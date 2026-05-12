@@ -5,6 +5,8 @@ import {
   LISTING_RULES,
   buildListingUserPrompt,
 } from "@/lib/api/prompts";
+import { checkAndIncrementUsage } from "@/lib/usage";
+import { auth } from "@clerk/nextjs/server";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -50,6 +52,39 @@ export async function POST(req: NextRequest) {
           "X-RateLimit-Reset": String(Math.ceil(rateLimit.resetIn)),
         },
       }
+    );
+  }
+
+  // Check user authentication
+  const { userId } = auth();
+  if (!userId) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Please sign in to use this tool.",
+        },
+      },
+      { status: 401 }
+    );
+  }
+
+  // Check usage limits
+  const { allowed, remaining, isSubscribed } = await checkAndIncrementUsage();
+  if (!allowed) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: isSubscribed ? "SUBSCRIPTION_EXPIRED" : "LIMIT_EXCEEDED",
+          message: isSubscribed
+            ? "Your subscription has expired. Please renew to continue."
+            : "You've used your 3 free uses this month. Upgrade to Pro for unlimited access.",
+          upgradeUrl: "/pricing",
+        },
+      },
+      { status: 403 }
     );
   }
 

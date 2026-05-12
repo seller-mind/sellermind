@@ -34,6 +34,33 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Check user authentication
+  const { userId } = auth();
+  if (!userId) {
+    return NextResponse.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Please sign in to use this tool." } },
+      { status: 401 }
+    );
+  }
+
+  // Check usage limits
+  const { allowed, isSubscribed } = await checkAndIncrementUsage();
+  if (!allowed) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: isSubscribed ? "SUBSCRIPTION_EXPIRED" : "LIMIT_EXCEEDED",
+          message: isSubscribed
+            ? "Your subscription has expired. Please renew to continue."
+            : "You've used your 3 free uses this month. Upgrade to Pro for unlimited access.",
+          upgradeUrl: "/pricing",
+        },
+      },
+      { status: 403 }
+    );
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ success: false, error: { code: "AI_SERVICE_ERROR", message: "OpenAI API key is not configured." } }, { status: 500 });

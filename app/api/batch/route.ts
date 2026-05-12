@@ -5,6 +5,8 @@ import {
   BATCH_RULES,
   buildBatchUserPrompt,
 } from "@/lib/api/prompts";
+import { checkAndIncrementUsage } from "@/lib/usage";
+import { auth } from "@clerk/nextjs/server";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 

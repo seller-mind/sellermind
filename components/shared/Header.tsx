@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home", icon: "home" },
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
 
 function Header() {
   const pathname = usePathname();
+  const { isSignedIn, isLoaded } = useUser();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background-primary/95 backdrop-blur supports-[backdrop-filter]:bg-background-primary/95">
@@ -77,6 +79,37 @@ function Header() {
             );
           })}
         </nav>
+
+        {/* Desktop Auth Buttons */}
+        <div className="hidden md:flex items-center gap-3">
+          <Link
+            href="/pricing"
+            className={cn(
+              "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+              pathname === "/pricing"
+                ? "bg-primary-light text-primary"
+                : "text-foreground-secondary hover:bg-background-secondary hover:text-foreground-primary"
+            )}
+          >
+            Pricing
+          </Link>
+          {!isLoaded ? null : isSignedIn ? (
+            <UserButton afterSignOutUrl="/" />
+          ) : (
+            <>
+              <SignInButton mode="modal">
+                <button className="px-4 py-2 text-sm font-medium text-foreground-secondary hover:text-foreground-primary transition-colors">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors">
+                  Get Started Free
+                </button>
+              </SignUpButton>
+            </>
+          )}
+        </div>
 
         {/* Mobile: just show logo */}
         <div className="md:hidden" />
