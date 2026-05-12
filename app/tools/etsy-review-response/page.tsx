@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import type { Metadata } from "next";
 import { ToolLayout } from "./components/ToolLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,20 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Copy, Check, RefreshCw } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Free Etsy Review Response Generator | AI-Powered Professional Replies",
-  description: "Generate professional Etsy review responses instantly with AI. Reply to positive & negative reviews the right way. Free tool, no signup required.",
-  alternates: {
-    canonical: "https://thesellermind.com/tools/etsy-review-response",
-  },
-  openGraph: {
-    title: "Free Etsy Review Response Generator | SellerMind",
-    description: "Generate professional Etsy review responses instantly with AI. Reply to positive & negative reviews.",
-    url: "https://thesellermind.com/tools/etsy-review-response",
-    type: "website",
-  },
-};
 
 const TOOL_INFO = {
   name: "Free Etsy Review Response Generator",

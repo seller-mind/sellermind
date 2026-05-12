@@ -1,25 +1,10 @@
 "use client";
 
 import * as React from "react";
-import type { Metadata } from "next";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { BatchForm } from "@/components/tools/BatchForm";
 import { BatchResult } from "@/components/tools/BatchResult";
 import { Toast } from "@/components/ui/toast";
-
-export const metadata: Metadata = {
-  title: "Batch Optimizer | Analyze and Optimize Multiple Listings | SellerMind",
-  description: "Analyze and optimize multiple listings at once with AI-powered suggestions. Batch optimizer for Etsy sellers.",
-  alternates: {
-    canonical: "https://thesellermind.com/tools/batch",
-  },
-  openGraph: {
-    title: "Batch Optimizer | SellerMind",
-    description: "Analyze and optimize multiple listings at once with AI-powered suggestions.",
-    url: "https://thesellermind.com/tools/batch",
-    type: "website",
-  },
-};
 
 interface BatchData {
   listingsText: string;

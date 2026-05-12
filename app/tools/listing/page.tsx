@@ -1,25 +1,10 @@
 "use client";
 
 import * as React from "react";
-import type { Metadata } from "next";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ListingForm } from "@/components/tools/ListingForm";
 import { ListingResult } from "@/components/tools/ListingResult";
 import { Toast } from "@/components/ui/toast";
-
-export const metadata: Metadata = {
-  title: "Listing Generator | Create SEO-Optimized Etsy Listings | SellerMind",
-  description: "Create SEO-optimized titles, descriptions, and tags for your Etsy products in seconds. AI-powered listing generator for Etsy sellers.",
-  alternates: {
-    canonical: "https://thesellermind.com/tools/listing",
-  },
-  openGraph: {
-    title: "Listing Generator | SellerMind",
-    description: "Create SEO-optimized titles, descriptions, and tags for your Etsy products in seconds.",
-    url: "https://thesellermind.com/tools/listing",
-    type: "website",
-  },
-};
 
 interface ListingData {
   productName: string;

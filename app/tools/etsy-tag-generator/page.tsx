@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import type { Metadata } from "next";
 import { ToolLayout } from "./components/ToolLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,20 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Copy, Check } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Free Etsy Tag Generator | Generate All 13 Etsy Tags with Search Volume Data",
-  description: "Generate all 13 Etsy tags in seconds. Free AI tag generator with real search volume data, competition scores & one-click copy. Fill every slot for maximum visibility!",
-  alternates: {
-    canonical: "https://thesellermind.com/tools/etsy-tag-generator",
-  },
-  openGraph: {
-    title: "Free Etsy Tag Generator | SellerMind",
-    description: "Generate all 13 Etsy tags in seconds. Free AI tag generator with search volume data and competition scores.",
-    url: "https://thesellermind.com/tools/etsy-tag-generator",
-    type: "website",
-  },
-};
 
 interface GeneratedTag {
   text: string;

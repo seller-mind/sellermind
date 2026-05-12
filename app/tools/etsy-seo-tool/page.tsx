@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import type { Metadata } from "next";
 import { ToolLayout } from "./components/ToolLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,20 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy, Check, RefreshCw, AlertCircle, CheckCircle, AlertTriangle } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Free Etsy SEO Tool | Analyze & Optimize Listings to Rank Higher (2025)",
-  description: "Free Etsy SEO tool analyzes your listings in seconds. Get title scores, tag analysis & actionable tips to rank higher. 100% free, no signup needed.",
-  alternates: {
-    canonical: "https://thesellermind.com/tools/etsy-seo-tool",
-  },
-  openGraph: {
-    title: "Free Etsy SEO Tool | SellerMind",
-    description: "Free Etsy SEO tool analyzes your listings in seconds. Get title scores and actionable tips to rank higher.",
-    url: "https://thesellermind.com/tools/etsy-seo-tool",
-    type: "website",
-  },
-};
 
 interface SEORecommendation {
   type: "success" | "warning" | "improvement";

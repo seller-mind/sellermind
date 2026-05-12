@@ -1,26 +1,11 @@
 "use client";
 
 import * as React from "react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Free Etsy Seller Tools | AI-Powered Listing Optimization | SellerMind",
-  description: "Complete suite of free Etsy seller tools. Generate titles, tags, analyze SEO, respond to reviews & create holiday marketing. 100% free, no signup required.",
-  alternates: {
-    canonical: "https://thesellermind.com/tools",
-  },
-  openGraph: {
-    title: "Free Etsy Seller Tools | SellerMind",
-    description: "Complete suite of free Etsy seller tools. Generate titles, tags, analyze SEO & more. 100% free.",
-    url: "https://thesellermind.com/tools",
-    type: "website",
-  },
-};
 
 const TOOLS = [
   {

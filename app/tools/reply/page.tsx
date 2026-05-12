@@ -1,25 +1,10 @@
 "use client";
 
 import * as React from "react";
-import type { Metadata } from "next";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ReplyForm } from "@/components/tools/ReplyForm";
 import { ReplyResult } from "@/components/tools/ReplyResult";
 import { Toast } from "@/components/ui/toast";
-
-export const metadata: Metadata = {
-  title: "Auto Reply | AI-Powered Customer Service Responses | SellerMind",
-  description: "Generate professional, warm customer service responses for any inquiry scenario. AI-powered auto reply tool for Etsy sellers.",
-  alternates: {
-    canonical: "https://thesellermind.com/tools/reply",
-  },
-  openGraph: {
-    title: "Auto Reply | SellerMind",
-    description: "Generate professional, warm customer service responses for any inquiry scenario.",
-    url: "https://thesellermind.com/tools/reply",
-    type: "website",
-  },
-};
 
 interface ReplyData {
   scenario: string;
