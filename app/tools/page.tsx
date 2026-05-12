@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
 
@@ -237,11 +236,9 @@ export default function ToolsHubPage() {
                           ))}
                         </div>
                       </div>
-                      <Button asChild className="bg-green-600 hover:bg-green-700 whitespace-nowrap">
-                        <Link href={tool.slug}>
+                      <Link href={tool.slug} className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-sm hover:shadow-md px-5 h-10">
                           Use Tool <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
-                      </Button>
                     </div>
                   </div>
                 </div>
@@ -289,18 +286,14 @@ export default function ToolsHubPage() {
               and tags — all powered by AI. Perfect for sellers who want everything in one place.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
-                <Link href="https://thesellermind.com">
+              <Link href="https://thesellermind.com" className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-base font-semibold transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-sm hover:shadow-md px-8 h-12">
                   <Sparkles className="w-5 h-5 mr-2" />
                   Try SellerMind Free
                 </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/tools/etsy-seo-tool">
+              <Link href="/tools/etsy-seo-tool" className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-base font-semibold transition-all duration-200 bg-white text-foreground-primary border-2 border-border hover:border-primary hover:text-primary px-8 h-12">
                   <Zap className="w-5 h-5 mr-2" />
                   Try SEO Analyzer
                 </Link>
-              </Button>
             </div>
           </CardContent>
         </Card>

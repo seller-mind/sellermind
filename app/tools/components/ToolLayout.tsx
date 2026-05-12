@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface ToolLayoutProps {
@@ -267,11 +266,12 @@ export function ToolLayout({
                   Try SellerMind - Your all-in-one Etsy AI assistant
                 </p>
               </div>
-              <Button asChild className="bg-green-600 hover:bg-green-700">
-                <Link href="https://thesellermind.com">
-                  Go to SellerMind →
-                </Link>
-              </Button>
+              <Link 
+                href="https://thesellermind.com"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-sm hover:shadow-md px-5 h-10"
+              >
+                Go to SellerMind →
+              </Link>
             </div>
           </CardContent>
         </Card>
