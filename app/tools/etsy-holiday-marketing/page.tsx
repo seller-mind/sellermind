@@ -24,8 +24,8 @@ interface MarketingKit {
 }
 
 const TOOL_INFO = {
-  name: "Free Etsy Holiday Marketing Generator",
-  description: "Generate seasonal keywords and marketing templates for Christmas, Valentine's, Mother's Day and more. Complete holiday marketing kit in seconds.",
+  toolName: "Free Etsy Holiday Marketing Generator",
+  toolDescription: "Generate seasonal keywords and marketing templates for Christmas, Valentine's, Mother's Day and more. Complete holiday marketing kit in seconds.",
   metaTitle: "Free Etsy Holiday Marketing Generator | Seasonal Keywords for 2025",
   metaDescription: "Free Etsy holiday marketing tool for 2025. Get Christmas, Valentine's & Mother's Day keywords. Seasonal title templates & tag ideas. No signup!",
   canonicalUrl: "https://thesellermind.com/tools/etsy-holiday-marketing",

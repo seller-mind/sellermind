@@ -23,8 +23,8 @@ interface GeneratedTag {
 }
 
 const TOOL_INFO = {
-  name: "Free Etsy Tag Generator",
-  description: "Generate all 13 Etsy tags with search volume data and competition scores. Find the best keyword tags for your listings in seconds.",
+  toolName: "Free Etsy Tag Generator",
+  toolDescription: "Generate all 13 Etsy tags with search volume data and competition scores. Find the best keyword tags for your listings in seconds.",
   metaTitle: "Free Etsy Tag Generator | Generate All 13 Etsy Tags with Search Volume Data",
   metaDescription: "Generate all 13 Etsy tags in seconds. Free AI tag generator with real search volume data, competition scores & one-click copy. Fill every slot for maximum visibility!",
   canonicalUrl: "https://thesellermind.com/tools/etsy-tag-generator",

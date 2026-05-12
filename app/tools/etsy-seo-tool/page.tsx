@@ -24,8 +24,8 @@ interface SEOAnalysis {
 }
 
 const TOOL_INFO = {
-  name: "Free Etsy SEO Tool",
-  description: "Analyze and optimize your Etsy listings for maximum search visibility. Get actionable tips to rank higher with our instant listing analyzer.",
+  toolName: "Free Etsy SEO Tool",
+  toolDescription: "Analyze and optimize your Etsy listings for maximum search visibility. Get actionable tips to rank higher with our instant listing analyzer.",
   metaTitle: "Free Etsy SEO Tool | Analyze & Optimize Listings to Rank Higher (2025)",
   metaDescription: "Free Etsy SEO tool analyzes your listings in seconds. Get title scores, tag analysis & actionable tips to rank higher. 100% free, no signup needed.",
   canonicalUrl: "https://thesellermind.com/tools/etsy-seo-tool",

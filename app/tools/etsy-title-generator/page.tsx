@@ -23,8 +23,8 @@ interface GeneratedTitle {
 }
 
 const TOOL_INFO = {
-  name: "Free Etsy Title Generator",
-  description: "Generate SEO-optimized Etsy listing titles that rank higher in search results. Create keyword-rich titles in 30 seconds with character count and quality scores.",
+  toolName: "Free Etsy Title Generator",
+  toolDescription: "Generate SEO-optimized Etsy listing titles that rank higher in search results. Create keyword-rich titles in 30 seconds with character count and quality scores.",
   metaTitle: "Free Etsy Title Generator | Create 140-Character SEO Titles in 30 Seconds",
   metaDescription: "Generate keyword-rich Etsy titles that rank #1. Free AI title generator creates SEO-optimized titles with character count and quality scoring. No signup required.",
   canonicalUrl: "https://thesellermind.com/tools/etsy-title-generator",

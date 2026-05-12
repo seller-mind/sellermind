@@ -17,8 +17,8 @@ import {
 import { Copy, Check, RefreshCw } from "lucide-react";
 
 const TOOL_INFO = {
-  name: "Free Etsy Review Response Generator",
-  description: "Generate professional review responses instantly. AI-powered tool for Etsy sellers to reply to positive and negative reviews professionally.",
+  toolName: "Free Etsy Review Response Generator",
+  toolDescription: "Generate professional review responses instantly. AI-powered tool for Etsy sellers to reply to positive and negative reviews professionally.",
   metaTitle: "Free Etsy Review Response Generator | AI-Powered Professional Replies",
   metaDescription: "Generate professional Etsy review responses instantly with AI. Reply to positive & negative reviews the right way. Free tool, no signup required.",
   canonicalUrl: "https://thesellermind.com/tools/etsy-review-response",
