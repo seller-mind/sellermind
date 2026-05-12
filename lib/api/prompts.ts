@@ -632,7 +632,7 @@ Example: "Handmade Silver Chain Necklace | Dainty Everyday Jewelry | Hypoallerge
 4. Are size/material/usage instructions included?
 5. Is CTA clear and compelling?
 6. Is there emotional resonance?
-7. Is original description's core selling points preserved after optimization?
+7. Is original description's core selling points preserved after optimization?`;
 
 export function buildBatchUserPrompt(listings: string): string {
   return `Analyze and optimize multiple Etsy listings for better SEO performance.
