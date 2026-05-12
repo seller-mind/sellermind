@@ -11,7 +11,7 @@ function generateTags(data: TagRequest) {
   
   // Simple keyword extraction from description
   const words = productDescription.toLowerCase().split(/\s+/);
-  const uniqueWords = [...new Set(words.filter(w => w.length > 3))];
+  const uniqueWords = Array.from(new Set(words.filter(w => w.length > 3)));
   
   // Common high-value Etsy keywords
   const intentKeywords = ["gift", "gift for her", "gift for him", "birthday", "wedding", "anniversary"];
