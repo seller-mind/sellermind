@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
     const userPrompt = buildListingUserPrompt({ productName, sellingPoints, category, tone });
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
