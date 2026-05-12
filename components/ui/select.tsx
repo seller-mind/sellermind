@@ -12,7 +12,8 @@ export interface SelectProps
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, label, hint, error, options, placeholder, id, ...props }, ref) => {
-    const selectId = id || React.useId();
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
 
     return (
       <div className="w-full">
@@ -77,4 +78,66 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 );
 Select.displayName = "Select";
 
-export { Select };
+// Shadcn-style Select sub-components for compatibility with SEO pages
+const SelectTrigger = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+>(({ className, children, ...props }, ref) => (
+  <button
+    ref={ref}
+    className={cn(
+      "flex h-11 w-full items-center justify-between rounded-xl border-2 border-border bg-white px-4 py-2 text-base text-foreground-primary transition-all duration-200",
+      "focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary-light",
+      "disabled:cursor-not-allowed disabled:opacity-50",
+      className
+    )}
+    {...props}
+  >
+    {children}
+    <svg className="h-5 w-5 text-foreground-muted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+  </button>
+));
+SelectTrigger.displayName = "SelectTrigger";
+
+const SelectValue = ({ placeholder }: { placeholder?: string }) => (
+  <span className={placeholder ? "text-foreground-muted" : ""}>{placeholder}</span>
+);
+SelectValue.displayName = "SelectValue";
+
+const SelectContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "relative z-50 mt-1 max-h-60 overflow-auto rounded-xl border-2 border-border bg-white p-1 shadow-lg",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+));
+SelectContent.displayName = "SelectContent";
+
+const SelectItem = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { value?: string }
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "relative flex w-full cursor-pointer select-none items-center rounded-lg px-4 py-2 text-sm text-foreground-primary outline-none transition-colors",
+      "hover:bg-primary-light hover:text-primary-dark",
+      "focus:bg-primary-light focus:text-primary-dark",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+));
+SelectItem.displayName = "SelectItem";
+
+export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem };
