@@ -152,7 +152,7 @@ function analyzeListing(data: SEORequest): SEOAnalysis {
     score,
     strengths,
     weaknesses,
-    additionalTags: [...new Set(additionalTags)].slice(0, 5),
+    additionalTags: Array.from(new Set(additionalTags)).slice(0, 5),
     overallFeedback
   };
 }
