@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Header, MobileNav } from "@/components/shared/Header";
 import { CookieConsentBanner } from "@/components/shared/CookieConsentBanner";
@@ -36,13 +35,24 @@ export const metadata: Metadata = {
   },
 };
 
+// Conditional wrapper - only use Clerk if keys are configured
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  if (clerkKey && !clerkKey.includes('placeholder')) {
+    // Dynamically import ClerkProvider to avoid errors when Clerk is not configured
+    const { ClerkProvider } = require("@clerk/nextjs");
+    return <ClerkProvider>{children}</ClerkProvider>;
+  }
+  return <>{children}</>;
+}
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <AuthProvider>
       <html lang="en">
         <head>
           <link rel="manifest" href="/manifest.json" />
@@ -90,6 +100,6 @@ export default function RootLayout({
           />
         </body>
       </html>
-    </ClerkProvider>
+    </AuthProvider>
   );
 }

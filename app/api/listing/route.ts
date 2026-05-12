@@ -6,7 +6,7 @@ import {
   buildListingUserPrompt,
 } from "@/lib/api/prompts";
 import { checkAndIncrementUsage } from "@/lib/usage";
-import { auth } from "@clerk/nextjs/server";
+import { isClerkConfigured } from "@/lib/clerk-helpers";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -26,6 +26,21 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number; rese
 
   limit.count++;
   return { allowed: true, remaining: 10 - limit.count, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
+}
+
+// Safe auth function that handles Clerk not configured
+async function getUserId(): Promise<string | null> {
+  if (!isClerkConfigured()) {
+    return null; // No auth required when Clerk is not configured
+  }
+  try {
+    const { auth } = await import("@clerk/nextjs/server");
+    const { userId } = auth();
+    return userId;
+  } catch (error) {
+    console.warn("Clerk auth error:", error);
+    return null;
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -55,9 +70,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check user authentication
-  const { userId } = auth();
-  if (!userId) {
+  // Check user authentication (skip if Clerk not configured)
+  const userId = await getUserId();
+  if (isClerkConfigured() && !userId) {
     return NextResponse.json(
       {
         success: false,
@@ -70,7 +85,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check usage limits
+  // Check usage limits (will return allowed=true if Clerk not configured)
   const { allowed, remaining, isSubscribed } = await checkAndIncrementUsage();
   if (!allowed) {
     return NextResponse.json(

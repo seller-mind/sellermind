@@ -1,8 +1,8 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { isClerkConfigured } from '@/lib/clerk-helpers'
 
 interface UsageInfo {
   remaining: number
@@ -11,9 +11,42 @@ interface UsageInfo {
   freeLimit: number
 }
 
+interface UserHook {
+  isSignedIn: boolean | null;
+  isLoaded: boolean;
+}
+
 export function UsageBanner() {
-  const { isSignedIn, isLoaded } = useUser()
-  const [usageInfo, setUsageInfo] = useState<UsageInfo | null>(null)
+  const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [usageInfo, setUsageInfo] = useState<UsageInfo | null>(null);
+
+  useEffect(() => {
+    // Check if Clerk is configured and load useUser hook
+    if (!isClerkConfigured()) {
+      setIsLoaded(true);
+      setIsSignedIn(null);
+      return;
+    }
+
+    import('@clerk/nextjs').then(({ useUser }) => {
+      // Subscribe to user state changes
+      const unsubscribe = useUser.subscribe((user: UserHook) => {
+        setIsSignedIn(user.isSignedIn);
+        setIsLoaded(user.isLoaded);
+      });
+      
+      // Initial check
+      const initialUser = useUser.getState();
+      setIsSignedIn(initialUser.isSignedIn);
+      setIsLoaded(initialUser.isLoaded);
+
+      return () => unsubscribe();
+    }).catch(() => {
+      setIsLoaded(true);
+      setIsSignedIn(null);
+    });
+  }, []);
 
   useEffect(() => {
     if (isSignedIn) {
@@ -24,6 +57,7 @@ export function UsageBanner() {
     }
   }, [isSignedIn])
 
+  // Don't render if Clerk is not configured or user is not signed in
   if (!isLoaded || !isSignedIn || !usageInfo || usageInfo.isSubscribed) return null
 
   if (usageInfo.remaining === 0) {

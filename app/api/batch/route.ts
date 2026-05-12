@@ -6,7 +6,7 @@ import {
   buildBatchUserPrompt,
 } from "@/lib/api/prompts";
 import { checkAndIncrementUsage } from "@/lib/usage";
-import { auth } from "@clerk/nextjs/server";
+import { isClerkConfigured } from "@/lib/clerk-helpers";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -15,13 +15,28 @@ function checkRateLimit(ip: string) {
   const limit = rateLimitMap.get(ip);
   if (!limit || now > limit.resetTime) {
     rateLimitMap.set(ip, { count: 1, resetTime: now + 60000 });
-    return { allowed: true, remaining: 9, resetIn: 60 };
+    return { allowed: true, remaining: 4, resetIn: 60 };
   }
   if (limit.count >= 5) { // Lower limit for batch operations
     return { allowed: false, remaining: 0, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
   }
   limit.count++;
   return { allowed: true, remaining: 5 - limit.count, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
+}
+
+// Safe auth function that handles Clerk not configured
+async function getUserId(): Promise<string | null> {
+  if (!isClerkConfigured()) {
+    return null;
+  }
+  try {
+    const { auth } = await import("@clerk/nextjs/server");
+    const { userId } = auth();
+    return userId;
+  } catch (error) {
+    console.warn("Clerk auth error:", error);
+    return null;
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -33,6 +48,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { success: false, error: { code: "RATE_LIMIT_EXCEEDED", message: `Too many requests. Please wait ${rateLimit.resetIn} seconds.` } },
       { status: 429 }
+    );
+  }
+
+  // Check user authentication (skip if Clerk not configured)
+  const userId = await getUserId();
+  if (isClerkConfigured() && !userId) {
+    return NextResponse.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Please sign in to use this tool." } },
+      { status: 401 }
+    );
+  }
+
+  // Check usage limits
+  const { allowed, isSubscribed } = await checkAndIncrementUsage();
+  if (!allowed) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: isSubscribed ? "SUBSCRIPTION_EXPIRED" : "LIMIT_EXCEEDED",
+          message: isSubscribed
+            ? "Your subscription has expired. Please renew to continue."
+            : "You've used your 3 free uses this month. Upgrade to Pro for unlimited access.",
+          upgradeUrl: "/pricing",
+        },
+      },
+      { status: 403 }
     );
   }
 

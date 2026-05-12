@@ -5,6 +5,8 @@ import {
   REPLY_TONE_GUIDE,
   buildReplyUserPrompt,
 } from "@/lib/api/prompts";
+import { checkAndIncrementUsage } from "@/lib/usage";
+import { isClerkConfigured } from "@/lib/clerk-helpers";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -22,6 +24,21 @@ function checkRateLimit(ip: string) {
   return { allowed: true, remaining: 10 - limit.count, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
 }
 
+// Safe auth function that handles Clerk not configured
+async function getUserId(): Promise<string | null> {
+  if (!isClerkConfigured()) {
+    return null;
+  }
+  try {
+    const { auth } = await import("@clerk/nextjs/server");
+    const { userId } = auth();
+    return userId;
+  } catch (error) {
+    console.warn("Clerk auth error:", error);
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   const ip = req.headers.get("x-forwarded-for") || "anonymous";
@@ -34,9 +51,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check user authentication
-  const { userId } = auth();
-  if (!userId) {
+  // Check user authentication (skip if Clerk not configured)
+  const userId = await getUserId();
+  if (isClerkConfigured() && !userId) {
     return NextResponse.json(
       { success: false, error: { code: "UNAUTHORIZED", message: "Please sign in to use this tool." } },
       { status: 401 }

@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
+import { isClerkConfigured } from "@/lib/clerk-helpers";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home", icon: "home" },
@@ -15,9 +15,79 @@ const NAV_ITEMS = [
   { href: "/tools/batch", label: "Batch", icon: "layers" },
 ];
 
+// ClerkAuthButton - dynamically loads Clerk buttons only when Clerk is configured
+function ClerkAuthButton() {
+  // Use state to track if Clerk is configured (checked on client side)
+  const [clerkConfigured, setClerkConfigured] = React.useState(false);
+  const [clerkComponents, setClerkComponents] = React.useState<{
+    SignInButton: React.ComponentType<any> | null;
+    SignUpButton: React.ComponentType<any> | null;
+    UserButton: React.ComponentType<any> | null;
+  }>({ SignInButton: null, SignUpButton: null, UserButton: null });
+
+  React.useEffect(() => {
+    // Check if Clerk is configured
+    if (isClerkConfigured()) {
+      // Dynamically import Clerk components
+      import("@clerk/nextjs").then((clerk) => {
+        setClerkConfigured(true);
+        setClerkComponents({
+          SignInButton: clerk.SignInButton,
+          SignUpButton: clerk.SignUpButton,
+          UserButton: clerk.UserButton,
+        });
+      }).catch(() => {
+        setClerkConfigured(false);
+      });
+    }
+  }, []);
+
+  // Don't render auth buttons if Clerk is not configured
+  // The app will work without authentication
+  if (!clerkConfigured) {
+    return (
+      <>
+        <Link
+          href="/sign-in"
+          className="px-4 py-2 text-sm font-medium text-foreground-secondary hover:text-foreground-primary transition-colors"
+        >
+          Sign In
+        </Link>
+        <Link
+          href="/sign-up"
+          className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+        >
+          Get Started Free
+        </Link>
+      </>
+    );
+  }
+
+  const { SignInButton, SignUpButton, UserButton } = clerkComponents;
+
+  if (!SignInButton || !SignUpButton || !UserButton) {
+    // Still loading Clerk components
+    return null;
+  }
+
+  return (
+    <>
+      <SignInButton mode="modal">
+        <button className="px-4 py-2 text-sm font-medium text-foreground-secondary hover:text-foreground-primary transition-colors">
+          Sign In
+        </button>
+      </SignInButton>
+      <SignUpButton mode="modal">
+        <button className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors">
+          Get Started Free
+        </button>
+      </SignUpButton>
+    </>
+  );
+}
+
 function Header() {
   const pathname = usePathname();
-  const { isSignedIn, isLoaded } = useUser();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background-primary/95 backdrop-blur supports-[backdrop-filter]:bg-background-primary/95">
@@ -93,22 +163,8 @@ function Header() {
           >
             Pricing
           </Link>
-          {!isLoaded ? null : isSignedIn ? (
-            <UserButton afterSignOutUrl="/" />
-          ) : (
-            <>
-              <SignInButton mode="modal">
-                <button className="px-4 py-2 text-sm font-medium text-foreground-secondary hover:text-foreground-primary transition-colors">
-                  Sign In
-                </button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors">
-                  Get Started Free
-                </button>
-              </SignUpButton>
-            </>
-          )}
+          
+          <ClerkAuthButton />
         </div>
 
         {/* Mobile: just show logo */}
@@ -165,8 +221,8 @@ function MobileNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-white md:hidden">
-      <div className="flex">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background-primary md:hidden">
+      <div className="flex justify-around py-2">
         {mobileItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -174,12 +230,14 @@ function MobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[10px] transition-colors",
-                isActive ? "text-primary" : "text-foreground-muted"
+                "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors",
+                isActive
+                  ? "text-primary"
+                  : "text-foreground-muted hover:text-foreground-primary"
               )}
             >
               {icons[item.icon]}
-              <span>{item.label}</span>
+              <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );
         })}
