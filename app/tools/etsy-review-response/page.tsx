@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ToolLayout } from "./components/ToolLayout";
+import { ToolLayout } from "../components/ToolLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
