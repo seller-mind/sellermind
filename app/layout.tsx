@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header, MobileNav } from "@/components/shared/Header";
 import { CookieConsentBanner } from "@/components/shared/CookieConsentBanner";
 import { UsageBanner } from "@/components/shared/UsageBanner";
+import dynamic from "next/dynamic";
 
 export const viewport: Viewport = {
   themeColor: "#E07A5F",
@@ -35,13 +36,16 @@ export const metadata: Metadata = {
   },
 };
 
-// Conditional wrapper - only use Clerk if keys are configured
+// Dynamic Clerk provider - won't block page if Clerk CDN is unreachable (e.g. in China)
+const ClerkProviderWrapper = dynamic(
+  () => import("@clerk/nextjs").then((mod) => mod.ClerkProvider),
+  { ssr: false }
+);
+
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  if (clerkKey && !clerkKey.includes('placeholder')) {
-    // Dynamically import ClerkProvider to avoid errors when Clerk is not configured
-    const { ClerkProvider } = require("@clerk/nextjs");
-    return <ClerkProvider>{children}</ClerkProvider>;
+  if (clerkKey && !clerkKey.includes("placeholder")) {
+    return <ClerkProviderWrapper>{children}</ClerkProviderWrapper>;
   }
   return <>{children}</>;
 }
