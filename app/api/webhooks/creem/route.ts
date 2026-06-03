@@ -47,10 +47,35 @@ export async function POST(request: NextRequest) {
 
   try {
     const event = JSON.parse(rawBody)
-    const { type, data } = event
+    // Creem uses 'eventType' field for event type
+    const eventType = event.eventType
+    const eventData = event.object || event.data || event
+
+    // Filter: only process events for SellerMind products
+    const productId =
+      eventData?.product?.id ||
+      eventData?.product_id ||
+      eventData?.product
+
+    const sellerMindProductIds = [
+      process.env.CREEM_PRODUCT_ID_MONTHLY,
+      process.env.CREEM_PRODUCT_ID_YEARLY,
+    ].filter(Boolean)
+
+    if (
+      productId &&
+      sellerMindProductIds.length > 0 &&
+      !sellerMindProductIds.includes(productId)
+    ) {
+      // Not a SellerMind product event, skip
+      return NextResponse.json({ received: true, skipped: true })
+    }
 
     // Extract user_id from metadata
-    const userId = data?.metadata?.user_id || data?.custom_data?.user_id
+    const userId =
+      eventData?.metadata?.user_id ||
+      eventData?.custom_data?.user_id ||
+      eventData?.metadata?.userId
     if (!userId || userId === 'anonymous') {
       console.log('No user_id in webhook data, skipping Clerk update')
       return NextResponse.json({ received: true })
@@ -66,57 +91,83 @@ export async function POST(request: NextRequest) {
     const { clerkClient } = await import('@clerk/nextjs/server')
     const client = await clerkClient()
 
-    switch (type) {
+    switch (eventType) {
       case 'checkout.completed': {
         // A checkout was completed - activate subscription
-        const productId = data?.product_id || ''
-        const isMonthly = productId === process.env.CREEM_PRODUCT_ID_MONTHLY
+        const planProductId =
+          eventData?.product?.id || eventData?.product_id || ''
+        const isMonthly =
+          planProductId === process.env.CREEM_PRODUCT_ID_MONTHLY
         const planName = isMonthly ? 'Pro Monthly' : 'Pro Yearly'
 
         await client.users.updateUserMetadata(userId, {
           privateMetadata: {
             subscriptionStatus: 'active',
             subscriptionPlan: planName,
-            creemCheckoutId: data?.id,
-            creemCustomerId: data?.customer_id,
-            currentPeriodEnd: data?.billing_period?.end,
+            creemCheckoutId: eventData?.id,
+            creemCustomerId:
+              eventData?.customer?.id || eventData?.customer_id,
+            currentPeriodEnd:
+              eventData?.billing_period?.end ||
+              eventData?.current_period_end_date,
           },
         })
-        console.log(`Subscription activated for user ${userId}: ${planName}`)
+        console.log(
+          `Checkout completed for user ${userId}: ${planName}`
+        )
         break
       }
 
-      case 'subscription.created': {
+      case 'subscription.active': {
+        // New subscription created
         await client.users.updateUserMetadata(userId, {
           privateMetadata: {
             subscriptionStatus: 'active',
-            creemSubscriptionId: data?.id,
-            creemCustomerId: data?.customer_id,
-            currentPeriodEnd: data?.billing_period?.end,
+            creemSubscriptionId: eventData?.id,
+            creemCustomerId:
+              eventData?.customer?.id || eventData?.customer_id,
+            currentPeriodEnd:
+              eventData?.current_period_end_date,
           },
         })
-        console.log(`Subscription created for user ${userId}`)
+        console.log(`Subscription activated for user ${userId}`)
         break
       }
 
-      case 'subscription.updated': {
+      case 'subscription.paid': {
+        // Recurring payment processed - extend access
         await client.users.updateUserMetadata(userId, {
           privateMetadata: {
             subscriptionStatus: 'active',
-            currentPeriodEnd: data?.billing_period?.end,
+            currentPeriodEnd:
+              eventData?.current_period_end_date,
+          },
+        })
+        console.log(`Subscription payment received for user ${userId}`)
+        break
+      }
+
+      case 'subscription.update': {
+        // Subscription modified
+        await client.users.updateUserMetadata(userId, {
+          privateMetadata: {
+            subscriptionStatus: 'active',
+            currentPeriodEnd:
+              eventData?.current_period_end_date,
           },
         })
         console.log(`Subscription updated for user ${userId}`)
         break
       }
 
-      case 'subscription.cancelled': {
+      case 'subscription.canceled': {
+        // Subscription canceled - access continues until period end
         await client.users.updateUserMetadata(userId, {
           privateMetadata: {
             subscriptionStatus: 'cancelled',
-            cancelAtPeriodEnd: data?.cancellation?.at_period_end
-              ? data?.billing_period?.end
-              : new Date().toISOString(),
+            cancelAtPeriodEnd:
+              eventData?.current_period_end_date ||
+              new Date().toISOString(),
           },
         })
         console.log(`Subscription cancelled for user ${userId}`)
@@ -124,6 +175,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'subscription.expired': {
+        // Subscription expired - payment retries may happen
         await client.users.updateUserMetadata(userId, {
           privateMetadata: {
             subscriptionStatus: 'expired',
@@ -133,20 +185,29 @@ export async function POST(request: NextRequest) {
         break
       }
 
-      case 'payment.succeeded': {
-        console.log(`Payment succeeded for user ${userId}`)
-        // Payment success is already handled by subscription events
+      case 'subscription.paused': {
+        await client.users.updateUserMetadata(userId, {
+          privateMetadata: {
+            subscriptionStatus: 'paused',
+          },
+        })
+        console.log(`Subscription paused for user ${userId}`)
         break
       }
 
-      case 'payment.failed': {
-        console.log(`Payment failed for user ${userId}`)
-        // Don't immediately cancel - let the subscription events handle it
+      case 'refund.created': {
+        // Refund processed - may need to revoke access
+        console.log(`Refund created for user ${userId}`)
+        break
+      }
+
+      case 'dispute.created': {
+        console.log(`Dispute/chargeback for user ${userId}`)
         break
       }
 
       default:
-        console.log('Unhandled Creem webhook event type:', type)
+        console.log('Unhandled Creem webhook event:', eventType)
     }
 
     return NextResponse.json({ received: true })
