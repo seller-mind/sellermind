@@ -17,14 +17,6 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.thesellermind.com',
       },
-      {
-        protocol: 'https',
-        hostname: 'img.clerk.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'clerk.com',
-      },
     ],
   },
 };

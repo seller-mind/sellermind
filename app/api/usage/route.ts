@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getUsageInfo } from '@/lib/usage'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const info = await getUsageInfo()
+    const email = request.nextUrl.searchParams.get('email')
+    const info = await getUsageInfo(email || '')
     return NextResponse.json(info)
   } catch (error) {
     console.error('Usage API error:', error)

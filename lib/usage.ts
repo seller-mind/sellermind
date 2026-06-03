@@ -1,26 +1,21 @@
-import { auth, clerkClient } from '@clerk/nextjs/server'
-import { isClerkConfigured } from './clerk-helpers'
+import { supabaseAdmin } from './supabase'
 
 const FREE_LIMIT = 3
 
 interface UsageData {
-  monthlyCount: number
-  monthlyResetDate: string
-  totalLifetimeCount: number
-  refundCount: number
-  hasUsedRefund: boolean
-  refundLockoutUntil: string | null
+  monthly_count: number
+  monthly_reset_date: string
+  total_lifetime_count: number
+  subscription_status: string
 }
 
 function getDefaultUsage(): UsageData {
   const now = new Date()
   return {
-    monthlyCount: 0,
-    monthlyResetDate: new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString(),
-    totalLifetimeCount: 0,
-    refundCount: 0,
-    hasUsedRefund: false,
-    refundLockoutUntil: null,
+    monthly_count: 0,
+    monthly_reset_date: new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString(),
+    total_lifetime_count: 0,
+    subscription_status: 'free',
   }
 }
 
@@ -28,100 +23,171 @@ function isMonthExpired(resetDate: string): boolean {
   return new Date() >= new Date(resetDate)
 }
 
-export async function checkAndIncrementUsage(): Promise<{
+export async function checkAndIncrementUsage(email: string): Promise<{
   allowed: boolean
   remaining: number
   totalUsed: number
   isSubscribed: boolean
 }> {
-  // If Clerk is not configured, allow all usage (no auth required)
-  if (!isClerkConfigured()) {
-    return { allowed: true, remaining: -1, totalUsed: 0, isSubscribed: false }
+  if (!email) {
+    return { allowed: false, remaining: 0, totalUsed: 0, isSubscribed: false }
   }
 
   try {
-    const { userId } = auth()
-    if (!userId) return { allowed: false, remaining: 0, totalUsed: 0, isSubscribed: false }
+    const { data: user, error } = await supabaseAdmin
+      .from('sellermind_users')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .single()
 
-    const client = await clerkClient()
-    const user = await client.users.getUser(userId)
-    
-    const isSubscribed = user.privateMetadata?.subscriptionStatus === 'active'
-    if (isSubscribed) {
+    if (error || !user) {
+      // New user - create record
+      const newUsage = getDefaultUsage()
+      newUsage.monthly_count = 1
+      newUsage.total_lifetime_count = 1
+
+      await supabaseAdmin
+        .from('sellermind_users')
+        .upsert({
+          email: email.toLowerCase(),
+          monthly_count: newUsage.monthly_count,
+          monthly_reset_date: newUsage.monthly_reset_date,
+          total_lifetime_count: newUsage.total_lifetime_count,
+          subscription_status: 'free',
+        }, { onConflict: 'email' })
+
+      return {
+        allowed: true,
+        remaining: FREE_LIMIT - 1,
+        totalUsed: 1,
+        isSubscribed: false,
+      }
+    }
+
+    // Subscribed user = unlimited
+    if (user.subscription_status === 'active') {
       return { allowed: true, remaining: -1, totalUsed: -1, isSubscribed: true }
     }
 
-    let usage = (user.privateMetadata?.usage as UsageData) || getDefaultUsage()
-    
-    if (isMonthExpired(usage.monthlyResetDate)) {
-      usage.monthlyCount = 0
+    // Check if monthly reset needed
+    let monthlyCount = user.monthly_count || 0
+    let resetDate = user.monthly_reset_date
+
+    if (isMonthExpired(resetDate)) {
+      monthlyCount = 0
       const now = new Date()
-      usage.monthlyResetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString()
+      resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString()
     }
 
-    if (usage.refundLockoutUntil && new Date() < new Date(usage.refundLockoutUntil)) {
-      return { allowed: false, remaining: 0, totalUsed: usage.totalLifetimeCount, isSubscribed: false }
+    // Check limit
+    if (monthlyCount >= FREE_LIMIT) {
+      return {
+        allowed: false,
+        remaining: 0,
+        totalUsed: monthlyCount,
+        isSubscribed: false,
+      }
     }
 
-    if (usage.monthlyCount >= FREE_LIMIT) {
-      return { allowed: false, remaining: 0, totalUsed: usage.monthlyCount, isSubscribed: false }
-    }
+    // Increment usage
+    const newMonthlyCount = monthlyCount + 1
+    const newTotalCount = (user.total_lifetime_count || 0) + 1
 
-    usage.monthlyCount++
-    usage.totalLifetimeCount++
-    
-    await client.users.updateUserMetadata(userId, {
-      privateMetadata: { usage },
-    })
+    await supabaseAdmin
+      .from('sellermind_users')
+      .update({
+        monthly_count: newMonthlyCount,
+        monthly_reset_date: resetDate,
+        total_lifetime_count: newTotalCount,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('email', email.toLowerCase())
 
-    return { 
-      allowed: true, 
-      remaining: FREE_LIMIT - usage.monthlyCount, 
-      totalUsed: usage.monthlyCount, 
-      isSubscribed: false 
+    return {
+      allowed: true,
+      remaining: FREE_LIMIT - newMonthlyCount,
+      totalUsed: newMonthlyCount,
+      isSubscribed: false,
     }
   } catch (error) {
-    console.error("Usage check error:", error)
+    console.error('Usage check error:', error)
     // On error, allow usage to avoid blocking users
     return { allowed: true, remaining: -1, totalUsed: 0, isSubscribed: false }
   }
 }
 
-export async function getUsageInfo(): Promise<{
+export async function getUsageInfo(email: string): Promise<{
   remaining: number
   totalUsed: number
   isSubscribed: boolean
   freeLimit: number
 }> {
-  // If Clerk is not configured, return unlimited
-  if (!isClerkConfigured()) {
-    return { remaining: -1, totalUsed: 0, isSubscribed: false, freeLimit: FREE_LIMIT }
+  if (!email) {
+    return { remaining: FREE_LIMIT, totalUsed: 0, isSubscribed: false, freeLimit: FREE_LIMIT }
   }
 
   try {
-    const { userId } = auth()
-    if (!userId) return { remaining: 0, totalUsed: 0, isSubscribed: false, freeLimit: FREE_LIMIT }
+    const { data: user, error } = await supabaseAdmin
+      .from('sellermind_users')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .single()
 
-    const client = await clerkClient()
-    const user = await client.users.getUser(userId)
-    
-    const isSubscribed = user.privateMetadata?.subscriptionStatus === 'active'
-    if (isSubscribed) return { remaining: -1, totalUsed: -1, isSubscribed: true, freeLimit: FREE_LIMIT }
-
-    let usage = (user.privateMetadata?.usage as UsageData) || getDefaultUsage()
-    if (isMonthExpired(usage.monthlyResetDate)) {
-      usage.monthlyCount = 0
+    if (error || !user) {
+      return { remaining: FREE_LIMIT, totalUsed: 0, isSubscribed: false, freeLimit: FREE_LIMIT }
     }
 
-    return { 
-      remaining: Math.max(0, FREE_LIMIT - usage.monthlyCount), 
-      totalUsed: usage.monthlyCount, 
-      isSubscribed: false, 
-      freeLimit: FREE_LIMIT 
+    if (user.subscription_status === 'active') {
+      return { remaining: -1, totalUsed: -1, isSubscribed: true, freeLimit: FREE_LIMIT }
+    }
+
+    let monthlyCount = user.monthly_count || 0
+    if (isMonthExpired(user.monthly_reset_date)) {
+      monthlyCount = 0
+    }
+
+    return {
+      remaining: Math.max(0, FREE_LIMIT - monthlyCount),
+      totalUsed: monthlyCount,
+      isSubscribed: false,
+      freeLimit: FREE_LIMIT,
     }
   } catch (error) {
-    console.error("Get usage info error:", error)
-    // On error, return unlimited
+    console.error('Get usage info error:', error)
     return { remaining: -1, totalUsed: 0, isSubscribed: false, freeLimit: FREE_LIMIT }
+  }
+}
+
+export async function getSubscriptionStatus(email: string): Promise<{
+  isSubscribed: boolean
+  plan?: string
+  currentPeriodEnd?: string
+}> {
+  if (!email) return { isSubscribed: false }
+
+  try {
+    const { data: user } = await supabaseAdmin
+      .from('sellermind_users')
+      .select('subscription_status, subscription_plan, current_period_end')
+      .eq('email', email.toLowerCase())
+      .single()
+
+    if (!user || user.subscription_status !== 'active') {
+      return { isSubscribed: false }
+    }
+
+    // Check if subscription has expired
+    if (user.current_period_end && new Date(user.current_period_end) < new Date()) {
+      // Subscription period ended, but status might not be updated yet
+      return { isSubscribed: false }
+    }
+
+    return {
+      isSubscribed: true,
+      plan: user.subscription_plan,
+      currentPeriodEnd: user.current_period_end,
+    }
+  } catch {
+    return { isSubscribed: false }
   }
 }

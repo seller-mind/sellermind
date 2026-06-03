@@ -6,7 +6,6 @@ import {
   buildReviewUserPrompt,
 } from "@/lib/api/prompts";
 import { checkAndIncrementUsage } from "@/lib/usage";
-import { isClerkConfigured } from "@/lib/clerk-helpers";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -24,20 +23,6 @@ function checkRateLimit(ip: string) {
   return { allowed: true, remaining: 10 - limit.count, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
 }
 
-// Safe auth function that handles Clerk not configured
-async function getUserId(): Promise<string | null> {
-  if (!isClerkConfigured()) {
-    return null;
-  }
-  try {
-    const { auth } = await import("@clerk/nextjs/server");
-    const { userId } = auth();
-    return userId;
-  } catch (error) {
-    console.warn("Clerk auth error:", error);
-    return null;
-  }
-}
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
@@ -51,17 +36,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check user authentication (skip if Clerk not configured)
-  const userId = await getUserId();
-  if (isClerkConfigured() && !userId) {
-    return NextResponse.json(
-      { success: false, error: { code: "UNAUTHORIZED", message: "Please sign in to use this tool." } },
-      { status: 401 }
-    );
+  // Parse body and extract email
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ success: false, error: { code: 'INVALID_INPUT', message: 'Invalid request body.' } }, { status: 400 });
   }
+  const email = (body.email as string) || req.nextUrl.searchParams.get('email') || '';
 
   // Check usage limits
-  const { allowed, isSubscribed } = await checkAndIncrementUsage();
+  const { allowed, isSubscribed } = await checkAndIncrementUsage(email);
   if (!allowed) {
     return NextResponse.json(
       {
@@ -84,8 +69,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = await req.json();
-    const { reviewContent, isSellerFault, tonePreference } = body;
+    const { reviewContent, isSellerFault, tonePreference } = body as { reviewContent?: string; isSellerFault?: string; tonePreference?: string };
 
     if (!reviewContent) {
       return NextResponse.json({ success: false, error: { code: "INVALID_INPUT", message: "Review content is required." } }, { status: 400 });

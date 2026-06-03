@@ -1,25 +1,68 @@
 'use client'
 
-import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 export default function PricingClient() {
+  const [email, setEmail] = useState('')
+  const [savedEmail, setSavedEmail] = useState('')
+
+  useEffect(() => {
+    // Load saved email from localStorage
+    const stored = localStorage.getItem('sellermind_email')
+    if (stored) {
+      setEmail(stored)
+      setSavedEmail(stored)
+    }
+  }, [])
+
+  const saveEmail = () => {
+    if (email && email.includes('@')) {
+      localStorage.setItem('sellermind_email', email.toLowerCase())
+      setSavedEmail(email.toLowerCase())
+    }
+  }
+
   const handleSubscribe = async (planId: string) => {
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address first.')
+      return
+    }
+
+    // Save email before checkout
+    localStorage.setItem('sellermind_email', email.toLowerCase())
+    setSavedEmail(email.toLowerCase())
+
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: planId }),
+        body: JSON.stringify({ productId: planId, email: email.toLowerCase() }),
       })
       const data = await response.json()
       if (data.url) {
         window.location.href = data.url
       } else {
-        alert('Failed to create checkout. Please try again.')
+        alert(data.error || 'Failed to create checkout. Please try again.')
       }
     } catch {
       alert('Failed to create checkout. Please try again.')
     }
   }
+
+  // Check for checkout success redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('checkout') === 'success') {
+      const emailParam = params.get('email')
+      if (emailParam) {
+        localStorage.setItem('sellermind_email', emailParam.toLowerCase())
+        setEmail(emailParam.toLowerCase())
+        setSavedEmail(emailParam.toLowerCase())
+      }
+      // Clean up URL
+      window.history.replaceState({}, '', '/pricing')
+    }
+  }, [])
 
   return (
     <div className="py-12">
@@ -32,12 +75,45 @@ export default function PricingClient() {
         </p>
       </div>
 
+      {/* Email Input Section */}
+      <div className="max-w-md mx-auto mb-12 px-4">
+        <div className="bg-white rounded-xl border border-border p-6">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground-primary mb-2">
+            Your Email Address
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            <button
+              onClick={saveEmail}
+              disabled={!email || !email.includes('@') || email.toLowerCase() === savedEmail}
+              className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Save
+            </button>
+          </div>
+          {savedEmail && (
+            <p className="mt-2 text-xs text-foreground-muted">
+              ✓ Using {savedEmail} — your free uses are tracked by this email.
+            </p>
+          )}
+        </div>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto px-4">
         {/* Free Plan */}
         <div className="bg-white rounded-2xl border border-border p-8 shadow-sm">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-foreground-primary">Free</h2>
-            <p className="text-4xl font-bold text-foreground-primary mt-2">$0<span className="text-lg font-normal text-foreground-muted">/month</span></p>
+            <p className="text-4xl font-bold text-foreground-primary mt-2">
+              $0<span className="text-lg font-normal text-foreground-muted">/month</span>
+            </p>
           </div>
           
           <ul className="space-y-4 mb-8">
@@ -85,12 +161,11 @@ export default function PricingClient() {
             </li>
           </ul>
 
-          <Link
-            href="/sign-up"
-            className="block w-full py-3 px-4 text-center font-medium rounded-lg border border-border text-foreground-primary hover:bg-background-secondary transition-colors"
-          >
-            Get Started Free
-          </Link>
+          <div className="text-center">
+            <p className="text-sm text-foreground-muted">
+              Just enter your email above to get started — no sign-up required.
+            </p>
+          </div>
         </div>
 
         {/* Pro Plan */}
@@ -181,7 +256,19 @@ export default function PricingClient() {
         <div className="space-y-4">
           <details className="bg-white rounded-xl border border-border p-6 group">
             <summary className="font-medium cursor-pointer list-none flex justify-between items-center">
-              <span>What counts as an "AI use"?</span>
+              <span>Do I need to create an account?</span>
+              <svg className="w-5 h-5 text-foreground-muted group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <p className="mt-4 text-foreground-secondary">
+              No! Just enter your email and start using the tools. Your email is used to track your free usage and link your Pro subscription — no password needed.
+            </p>
+          </details>
+
+          <details className="bg-white rounded-xl border border-border p-6 group">
+            <summary className="font-medium cursor-pointer list-none flex justify-between items-center">
+              <span>What counts as an &quot;AI use&quot;?</span>
               <svg className="w-5 h-5 text-foreground-muted group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -211,7 +298,7 @@ export default function PricingClient() {
               </svg>
             </summary>
             <p className="mt-4 text-foreground-secondary">
-              You can cancel anytime from your account settings. Your access continues until the end of your billing period.
+              You can cancel anytime. Contact us at support and your access continues until the end of your billing period.
             </p>
           </details>
 
@@ -223,7 +310,7 @@ export default function PricingClient() {
               </svg>
             </summary>
             <p className="mt-4 text-foreground-secondary">
-              Yes! We offer a 7-day money-back guarantee for accounts with 10 or fewer AI uses. EU customers have 14 days under consumer protection laws. Contact us through our support channels.
+              Yes! We offer a 7-day money-back guarantee for accounts with 10 or fewer AI uses. EU customers have 14 days under consumer protection laws.
             </p>
           </details>
         </div>

@@ -6,7 +6,6 @@ import {
   buildListingUserPrompt,
 } from "@/lib/api/prompts";
 import { checkAndIncrementUsage } from "@/lib/usage";
-import { isClerkConfigured } from "@/lib/clerk-helpers";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -26,21 +25,6 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number; rese
 
   limit.count++;
   return { allowed: true, remaining: 10 - limit.count, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
-}
-
-// Safe auth function that handles Clerk not configured
-async function getUserId(): Promise<string | null> {
-  if (!isClerkConfigured()) {
-    return null; // No auth required when Clerk is not configured
-  }
-  try {
-    const { auth } = await import("@clerk/nextjs/server");
-    const { userId } = auth();
-    return userId;
-  } catch (error) {
-    console.warn("Clerk auth error:", error);
-    return null;
-  }
 }
 
 export async function POST(req: NextRequest) {
@@ -70,23 +54,18 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check user authentication (skip if Clerk not configured)
-  const userId = await getUserId();
-  if (isClerkConfigured() && !userId) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "UNAUTHORIZED",
-          message: "Please sign in to use this tool.",
-        },
-      },
-      { status: 401 }
-    );
+  // Parse body and extract email
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ success: false, error: { code: "INVALID_INPUT", message: "Invalid request body." } }, { status: 400 });
   }
 
-  // Check usage limits (will return allowed=true if Clerk not configured)
-  const { allowed, remaining, isSubscribed } = await checkAndIncrementUsage();
+  const email = (body.email as string) || req.nextUrl.searchParams.get("email") || "";
+
+  // Check usage limits
+  const { allowed, remaining, isSubscribed } = await checkAndIncrementUsage(email);
   if (!allowed) {
     return NextResponse.json(
       {
@@ -107,35 +86,27 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "AI_SERVICE_ERROR",
-          message: "DeepSeek API key is not configured.",
-        },
-      },
+      { success: false, error: { code: "AI_SERVICE_ERROR", message: "DeepSeek API key is not configured." } },
       { status: 500 }
     );
   }
 
   try {
-    const body = await req.json();
-    const { productName, sellingPoints, category, tone } = body;
+    const { productName, sellingPoints, category, tone } = body as {
+      productName?: string;
+      sellingPoints?: string[];
+      category?: string;
+      tone?: string;
+    };
 
     if (!productName || !sellingPoints || !Array.isArray(sellingPoints)) {
       return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: "INVALID_INPUT",
-            message: "Product name and 3 selling points are required.",
-          },
-        },
+        { success: false, error: { code: "INVALID_INPUT", message: "Product name and 3 selling points are required." } },
         { status: 400 }
       );
     }
 
-    const openai = new OpenAI({ 
+    const openai = new OpenAI({
       apiKey,
       baseURL: "https://api.deepseek.com"
     });
@@ -163,20 +134,8 @@ export async function POST(req: NextRequest) {
     const processingTime = Date.now() - startTime;
 
     return NextResponse.json(
-      {
-        success: true,
-        data,
-        meta: {
-          tokens_used: response.usage?.total_tokens || 0,
-          processing_time_ms: processingTime,
-        },
-      },
-      {
-        headers: {
-          "X-RateLimit-Limit": "10",
-          "X-RateLimit-Remaining": String(rateLimit.remaining),
-        },
-      }
+      { success: true, data, meta: { tokens_used: response.usage?.total_tokens || 0, processing_time_ms: processingTime } },
+      { headers: { "X-RateLimit-Limit": "10", "X-RateLimit-Remaining": String(rateLimit.remaining) } }
     );
   } catch (error: unknown) {
     console.error("Listing API error:", error);
@@ -184,25 +143,13 @@ export async function POST(req: NextRequest) {
 
     if (message.includes("JSON")) {
       return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: "AI_SERVICE_ERROR",
-            message: "Failed to parse AI response. Please try again.",
-          },
-        },
+        { success: false, error: { code: "AI_SERVICE_ERROR", message: "Failed to parse AI response. Please try again." } },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: "AI_SERVICE_ERROR",
-          message: "An error occurred while generating. Please try again.",
-        },
-      },
+      { success: false, error: { code: "AI_SERVICE_ERROR", message: "An error occurred while generating. Please try again." } },
       { status: 500 }
     );
   }

@@ -1,27 +1,10 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { isClerkConfigured } from '@/lib/clerk-helpers'
 
-// Safe auth function that handles Clerk not configured
-async function getUserId(): Promise<string | null> {
-  if (!isClerkConfigured()) {
-    return null
-  }
-  try {
-    const { userId } = auth()
-    return userId
-  } catch (error) {
-    console.warn('Clerk auth error:', error)
-    return null
-  }
-}
-
-// Creem API helper - following official docs: https://docs.creem.io/features/checkout/checkout-api
 async function createCreemCheckout(params: {
   productId: string
   requestId: string
   successUrl: string
-  userId: string
+  email: string
 }) {
   const apiKey = process.env.CREEM_API_KEY
   if (!apiKey) {
@@ -42,8 +25,9 @@ async function createCreemCheckout(params: {
       product_id: params.productId,
       request_id: params.requestId,
       success_url: params.successUrl,
+      customer_email: params.email,
       metadata: {
-        user_id: params.userId,
+        email: params.email,
       },
     }),
   })
@@ -62,18 +46,23 @@ async function createCreemCheckout(params: {
 }
 
 export async function POST(request: Request) {
-  const userId = await getUserId()
-  if (isClerkConfigured() && !userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   let productId: string
+  let email: string
+
   try {
     const body = await request.json()
-    // Accept both 'productId' and 'variantId' for compatibility
     productId = body.productId || body.variantId || ''
+    email = body.email || ''
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  }
+
+  // Validate email
+  if (!email || !email.includes('@')) {
+    return NextResponse.json(
+      { error: 'Please provide a valid email address' },
+      { status: 400 }
+    )
   }
 
   // Map plan names to Creem product IDs
@@ -103,9 +92,9 @@ export async function POST(request: Request) {
     const siteUrl = process.env.SITE_URL || 'https://thesellermind.com'
     const checkout = await createCreemCheckout({
       productId: creemProductId,
-      requestId: `sellermind_${userId || 'anon'}_${Date.now()}`,
-      successUrl: `${siteUrl}/pricing?checkout=success`,
-      userId: userId || 'anonymous',
+      requestId: `sellermind_${email}_${Date.now()}`,
+      successUrl: `${siteUrl}/pricing?checkout=success&email=${encodeURIComponent(email)}`,
+      email: email.toLowerCase(),
     })
 
     if (!checkout.checkoutUrl) {

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { isClerkConfigured } from '@/lib/clerk-helpers'
 
 interface UsageInfo {
   remaining: number
@@ -11,54 +10,22 @@ interface UsageInfo {
   freeLimit: number
 }
 
-interface UserHook {
-  isSignedIn: boolean | null;
-  isLoaded: boolean;
-}
-
 export function UsageBanner() {
-  const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [usageInfo, setUsageInfo] = useState<UsageInfo | null>(null);
+  const [usageInfo, setUsageInfo] = useState<UsageInfo | null>(null)
 
   useEffect(() => {
-    // Check if Clerk is configured and load useUser hook
-    if (!isClerkConfigured()) {
-      setIsLoaded(true);
-      setIsSignedIn(null);
-      return;
-    }
+    // Get email from localStorage
+    const email = localStorage.getItem('sellermind_email')
+    if (!email) return
 
-    import('@clerk/nextjs').then(({ useUser }) => {
-      // Subscribe to user state changes
-      const unsubscribe = useUser.subscribe((user: UserHook) => {
-        setIsSignedIn(user.isSignedIn);
-        setIsLoaded(user.isLoaded);
-      });
-      
-      // Initial check
-      const initialUser = useUser.getState();
-      setIsSignedIn(initialUser.isSignedIn);
-      setIsLoaded(initialUser.isLoaded);
+    fetch(`/api/usage?email=${encodeURIComponent(email)}`)
+      .then(res => res.json())
+      .then(setUsageInfo)
+      .catch(() => setUsageInfo(null))
+  }, [])
 
-      return () => unsubscribe();
-    }).catch(() => {
-      setIsLoaded(true);
-      setIsSignedIn(null);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (isSignedIn) {
-      fetch('/api/usage')
-        .then(res => res.json())
-        .then(setUsageInfo)
-        .catch(() => setUsageInfo({ remaining: 0, totalUsed: 0, isSubscribed: false, freeLimit: 3 }))
-    }
-  }, [isSignedIn])
-
-  // Don't render if Clerk is not configured or user is not signed in
-  if (!isLoaded || !isSignedIn || !usageInfo || usageInfo.isSubscribed) return null
+  // Don't render if no usage info or user is subscribed
+  if (!usageInfo || usageInfo.isSubscribed) return null
 
   if (usageInfo.remaining === 0) {
     return (

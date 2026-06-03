@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { isClerkConfigured } from '@/lib/clerk-helpers'
+import { supabaseAdmin } from '@/lib/supabase'
 
-// Verify Creem webhook signature with timing-safe comparison
 function verifyCreemSignature(
   payload: string,
   signature: string,
@@ -40,14 +39,12 @@ export async function POST(request: NextRequest) {
 
   const rawBody = await request.text()
 
-  // Verify webhook signature
   if (!verifyCreemSignature(rawBody, signature, webhookSecret)) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
   try {
     const event = JSON.parse(rawBody)
-    // Creem uses 'eventType' field for event type
     const eventType = event.eventType
     const eventData = event.object || event.data || event
 
@@ -67,142 +64,137 @@ export async function POST(request: NextRequest) {
       sellerMindProductIds.length > 0 &&
       !sellerMindProductIds.includes(productId)
     ) {
-      // Not a SellerMind product event, skip
       return NextResponse.json({ received: true, skipped: true })
     }
 
-    // Extract user_id from metadata
-    const userId =
-      eventData?.metadata?.user_id ||
-      eventData?.custom_data?.user_id ||
-      eventData?.metadata?.userId
-    if (!userId || userId === 'anonymous') {
-      console.log('No user_id in webhook data, skipping Clerk update')
+    // Extract email from metadata or customer data
+    const email =
+      eventData?.metadata?.email ||
+      eventData?.customer?.email ||
+      eventData?.customer_email ||
+      eventData?.custom_data?.email
+
+    if (!email) {
+      console.log('No email in webhook data, skipping')
       return NextResponse.json({ received: true })
     }
 
-    // Only update Clerk if it's properly configured
-    if (!isClerkConfigured()) {
-      console.log('Clerk not configured, skipping user metadata update')
-      return NextResponse.json({ received: true })
-    }
-
-    // Dynamically import Clerk to avoid errors when not configured
-    const { clerkClient } = await import('@clerk/nextjs/server')
-    const client = await clerkClient()
+    const normalizedEmail = email.toLowerCase()
+    const now = new Date().toISOString()
 
     switch (eventType) {
       case 'checkout.completed': {
-        // A checkout was completed - activate subscription
-        const planProductId =
-          eventData?.product?.id || eventData?.product_id || ''
-        const isMonthly =
-          planProductId === process.env.CREEM_PRODUCT_ID_MONTHLY
+        const planProductId = eventData?.product?.id || eventData?.product_id || ''
+        const isMonthly = planProductId === process.env.CREEM_PRODUCT_ID_MONTHLY
         const planName = isMonthly ? 'Pro Monthly' : 'Pro Yearly'
 
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            subscriptionStatus: 'active',
-            subscriptionPlan: planName,
-            creemCheckoutId: eventData?.id,
-            creemCustomerId:
-              eventData?.customer?.id || eventData?.customer_id,
-            currentPeriodEnd:
-              eventData?.billing_period?.end ||
-              eventData?.current_period_end_date,
-          },
-        })
-        console.log(
-          `Checkout completed for user ${userId}: ${planName}`
-        )
+        await supabaseAdmin
+          .from('sellermind_users')
+          .upsert({
+            email: normalizedEmail,
+            subscription_status: 'active',
+            subscription_plan: planName,
+            creem_checkout_id: eventData?.id,
+            creem_customer_id: eventData?.customer?.id || eventData?.customer_id,
+            current_period_end: eventData?.billing_period?.end || eventData?.current_period_end_date,
+            updated_at: now,
+          }, { onConflict: 'email' })
+
+        console.log(`Checkout completed for ${normalizedEmail}: ${planName}`)
         break
       }
 
       case 'subscription.active': {
-        // New subscription created
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            subscriptionStatus: 'active',
-            creemSubscriptionId: eventData?.id,
-            creemCustomerId:
-              eventData?.customer?.id || eventData?.customer_id,
-            currentPeriodEnd:
-              eventData?.current_period_end_date,
-          },
-        })
-        console.log(`Subscription activated for user ${userId}`)
+        await supabaseAdmin
+          .from('sellermind_users')
+          .upsert({
+            email: normalizedEmail,
+            subscription_status: 'active',
+            creem_subscription_id: eventData?.id,
+            creem_customer_id: eventData?.customer?.id || eventData?.customer_id,
+            current_period_end: eventData?.current_period_end_date,
+            updated_at: now,
+          }, { onConflict: 'email' })
+
+        console.log(`Subscription activated for ${normalizedEmail}`)
         break
       }
 
       case 'subscription.paid': {
-        // Recurring payment processed - extend access
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            subscriptionStatus: 'active',
-            currentPeriodEnd:
-              eventData?.current_period_end_date,
-          },
-        })
-        console.log(`Subscription payment received for user ${userId}`)
+        await supabaseAdmin
+          .from('sellermind_users')
+          .update({
+            subscription_status: 'active',
+            current_period_end: eventData?.current_period_end_date,
+            updated_at: now,
+          })
+          .eq('email', normalizedEmail)
+
+        console.log(`Subscription payment received for ${normalizedEmail}`)
         break
       }
 
       case 'subscription.update': {
-        // Subscription modified
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            subscriptionStatus: 'active',
-            currentPeriodEnd:
-              eventData?.current_period_end_date,
-          },
-        })
-        console.log(`Subscription updated for user ${userId}`)
+        await supabaseAdmin
+          .from('sellermind_users')
+          .update({
+            subscription_status: 'active',
+            current_period_end: eventData?.current_period_end_date,
+            updated_at: now,
+          })
+          .eq('email', normalizedEmail)
+
+        console.log(`Subscription updated for ${normalizedEmail}`)
         break
       }
 
       case 'subscription.canceled': {
-        // Subscription canceled - access continues until period end
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            subscriptionStatus: 'cancelled',
-            cancelAtPeriodEnd:
-              eventData?.current_period_end_date ||
-              new Date().toISOString(),
-          },
-        })
-        console.log(`Subscription cancelled for user ${userId}`)
+        await supabaseAdmin
+          .from('sellermind_users')
+          .update({
+            subscription_status: 'cancelled',
+            current_period_end: eventData?.current_period_end_date || now,
+            updated_at: now,
+          })
+          .eq('email', normalizedEmail)
+
+        console.log(`Subscription cancelled for ${normalizedEmail}`)
         break
       }
 
       case 'subscription.expired': {
-        // Subscription expired - payment retries may happen
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            subscriptionStatus: 'expired',
-          },
-        })
-        console.log(`Subscription expired for user ${userId}`)
+        await supabaseAdmin
+          .from('sellermind_users')
+          .update({
+            subscription_status: 'expired',
+            updated_at: now,
+          })
+          .eq('email', normalizedEmail)
+
+        console.log(`Subscription expired for ${normalizedEmail}`)
         break
       }
 
       case 'subscription.paused': {
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: {
-            subscriptionStatus: 'paused',
-          },
-        })
-        console.log(`Subscription paused for user ${userId}`)
+        await supabaseAdmin
+          .from('sellermind_users')
+          .update({
+            subscription_status: 'paused',
+            updated_at: now,
+          })
+          .eq('email', normalizedEmail)
+
+        console.log(`Subscription paused for ${normalizedEmail}`)
         break
       }
 
       case 'refund.created': {
-        // Refund processed - may need to revoke access
-        console.log(`Refund created for user ${userId}`)
+        console.log(`Refund created for ${normalizedEmail}`)
         break
       }
 
       case 'dispute.created': {
-        console.log(`Dispute/chargeback for user ${userId}`)
+        console.log(`Dispute/chargeback for ${normalizedEmail}`)
         break
       }
 

@@ -30,6 +30,13 @@ export default function HolidayPage() {
   };
 
   const generateCopy = async (data: HolidayData, isRegenerate = false) => {
+    // Check if user has entered their email
+    const userEmail = localStorage.getItem('sellermind_email');
+    if (!userEmail) {
+      showToast('Please enter your email on the Pricing page to start using AI tools.', 'error');
+      return;
+    }
+
     if (isRegenerate) {
       setIsRegenerating(true);
     } else {
@@ -42,7 +49,7 @@ export default function HolidayPage() {
       const response = await fetch("/api/holiday", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, email: localStorage.getItem('sellermind_email') || '' }),
       });
       const json = await response.json();
 

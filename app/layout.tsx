@@ -3,7 +3,6 @@ import "./globals.css";
 import { Header, MobileNav } from "@/components/shared/Header";
 import { CookieConsentBanner } from "@/components/shared/CookieConsentBanner";
 import { UsageBanner } from "@/components/shared/UsageBanner";
-import dynamic from "next/dynamic";
 
 export const viewport: Viewport = {
   themeColor: "#E07A5F",
@@ -36,74 +35,58 @@ export const metadata: Metadata = {
   },
 };
 
-// Dynamic Clerk provider - won't block page if Clerk CDN is unreachable (e.g. in China)
-const ClerkProviderWrapper = dynamic(
-  () => import("@clerk/nextjs").then((mod) => mod.ClerkProvider),
-  { ssr: false }
-);
-
-function AuthProvider({ children }: { children: React.ReactNode }) {
-  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  if (clerkKey && !clerkKey.includes("placeholder")) {
-    return <ClerkProviderWrapper>{children}</ClerkProviderWrapper>;
-  }
-  return <>{children}</>;
-}
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <html lang="en">
-        <head>
-          <link rel="manifest" href="/manifest.json" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          <meta name="apple-mobile-web-app-title" content="SellerMind" />
-        </head>
-        <body className="min-h-screen bg-background-primary antialiased">
-          <Header />
-          <UsageBanner />
-          <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 pb-20 md:pb-6">
-            {children}
-          </main>
-          <MobileNav />
-          
-          {/* Global Disclaimer Footer */}
-          <footer className="border-t border-border bg-background-secondary/50 mt-8">
-            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-              <div className="text-center space-y-3">
-                <p className="text-sm text-foreground-muted">
-                  <strong>SellerMind is not affiliated with, endorsed by, or connected to Etsy, Inc.</strong> Etsy is a trademark of Etsy, Inc.
-                </p>
-                <p className="text-xs text-foreground-muted">
-                  AI-generated content is for reference only. Please review and edit before publishing on your shop.
-                </p>
-                <p className="text-xs text-foreground-muted">
-                  SellerMind is not responsible for any outcomes resulting from the use of AI-generated content. The tool is provided "as is" without warranties of any kind.
-                </p>
-              </div>
+    <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="SellerMind" />
+      </head>
+      <body className="min-h-screen bg-background-primary antialiased">
+        <Header />
+        <UsageBanner />
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 pb-20 md:pb-6">
+          {children}
+        </main>
+        <MobileNav />
+
+        {/* Global Disclaimer Footer */}
+        <footer className="border-t border-border bg-background-secondary/50 mt-8">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className="text-center space-y-3">
+              <p className="text-sm text-foreground-muted">
+                <strong>SellerMind is not affiliated with, endorsed by, or connected to Etsy, Inc.</strong> Etsy is a trademark of Etsy, Inc.
+              </p>
+              <p className="text-xs text-foreground-muted">
+                AI-generated content is for reference only. Please review and edit before publishing on your shop.
+              </p>
+              <p className="text-xs text-foreground-muted">
+                SellerMind is not responsible for any outcomes resulting from the use of AI-generated content. The tool is provided &quot;as is&quot; without warranties of any kind.
+              </p>
             </div>
-          </footer>
-          
-          <CookieConsentBanner />
-          
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                if ('serviceWorker' in navigator) {
-                  window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js');
-                  });
-                }
-              `,
-            }}
-          />
-        </body>
-      </html>
-    </AuthProvider>
+          </div>
+        </footer>
+
+        <CookieConsentBanner />
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
+      </body>
+    </html>
   );
 }

@@ -39,7 +39,7 @@ export default function BatchPage() {
       const response = await fetch("/api/batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, email: localStorage.getItem('sellermind_email') || '' }),
       });
       const json = await response.json();
 
