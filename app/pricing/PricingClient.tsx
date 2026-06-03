@@ -3,12 +3,12 @@
 import Link from 'next/link'
 
 export default function PricingClient() {
-  const handleSubscribe = async (variantId: string) => {
+  const handleSubscribe = async (planId: string) => {
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variantId }),
+        body: JSON.stringify({ productId: planId }),
       })
       const data = await response.json()
       if (data.url) {
@@ -139,13 +139,13 @@ export default function PricingClient() {
 
           <div className="space-y-3">
             <button
-              onClick={() => handleSubscribe(process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_MONTHLY || 'monthly')}
+              onClick={() => handleSubscribe('monthly')}
               className="w-full py-3 px-4 text-center font-medium rounded-lg bg-[#E07A5F] text-white hover:bg-[#d46a50] transition-colors"
             >
               Subscribe Monthly
             </button>
             <button
-              onClick={() => handleSubscribe(process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID_YEARLY || 'yearly')}
+              onClick={() => handleSubscribe('yearly')}
               className="w-full py-3 px-4 text-center font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
             >
               Subscribe Yearly (Save $40)

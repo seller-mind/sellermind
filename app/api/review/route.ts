@@ -78,9 +78,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ success: false, error: { code: "AI_SERVICE_ERROR", message: "OpenAI API key is not configured." } }, { status: 500 });
+    return NextResponse.json({ success: false, error: { code: "AI_SERVICE_ERROR", message: "DeepSeek API key is not configured." } }, { status: 500 });
   }
 
   try {
@@ -91,12 +91,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: { code: "INVALID_INPUT", message: "Review content is required." } }, { status: 400 });
     }
 
-    const openai = new OpenAI({ apiKey });
+    const openai = new OpenAI({ 
+      apiKey,
+      baseURL: "https://api.deepseek.com"
+    });
     const systemPrompt = `${REVIEW_SYSTEM_PROMPT}\n\n${REVIEW_RULES}`;
     const userPrompt = buildReviewUserPrompt({ reviewContent, isSellerFault, tonePreference });
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "deepseek-chat",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

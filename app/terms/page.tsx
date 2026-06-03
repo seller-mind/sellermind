@@ -24,7 +24,7 @@ export default function TermsPage() {
           Terms of Service
         </h1>
         <p className="mt-2 text-foreground-secondary">
-          Last updated: January 2025
+          Last updated: June 2026
         </p>
       </div>
 
@@ -38,6 +38,29 @@ export default function TermsPage() {
           </p>
           <p className="mt-4">
             <strong>SellerMind is not affiliated with, endorsed by, or connected to Etsy, Inc.</strong> Etsy is a trademark of Etsy, Inc.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Geographic Restrictions</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p className="font-semibold">
+            IMPORTANT: This service is not available to users in certain jurisdictions.
+          </p>
+          <p className="mt-4">
+            <strong>SellerMind does not provide services to individuals or entities located in, or who reside in, mainland China, the Hong Kong Special Administrative Region, the Macau Special Administrative Region, or Taiwan</strong> (collectively, &quot;Restricted Regions&quot;).
+          </p>
+          <p className="mt-4">
+            By using this website and services, you represent and warrant that you are not located in, and do not reside in, any of the Restricted Regions. If we determine that you are accessing our services from a Restricted Region, your access may be blocked or terminated in accordance with applicable laws and regulations.
+          </p>
+          <p className="mt-4">
+            <strong>IP Address Blocking:</strong> Our website may automatically block access from IP addresses associated with the Restricted Regions. We utilize IP geolocation data from hosting providers and content delivery networks to enforce these geographic restrictions.
+          </p>
+          <p className="mt-4">
+            These restrictions are implemented for compliance purposes and do not constitute an admission that any Restricted Region&apos;s laws apply to our activities.
           </p>
         </CardContent>
       </Card>
@@ -97,6 +120,7 @@ export default function TermsPage() {
             <li>Not attempt to gain unauthorized access to any part of the Service</li>
             <li>Not interfere with or disrupt the Service or servers connected to the Service</li>
             <li>Comply with all applicable Etsy policies and guidelines when using generated content</li>
+            <li>Not access the Service if you are located in a Restricted Region (mainland China, Hong Kong, Macau, or Taiwan)</li>
           </ul>
         </CardContent>
       </Card>
@@ -182,6 +206,7 @@ export default function TermsPage() {
             <li>Technical issues beyond our control</li>
             <li>Third-party service disruptions</li>
             <li>Force majeure events</li>
+            <li>Geographic access restrictions as described above</li>
           </ul>
         </CardContent>
       </Card>
@@ -207,6 +232,9 @@ export default function TermsPage() {
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>
             These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which SellerMind operates, without regard to its conflict of law provisions.
+          </p>
+          <p className="mt-4">
+            <strong>Note for International Users:</strong> Given that SellerMind does not provide services to users in the Restricted Regions, any disputes arising from use of the Service by persons in the Restricted Regions shall be governed by applicable international laws and the laws of the jurisdiction where SellerMind operates.
           </p>
         </CardContent>
       </Card>

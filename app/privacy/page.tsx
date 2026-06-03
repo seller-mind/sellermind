@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="mt-2 text-foreground-secondary">
-          Last updated: January 2025
+          Last updated: June 2026
         </p>
       </div>
 
@@ -38,6 +38,9 @@ export default function PrivacyPage() {
           </p>
           <p className="mt-4">
             <strong>SellerMind is not affiliated with, endorsed by, or connected to Etsy, Inc.</strong> Etsy is a trademark of Etsy, Inc.
+          </p>
+          <p className="mt-4">
+            <strong>Geographic Restriction Notice:</strong> SellerMind services are not intended for users located in mainland China, the Hong Kong Special Administrative Region, Macau Special Administrative Region, or Taiwan. If you are located in these regions, please do not use our services. Our website may restrict access from these regions in accordance with applicable laws and regulations.
           </p>
         </CardContent>
       </Card>
@@ -85,6 +88,27 @@ export default function PrivacyPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>AI Data Processing</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            Our AI-powered services utilize third-party AI APIs (including but not limited to OpenAI) for content generation. When you use our tools:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-4">
+            <li>Your inputs are processed in real-time through AI APIs to generate content</li>
+            <li>We do not store the original data you input into our AI tools</li>
+            <li>AI-generated content is displayed to you and is not retained after your session ends</li>
+            <li>Your data is processed solely for the purpose of providing AI-generated responses</li>
+            <li>We implement appropriate technical safeguards to protect data during transmission</li>
+          </ul>
+          <p className="mt-4">
+            <strong>Note:</strong> When you use our AI tools, your input data may be transmitted to AI service providers. Please review their privacy policies to understand how they handle data.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Cookies and Tracking</CardTitle>
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
@@ -113,11 +137,79 @@ export default function PrivacyPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>International Data Transfers</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            Your information may be transferred to and processed in countries other than your own, including the United States and other jurisdictions where our service providers operate.
+          </p>
+          <p className="mt-4">
+            When we transfer personal data outside of the European Economic Area (EEA) or your jurisdiction, we ensure appropriate safeguards are in place, which may include:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-4">
+            <li>Standard Contractual Clauses (SCCs) approved by relevant authorities</li>
+            <li>Data processing agreements with service providers</li>
+            <li>Verifying that service providers maintain appropriate data protection standards</li>
+          </ul>
+          <p className="mt-4">
+            <strong>For Users in Restricted Regions:</strong> If you are accessing our services despite geographic restrictions, please note that your data may be processed outside your country of residence. We do not target or intentionally collect data from users in mainland China, Hong Kong, Macau, or Taiwan.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Data Security</CardTitle>
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>
             We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet is 100% secure.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>GDPR Compliance (European Users)</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            For users located in the European Economic Area (EEA), this section provides additional information about our data processing practices in compliance with the General Data Protection Regulation (GDPR).
+          </p>
+          
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Data Controller</h3>
+          <p>SellerMind</p>
+          <p>Contact: privacy@thesellermind.com</p>
+          
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Data Protection Officer (DPO)</h3>
+          <p>For GDPR-related inquiries, please contact us at: privacy@thesellermind.com</p>
+          
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Legal Basis for Processing</h3>
+          <p>We process your personal data based on one or more of the following legal grounds:</p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li><strong>Performance of Contract:</strong> Processing necessary to provide our services to you</li>
+            <li><strong>Legitimate Interests:</strong> Processing for our legitimate business interests, provided these are not overridden by your rights</li>
+            <li><strong>Consent:</strong> Where you have given explicit consent for specific processing activities</li>
+          </ul>
+          
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Your GDPR Rights</h3>
+          <p>If you are an EEA resident, you have the right to:</p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li><strong>Access:</strong> Request a copy of your personal data</li>
+            <li><strong>Rectification:</strong> Request correction of inaccurate personal data</li>
+            <li><strong>Erasure:</strong> Request deletion of your personal data ("right to be forgotten")</li>
+            <li><strong>Restriction:</strong> Request restriction of processing</li>
+            <li><strong>Portability:</strong> Receive your data in a structured, machine-readable format</li>
+            <li><strong>Object:</strong> Object to processing based on legitimate interests</li>
+            <li><strong>Withdraw Consent:</strong> Withdraw consent at any time where processing is based on consent</li>
+          </ul>
+          <p className="mt-4">
+            To exercise any of these rights, please contact us at privacy@thesellermind.com. We will respond to your request within 30 days.
+          </p>
+          
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Right to Lodge a Complaint</h3>
+          <p>
+            You have the right to lodge a complaint with your local data protection authority if you believe we have violated your GDPR rights.
           </p>
         </CardContent>
       </Card>
@@ -134,6 +226,7 @@ export default function PrivacyPage() {
             <li>Request deletion of your information</li>
             <li>Object to certain processing activities</li>
             <li>Data portability</li>
+            <li>Opt out of certain data collection practices</li>
           </ul>
           <p className="mt-4">
             To exercise these rights, please contact us at privacy@thesellermind.com
@@ -148,17 +241,6 @@ export default function PrivacyPage() {
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>
             Our services are not intended for individuals under the age of 18. We do not knowingly collect personal information from children.
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>International Data Transfers</CardTitle>
-        </CardHeader>
-        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
-          <p>
-            Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place for such transfers.
           </p>
         </CardContent>
       </Card>
@@ -187,6 +269,9 @@ export default function PrivacyPage() {
             <li>Email: privacy@thesellermind.com</li>
             <li>Website: https://thesellermind.com</li>
           </ul>
+          <p className="mt-4">
+            For GDPR requests or data protection inquiries from EEA users: privacy@thesellermind.com
+          </p>
         </CardContent>
       </Card>
 

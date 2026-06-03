@@ -103,15 +103,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check API key
-  const apiKey = process.env.OPENAI_API_KEY;
+  // Check DeepSeek API key
+  const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
       {
         success: false,
         error: {
           code: "AI_SERVICE_ERROR",
-          message: "OpenAI API key is not configured.",
+          message: "DeepSeek API key is not configured.",
         },
       },
       { status: 500 }
@@ -135,13 +135,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const openai = new OpenAI({ apiKey });
+    const openai = new OpenAI({ 
+      apiKey,
+      baseURL: "https://api.deepseek.com"
+    });
 
     const systemPrompt = `${LISTING_SYSTEM_PROMPT}\n\n${LISTING_RULES}`;
     const userPrompt = buildListingUserPrompt({ productName, sellingPoints, category, tone });
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "deepseek-chat",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -153,7 +156,7 @@ export async function POST(req: NextRequest) {
 
     const content = response.choices[0]?.message?.content;
     if (!content) {
-      throw new Error("Empty response from OpenAI");
+      throw new Error("Empty response from DeepSeek");
     }
 
     const data = JSON.parse(content);
