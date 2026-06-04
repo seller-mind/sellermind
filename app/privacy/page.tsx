@@ -40,6 +40,9 @@ export default function PrivacyPage() {
             <strong>SellerMind is not affiliated with, endorsed by, or connected to Etsy, Inc.</strong> Etsy is a trademark of Etsy, Inc.
           </p>
           <p className="mt-4">
+            <strong>AI Transparency Notice:</strong> This service uses artificial intelligence (DeepSeek) to generate content. AI-generated outputs may contain inaccuracies, errors, or omissions. Users should verify all information independently before making any business decisions or publishing any content. SellerMind does not guarantee the accuracy or completeness of AI-generated content.
+          </p>
+          <p className="mt-4">
             <strong>Geographic Restriction Notice:</strong> SellerMind services are not intended for users located in mainland China, the Hong Kong Special Administrative Region, Macau Special Administrative Region, or Taiwan. If you are located in these regions, please do not use our services. Our website may restrict access from these regions in accordance with applicable laws and regulations.
           </p>
         </CardContent>
@@ -121,8 +124,26 @@ export default function PrivacyPage() {
           <p>
             We use essential cookies to ensure our website functions properly. We may also use third-party analytics services like Microsoft Clarity to understand how visitors use our site.
           </p>
+
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Cookie Categories</h3>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>
+              <strong>Essential Cookies:</strong> Required for the website to function properly. These cookies enable core functionality such as security, session management, and accessibility. You cannot opt out of essential cookies as the Service would not function without them. Examples include authentication tokens and load balancing cookies.
+            </li>
+            <li>
+              <strong>Analytics Cookies:</strong> Help us understand how visitors interact with our website by collecting and reporting information anonymously. We use Microsoft Clarity for usage analytics. These cookies track pages visited, time spent on pages, and navigation patterns. You can manage these through your browser settings or our Cookie Consent Banner.
+            </li>
+            <li>
+              <strong>Functional Cookies:</strong> Enable enhanced functionality and personalization, such as remembering your preferences. These are optional and you can disable them without affecting the core functionality of the Service.
+            </li>
+          </ul>
+
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Managing Your Cookie Preferences</h3>
+          <p>
+            You can control cookies through your browser settings or the Cookie Consent Banner displayed on your first visit. Disabling cookies may affect some functionality of our tools.
+          </p>
           <p className="mt-4">
-            You can control cookies through your browser settings. Disabling cookies may affect some functionality of our tools.
+            <strong>Do Not Track:</strong> We respect Do Not Track (DNT) signals from browsers. If you have DNT enabled, we will not set non-essential cookies.
           </p>
         </CardContent>
       </Card>
@@ -302,7 +323,38 @@ export default function PrivacyPage() {
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>
-            Our services are not intended for individuals under the age of 18. We do not knowingly collect personal information from children.
+            Our services are not intended for individuals under the age of <strong>16</strong>. We do not knowingly collect personal information from children under 16. If we become aware that we have collected personal data from a child under 16 without verified parental consent, we will take steps to delete that information promptly.
+          </p>
+          <p className="mt-4">
+            If you are a parent or guardian and believe your child under 16 has provided us with personal information, please contact us at privacy@thesellermind.com.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>EU Consumer Rights (14-Day Withdrawal Right)</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            If you are located in the European Union (EU) or European Economic Area (EEA), you have the right to withdraw from a distance contract within <strong>14 days</strong> without providing any reason, in accordance with the EU Consumer Rights Directive 2011/83/EU.
+          </p>
+          <p className="mt-4">
+            The withdrawal period expires 14 days after the day on which you enter into the subscription contract. To exercise your right of withdrawal, you must notify us of your decision to withdraw before the withdrawal period has expired.
+          </p>
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">How to Withdraw</h3>
+          <p>
+            To exercise your right of withdrawal, you may contact us:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li><strong>Email:</strong> privacy@thesellermind.com</li>
+            <li>Using our <Link href="/contact" className="text-primary hover:underline">contact form</Link></li>
+          </ul>
+          <p className="mt-4">
+            If you withdraw from a subscription contract within the 14-day period, we will reimburse all payments received from you, without undue delay and in any event no later than 14 days from the day on which we are informed about your decision to withdraw.
+          </p>
+          <p className="mt-4">
+            <strong>Important:</strong> This right of withdrawal does not apply to digital content that has been delivered to you with your prior express consent and you acknowledge that you lose this right once the digital content has been delivered and used.
           </p>
         </CardContent>
       </Card>

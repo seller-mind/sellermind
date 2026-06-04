@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import "./globals.css";
 import { Header, MobileNav } from "@/components/shared/Header";
 import { CookieConsentBanner } from "@/components/shared/CookieConsentBanner";
@@ -69,6 +70,20 @@ export default function RootLayout({
               <p className="text-xs text-foreground-muted">
                 SellerMind is not responsible for any outcomes resulting from the use of AI-generated content. The tool is provided &quot;as is&quot; without warranties of any kind.
               </p>
+              {/* Legal page links */}
+              <div className="flex justify-center gap-4 pt-2">
+                <Link href="/privacy" className="text-xs text-foreground-muted hover:text-primary transition-colors">
+                  Privacy Policy
+                </Link>
+                <span className="text-xs text-foreground-muted">|</span>
+                <Link href="/terms" className="text-xs text-foreground-muted hover:text-primary transition-colors">
+                  Terms of Service
+                </Link>
+                <span className="text-xs text-foreground-muted">|</span>
+                <Link href="/dmca" className="text-xs text-foreground-muted hover:text-primary transition-colors">
+                  DMCA Policy
+                </Link>
+              </div>
             </div>
           </div>
         </footer>
