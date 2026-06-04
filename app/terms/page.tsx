@@ -37,6 +37,9 @@ export default function TermsPage() {
             By accessing or using SellerMind (&quot;the Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to these Terms, do not use the Service.
           </p>
           <p className="mt-4">
+            <strong>Age Requirement:</strong> You must be at least 16 years of age to use this Service. If you are between 16 and 18 years old, you represent that your parent or legal guardian has reviewed and agrees to these Terms on your behalf.
+          </p>
+          <p className="mt-4">
             <strong>SellerMind is not affiliated with, endorsed by, or connected to Etsy, Inc.</strong> Etsy is a trademark of Etsy, Inc.
           </p>
         </CardContent>
@@ -181,7 +184,9 @@ export default function TermsPage() {
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>
-            Your privacy is important to us. Please review our <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link> to understand how we collect, use, and protect your information.
+            Your privacy is important to us. Please review our{' '}
+            <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+            {' '}to understand how we collect, use, and protect your information in compliance with the General Data Protection Regulation (GDPR), the California Consumer Privacy Act (CCPA), and other applicable data protection laws. By using the Service, you consent to the data practices described in our Privacy Policy.
           </p>
         </CardContent>
       </Card>

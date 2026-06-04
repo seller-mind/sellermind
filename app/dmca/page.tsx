@@ -178,6 +178,20 @@ export default function DMCAPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Fair Use Notice</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            SellerMind generates AI-powered content that may reference or be inspired by publicly available information. Such use constitutes a &quot;fair use&quot; of any such copyrighted material as provided for in Title 17 U.S.C. Section 107. AI-generated content is transformative in nature and does not reproduce copyrighted material verbatim.
+          </p>
+          <p className="mt-4">
+            If you wish to use copyrighted material from this service for purposes of your own that go beyond &quot;fair use,&quot; you must obtain permission from the copyright owner.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Disclaimer</CardTitle>
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">

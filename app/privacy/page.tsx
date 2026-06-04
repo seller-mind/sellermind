@@ -356,6 +356,14 @@ export default function PrivacyPage() {
           <p className="mt-4">
             <strong>Important:</strong> This right of withdrawal does not apply to digital content that has been delivered to you with your prior express consent and you acknowledge that you lose this right once the digital content has been delivered and used.
           </p>
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Online Dispute Resolution (ODR)</h3>
+          <p>
+            In accordance with EU Regulation No 524/2013 on online dispute resolution for consumer disputes, EU consumers may use the{' '}
+            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+              EU Online Dispute Resolution platform
+            </a>{' '}
+            to resolve disputes out of court. The ODR platform is available at: https://ec.europa.eu/consumers/odr
+          </p>
         </CardContent>
       </Card>
 
