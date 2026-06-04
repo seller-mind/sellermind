@@ -92,7 +92,7 @@ export default function PrivacyPage() {
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>
-            Our AI-powered services utilize third-party AI APIs (including but not limited to OpenAI) for content generation. When you use our tools:
+            Our AI-powered services utilize third-party AI APIs for content generation. When you use our tools:
           </p>
           <ul className="list-disc pl-5 space-y-2 mt-4">
             <li>Your inputs are processed in real-time through AI APIs to generate content</li>
@@ -102,7 +102,13 @@ export default function PrivacyPage() {
             <li>We implement appropriate technical safeguards to protect data during transmission</li>
           </ul>
           <p className="mt-4">
+            <strong>⚠️ Important Notice for EU/EEA Users:</strong> Our primary AI provider (DeepSeek) processes data on servers located in China. By using our Service, you acknowledge and consent to the transfer and processing of your data on servers in this jurisdiction. DeepSeek processes data in real-time and does not retain your input after generating the response.
+          </p>
+          <p className="mt-4">
             <strong>Note:</strong> When you use our AI tools, your input data may be transmitted to AI service providers. Please review their privacy policies to understand how they handle data.
+          </p>
+          <p className="mt-4">
+            <strong>GDPR Safeguards (Article 44+):</strong> For international data transfers, we rely on Standard Contractual Clauses (SCCs) as the legal basis, in accordance with GDPR Article 46(2)(c). All data transfers are encrypted in transit using TLS 1.2+. We minimize the data sent to AI providers — only product details and customer messages, no personal identifiers beyond your email.
           </p>
         </CardContent>
       </Card>
@@ -128,8 +134,10 @@ export default function PrivacyPage() {
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>We use the following third-party services:</p>
           <ul className="list-disc pl-5 space-y-2 mt-4">
-            <li><strong>OpenAI:</strong> For AI content generation - subject to their privacy policy</li>
-            <li><strong>Vercel:</strong> For website hosting and analytics</li>
+            <li><strong>DeepSeek:</strong> Primary AI content generation provider - servers located in China - subject to their privacy policy</li>
+            <li><strong>Creem:</strong> Payment processing and subscription management - servers located in the United States</li>
+            <li><strong>Supabase:</strong> Database and user data storage - servers located in Tokyo, Japan</li>
+            <li><strong>Vercel:</strong> Website hosting and deployment - servers located in the United States</li>
             <li><strong>Microsoft Clarity:</strong> For usage analytics - subject to their privacy policy</li>
           </ul>
         </CardContent>
@@ -211,6 +219,60 @@ export default function PrivacyPage() {
           <p>
             You have the right to lodge a complaint with your local data protection authority if you believe we have violated your GDPR rights.
           </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>CCPA Compliance (California Users)</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            If you are a California resident, you have rights under the California Consumer Privacy Act (CCPA):
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li><strong>Right to Know:</strong> You can request information about the personal data we collect and how it is used</li>
+            <li><strong>Right to Delete:</strong> You can request deletion of your personal information</li>
+            <li><strong>Right to Correct:</strong> You can request correction of inaccurate personal information</li>
+            <li><strong>Right to Opt Out:</strong> We do not sell personal information. There is nothing to opt out of</li>
+            <li><strong>Right to Non-Discrimination:</strong> We will not discriminate against you for exercising your rights</li>
+          </ul>
+          <p className="mt-4">
+            We do not sell, rent, or share personal information with third parties for marketing purposes. To exercise these rights, contact us at privacy@thesellermind.com.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Data Breach Notification</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            In the event of a data breach that affects your personal information, we will:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>Notify affected users via email within 72 hours of becoming aware of the breach, as required by GDPR Article 33</li>
+            <li>Notify the relevant supervisory authority if the breach poses a risk to individuals&apos; rights and freedoms</li>
+            <li>Take immediate steps to contain the breach and prevent further data loss</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>EU AI Act Compliance</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>
+            Our Service uses artificial intelligence to generate content. In accordance with the EU Artificial Intelligence Act:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li><strong>Transparency:</strong> All AI-generated content is clearly labeled and includes a disclaimer about potential inaccuracies</li>
+            <li><strong>Human Oversight:</strong> Users can review, verify, and edit all AI-generated content before use</li>
+            <li><strong>Accuracy:</strong> We use state-of-the-art AI models and encourage users to cross-reference with original sources</li>
+            <li><strong>No Automated Decisions:</strong> The Service does not make decisions that produce legal effects for users</li>
+          </ul>
         </CardContent>
       </Card>
 
