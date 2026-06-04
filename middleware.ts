@@ -8,9 +8,10 @@ export function middleware(request: NextRequest) {
   
   // Block China (CN) access
   if (country === 'CN') {
-    // Allow privacy and terms pages (essential for legal compliance)
+    // Allow legal pages (essential for legal compliance)
     if (request.nextUrl.pathname === '/privacy' || 
-        request.nextUrl.pathname === '/terms') {
+        request.nextUrl.pathname === '/terms' ||
+        request.nextUrl.pathname === '/dmca') {
       return NextResponse.next()
     }
     
