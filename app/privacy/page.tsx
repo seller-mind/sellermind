@@ -122,7 +122,7 @@ export default function PrivacyPage() {
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>
-            We use essential cookies to ensure our website functions properly. We may also use third-party analytics services like Microsoft Clarity to understand how visitors use our site.
+            We use only essential cookies to ensure our website functions properly. We do not currently use any third-party analytics or tracking cookies.
           </p>
 
           <h3 className="text-base font-semibold text-foreground-primary mt-4">Cookie Categories</h3>
@@ -131,7 +131,7 @@ export default function PrivacyPage() {
               <strong>Essential Cookies:</strong> Required for the website to function properly. These cookies enable core functionality such as security, session management, and accessibility. You cannot opt out of essential cookies as the Service would not function without them. Examples include authentication tokens and load balancing cookies.
             </li>
             <li>
-              <strong>Analytics Cookies:</strong> Help us understand how visitors interact with our website by collecting and reporting information anonymously. We use Microsoft Clarity for usage analytics. These cookies track pages visited, time spent on pages, and navigation patterns. You can manage these through your browser settings or our Cookie Consent Banner.
+              <strong>Analytics Cookies:</strong> We do not currently use any analytics cookies. If we introduce analytics services in the future, we will update this policy and provide appropriate consent mechanisms before enabling them.
             </li>
             <li>
               <strong>Functional Cookies:</strong> Enable enhanced functionality and personalization, such as remembering your preferences. These are optional and you can disable them without affecting the core functionality of the Service.
@@ -159,7 +159,6 @@ export default function PrivacyPage() {
             <li><strong>Creem:</strong> Payment processing and subscription management - servers located in the United States</li>
             <li><strong>Supabase:</strong> Database and user data storage - servers located in Tokyo, Japan</li>
             <li><strong>Vercel:</strong> Website hosting and deployment - servers located in the United States</li>
-            <li><strong>Microsoft Clarity:</strong> For usage analytics - subject to their privacy policy</li>
           </ul>
         </CardContent>
       </Card>
