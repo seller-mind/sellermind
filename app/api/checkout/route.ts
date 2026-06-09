@@ -25,7 +25,9 @@ async function createCreemCheckout(params: {
       product_id: params.productId,
       request_id: params.requestId,
       success_url: params.successUrl,
-      email: params.email,
+      customer: {
+        email: params.email,
+      },
       metadata: {
         email: params.email,
       },
