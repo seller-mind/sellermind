@@ -4,7 +4,9 @@ import * as React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ReplyForm } from "@/components/tools/ReplyForm";
 import { ReplyResult } from "@/components/tools/ReplyResult";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
 import { Toast } from "@/components/ui/toast";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface ReplyData {
   scenario: string;
@@ -17,6 +19,7 @@ export default function ReplyPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRegenerating, setIsRegenerating] = React.useState(false);
   const [lastData, setLastData] = React.useState<ReplyData | null>(null);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [toast, setToast] = React.useState<{ message: string; type: "success" | "error"; visible: boolean }>({
     message: "",
     type: "success",
@@ -29,10 +32,13 @@ export default function ReplyPage() {
   };
 
   const generateReply = async (data: ReplyData, isRegenerate = false) => {
-    // Check if user has entered their email
-    const userEmail = localStorage.getItem('sellermind_email');
+    const userEmail = typeof window !== "undefined" ? localStorage.getItem("sellermind_email") : null;
     if (!userEmail) {
-      showToast('Please enter your email on the Pricing page to start using AI tools.', 'error');
+      setApiError({
+        message: "Please enter your email on the Pricing page to start using AI tools.",
+        code: "EMAIL_REQUIRED",
+        upgradeUrl: "/pricing",
+      });
       return;
     }
 
@@ -43,28 +49,22 @@ export default function ReplyPage() {
       setLastData(data);
     }
     setResult(null);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/reply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, email: localStorage.getItem('sellermind_email') || '' }),
-      });
-      const json = await response.json();
+    const apiResult = await callToolApi<ReplyData, ReplyResultData>("/api/reply", data);
 
-      if (!json.success) {
-        showToast(json.error?.message || "Failed to generate reply", "error");
-        return;
-      }
-
-      setResult(json.data);
-      showToast("Reply generated successfully!", "success");
-    } catch {
-      showToast("Network error. Please try again.", "error");
-    } finally {
+    if (apiResult.ok === false) {
+      // P0 fix: persistent banner instead of 3s toast (no more silent dead button)
+      setApiError(apiResult.error);
       setIsLoading(false);
       setIsRegenerating(false);
+      return;
     }
+
+    setResult(apiResult.data);
+    showToast("Reply generated successfully!", "success");
+    setIsLoading(false);
+    setIsRegenerating(false);
   };
 
   return (
@@ -77,6 +77,8 @@ export default function ReplyPage() {
           Generate professional, warm customer service responses for any inquiry.
         </p>
       </div>
+
+      <ApiErrorBanner error={apiError} onDismiss={() => setApiError(null)} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

@@ -4,7 +4,9 @@ import * as React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { HolidayForm } from "@/components/tools/HolidayForm";
 import { HolidayResult } from "@/components/tools/HolidayResult";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
 import { Toast } from "@/components/ui/toast";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface HolidayData {
   holiday: string;
@@ -18,6 +20,7 @@ export default function HolidayPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRegenerating, setIsRegenerating] = React.useState(false);
   const [lastData, setLastData] = React.useState<HolidayData | null>(null);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [toast, setToast] = React.useState<{ message: string; type: "success" | "error"; visible: boolean }>({
     message: "",
     type: "success",
@@ -30,10 +33,13 @@ export default function HolidayPage() {
   };
 
   const generateCopy = async (data: HolidayData, isRegenerate = false) => {
-    // Check if user has entered their email
-    const userEmail = localStorage.getItem('sellermind_email');
+    const userEmail = typeof window !== "undefined" ? localStorage.getItem("sellermind_email") : null;
     if (!userEmail) {
-      showToast('Please enter your email on the Pricing page to start using AI tools.', 'error');
+      setApiError({
+        message: "Please enter your email on the Pricing page to start using AI tools.",
+        code: "EMAIL_REQUIRED",
+        upgradeUrl: "/pricing",
+      });
       return;
     }
 
@@ -44,28 +50,21 @@ export default function HolidayPage() {
       setLastData(data);
     }
     setResult(null);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/holiday", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, email: localStorage.getItem('sellermind_email') || '' }),
-      });
-      const json = await response.json();
+    const apiResult = await callToolApi<HolidayData, HolidayResultData>("/api/holiday", data);
 
-      if (!json.success) {
-        showToast(json.error?.message || "Failed to generate marketing copy", "error");
-        return;
-      }
-
-      setResult(json.data);
-      showToast("Marketing copy generated successfully!", "success");
-    } catch {
-      showToast("Network error. Please try again.", "error");
-    } finally {
+    if (apiResult.ok === false) {
+      setApiError(apiResult.error);
       setIsLoading(false);
       setIsRegenerating(false);
+      return;
     }
+
+    setResult(apiResult.data);
+    showToast("Marketing copy generated successfully!", "success");
+    setIsLoading(false);
+    setIsRegenerating(false);
   };
 
   return (
@@ -78,6 +77,8 @@ export default function HolidayPage() {
           Create compelling marketing copy for any holiday or promotion.
         </p>
       </div>
+
+      <ApiErrorBanner error={apiError} onDismiss={() => setApiError(null)} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

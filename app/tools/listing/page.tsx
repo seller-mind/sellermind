@@ -4,7 +4,9 @@ import * as React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ListingForm } from "@/components/tools/ListingForm";
 import { ListingResult } from "@/components/tools/ListingResult";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
 import { Toast } from "@/components/ui/toast";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface ListingData {
   productName: string;
@@ -18,6 +20,7 @@ export default function ListingPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRegenerating, setIsRegenerating] = React.useState(false);
   const [lastData, setLastData] = React.useState<ListingData | null>(null);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [toast, setToast] = React.useState<{ message: string; type: "success" | "error"; visible: boolean }>({
     message: "",
     type: "success",
@@ -31,9 +34,14 @@ export default function ListingPage() {
 
   const generateListing = async (data: ListingData, isRegenerate = false) => {
     // Check if user has entered their email
-    const userEmail = localStorage.getItem('sellermind_email');
+    const userEmail = typeof window !== "undefined" ? localStorage.getItem("sellermind_email") : null;
     if (!userEmail) {
-      showToast('Please enter your email on the Pricing page to start using AI tools.', 'error');
+      // Pre-flight UX: surface as banner so it stays visible (matches P0 fix UX)
+      setApiError({
+        message: "Please enter your email on the Pricing page to start using AI tools.",
+        code: "EMAIL_REQUIRED",
+        upgradeUrl: "/pricing",
+      });
       return;
     }
 
@@ -44,29 +52,23 @@ export default function ListingPage() {
       setLastData(data);
     }
     setResult(null);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/listing", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, email: localStorage.getItem('sellermind_email') || '' }),
-      });
+    const apiResult = await callToolApi<ListingData, ListingResultData>("/api/listing", data);
 
-      const json = await response.json();
-
-      if (!json.success) {
-        showToast(json.error?.message || "Failed to generate listing", "error");
-        return;
-      }
-
-      setResult(json.data);
-      showToast("Listing generated successfully!", "success");
-    } catch {
-      showToast("Network error. Please try again.", "error");
-    } finally {
+    if (apiResult.ok === false) {
+      // P0 fix: surface 403 LIMIT_EXCEEDED (and every other failure) as a
+      // persistent red banner with an Upgrade CTA — never silently.
+      setApiError(apiResult.error);
       setIsLoading(false);
       setIsRegenerating(false);
+      return;
     }
+
+    setResult(apiResult.data);
+    showToast("Listing generated successfully!", "success");
+    setIsLoading(false);
+    setIsRegenerating(false);
   };
 
   const handleSubmit = (data: ListingData) => generateListing(data);
@@ -84,6 +86,8 @@ export default function ListingPage() {
           Create SEO-optimized titles, descriptions, and tags for your Etsy products.
         </p>
       </div>
+
+      <ApiErrorBanner error={apiError} onDismiss={() => setApiError(null)} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

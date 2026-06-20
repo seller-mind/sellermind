@@ -4,7 +4,9 @@ import * as React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { BatchForm } from "@/components/tools/BatchForm";
 import { BatchResult } from "@/components/tools/BatchResult";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
 import { Toast } from "@/components/ui/toast";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface BatchData {
   listingsText: string;
@@ -15,6 +17,7 @@ export default function BatchPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRegenerating, setIsRegenerating] = React.useState(false);
   const [lastData, setLastData] = React.useState<BatchData | null>(null);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [toast, setToast] = React.useState<{ message: string; type: "success" | "error"; visible: boolean }>({
     message: "",
     type: "success",
@@ -34,28 +37,23 @@ export default function BatchPage() {
       setLastData(data);
     }
     setResult(null);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/batch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, email: localStorage.getItem('sellermind_email') || '' }),
-      });
-      const json = await response.json();
+    const apiResult = await callToolApi<BatchData, BatchResultData>("/api/batch", data);
 
-      if (!json.success) {
-        showToast(json.error?.message || "Failed to optimize listings", "error");
-        return;
-      }
-
-      setResult(json.data);
-      showToast(`Optimized ${json.data.listings?.length || 0} listings!`, "success");
-    } catch {
-      showToast("Network error. Please try again.", "error");
-    } finally {
+    if (apiResult.ok === false) {
+      // P0 fix: persistent banner with Upgrade CTA replaces the previous
+      // 3-second toast that left users staring at a dead "Optimize" button.
+      setApiError(apiResult.error);
       setIsLoading(false);
       setIsRegenerating(false);
+      return;
     }
+
+    setResult(apiResult.data);
+    showToast(`Optimized ${apiResult.data.listings?.length || 0} listings!`, "success");
+    setIsLoading(false);
+    setIsRegenerating(false);
   };
 
   return (
@@ -68,6 +66,8 @@ export default function BatchPage() {
           Analyze and optimize multiple listings at once with AI-powered suggestions.
         </p>
       </div>
+
+      <ApiErrorBanner error={apiError} onDismiss={() => setApiError(null)} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
