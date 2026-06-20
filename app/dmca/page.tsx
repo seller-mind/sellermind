@@ -53,7 +53,7 @@ export default function DMCAPage() {
           <ul className="list-disc pl-5 space-y-2 mt-4">
             <li><strong>Recipient:</strong> Copyright Agent</li>
             <li><strong>Company:</strong> SellerMind / Haimo Tech</li>
-            <li><strong>Email:</strong> haimozhouqiu@outlook.com</li>
+            <li><strong>Email:</strong> dmca@thesellermind.com</li>
           </ul>
           <p className="mt-4">
             Only DMCA notices and counter-notices should be sent to the Copyright Agent. All other inquiries will not receive a response.
@@ -167,7 +167,7 @@ export default function DMCAPage() {
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
           <p>For copyright infringement matters, please contact us:</p>
           <ul className="list-disc pl-5 space-y-2 mt-4">
-            <li><strong>Email:</strong> haimozhouqiu@outlook.com</li>
+            <li><strong>Email:</strong> dmca@thesellermind.com</li>
             <li><strong>Website:</strong> https://thesellermind.com</li>
           </ul>
           <p className="mt-4">

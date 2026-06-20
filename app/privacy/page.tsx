@@ -156,7 +156,7 @@ export default function PrivacyPage() {
           <p>We use the following third-party services:</p>
           <ul className="list-disc pl-5 space-y-2 mt-4">
             <li><strong>DeepSeek:</strong> Primary AI content generation provider - servers located in China - subject to their privacy policy</li>
-            <li><strong>Creem:</strong> Payment processing and subscription management - servers located in the United States</li>
+            <li><strong>Dodo Payments:</strong> Payment processing and subscription management — servers located in the United States (Merchant of Record / payment processor)</li>
             <li><strong>Supabase:</strong> Database and user data storage - servers located in Tokyo, Japan</li>
             <li><strong>Vercel:</strong> Website hosting and deployment - servers located in the United States</li>
           </ul>

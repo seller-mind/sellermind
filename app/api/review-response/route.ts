@@ -1,65 +1,156 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import OpenAI from "openai";
+
+// Runtime declarations (also addresses BUG-19).
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/**
+ * Etsy Review Response — DeepSeek-backed implementation (2026-06-14, Y2).
+ *
+ * Replaces the original template-only handler (and the 503 stub from Y).
+ * Front-end contract (app/tools/etsy-review-response/page.tsx) is unchanged:
+ *   request:  { reviewType, reviewContent, responseTone }
+ *     - reviewType: "1" .. "5" (string of star count)
+ *     - responseTone: "professional" | "friendly" | "casual" | ""
+ *   response: { success: true, data: { response: string } }
+ *
+ * On any DeepSeek failure the route returns 503 + AI_SERVICE_UNAVAILABLE,
+ * which the front-end falls back to a local demo reply.
+ */
+
+const DEEPSEEK_TIMEOUT_MS = 30_000;
+const MODEL = "deepseek-chat";
+
+const SYSTEM_PROMPT = `You are an experienced Etsy seller and customer-service writer. You craft public review responses that protect the shop's reputation and feel personal, never scripted.
+
+Inputs you receive:
+- reviewType: "1".."5" — number of stars the buyer left.
+- reviewContent: the buyer's text (may be empty for star-only reviews).
+- responseTone: "professional" | "friendly" | "casual" | "" (empty means choose the most appropriate tone given the star rating).
+
+Rules for the reply you write:
+- 4-5 stars: thank the buyer warmly, mention something specific from their review when possible, end with a soft invitation to come back / share photos / follow the shop.
+- 3 stars: thank them for the honest feedback, briefly acknowledge what went well, name a specific improvement you can promise, invite them to message you so you can make it right.
+- 1-2 stars: do NOT argue. Apologize sincerely for their experience, take responsibility without making excuses, name a concrete next step (replacement / refund / direct contact), keep it short, never blame the buyer.
+- Match the requested tone:
+   * professional: polite, polished, complete sentences, no exclamation marks, no slang.
+   * friendly: warm, first-person, occasional exclamation, light positivity.
+   * casual: conversational, contractions OK, can use 1 emoji max.
+   * empty: pick whichever fits the star rating best.
+- Never invent specific details (do not promise free shipping, discount codes, or names you weren't told).
+- Length: 2-5 sentences. No headers, no bullet points.
+
+OUTPUT FORMAT - return STRICT JSON only, no markdown, no commentary:
+{
+  "response": "<the reply, plain text only>"
+}
+
+Only that single key. The value must be a non-empty string.`;
 
 interface ReviewRequest {
-  reviewType: string;
-  reviewContent: string;
+  reviewType?: string;
+  reviewContent?: string;
   responseTone?: string;
 }
 
-function generateReviewResponse(data: ReviewRequest): string {
-  const { reviewType, reviewContent, responseTone } = data;
-  const stars = parseInt(reviewType) || 5;
-  const tone = responseTone || "professional";
-  
-  const isPositive = stars >= 4;
-  const tonePrefix = tone === "friendly" ? "Hey there! " : tone === "casual" ? "Hi! " : "";
-  
-  if (isPositive) {
-    return `${tonePrefix}Thank you so much for your wonderful ${stars}-star review! We're absolutely thrilled to hear you had a great experience. Our team puts so much care and passion into every piece we create, and knowing it brought you joy truly means the world to us.
-
-We hope your purchase brings you happiness for years to come. If you ever need anything or want to share your experience, please don't hesitate to reach out.
-
-Thank you for supporting our small business! 💚`;
-  } else if (stars === 3) {
-    return `${tonePrefix}Thank you for taking the time to leave us feedback. We appreciate your honest thoughts and we're sorry if your experience wasn't exactly what you hoped for.
-
-We'd love to make things right. Could you please reach out to us directly so we can discuss how we can improve? Your feedback helps us grow and serve our customers better.
-
-Thank you for giving us the opportunity to address your concerns.`;
-  } else {
-    return `Dear valued customer,
-
-We sincerely apologize that your experience didn't meet our high standards. We take all feedback very seriously, and we're truly sorry for any disappointment.
-
-Please know that this is not the experience we strive to provide. We'd like to make this right immediately.
-
-Could you please contact us directly so we can resolve this issue as quickly as possible? We're committed to ensuring your complete satisfaction.
-
-Thank you for giving us the chance to improve.`;
-  }
+function serviceUnavailable() {
+  return NextResponse.json(
+    {
+      success: false,
+      error: {
+        code: "AI_SERVICE_UNAVAILABLE",
+        message: "AI service temporarily unavailable, please try again in a moment",
+      },
+    },
+    { status: 503, headers: { "Cache-Control": "no-store" } }
+  );
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body: ReviewRequest = await request.json();
-    
-    if (!body.reviewType || !body.reviewContent) {
-      return NextResponse.json(
-        { success: false, error: { message: "Review type and content are required" } },
-        { status: 400 }
-      );
-    }
+function buildUserPrompt(body: ReviewRequest): string {
+  const reviewType = (body.reviewType || "").trim();
+  const reviewContent = (body.reviewContent || "").trim();
+  const responseTone = (body.responseTone || "").trim();
 
-    const response = generateReviewResponse(body);
-    
-    return NextResponse.json({
-      success: true,
-      data: { response }
-    });
+  return `Write an Etsy review reply for the following:
+
+- Star rating: ${reviewType || "(not specified)"}
+- Buyer review text: ${reviewContent || "(empty — star-only review)"}
+- Requested tone: ${responseTone || "(choose based on star rating)"}
+
+Return strict JSON exactly matching the schema in the system prompt.`;
+}
+
+function sanitizeResponse(raw: unknown): string | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as { response?: unknown };
+  if (typeof r.response !== "string") return null;
+  const trimmed = r.response.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+export async function POST(request: Request) {
+  let body: ReviewRequest;
+  try {
+    body = (await request.json()) as ReviewRequest;
   } catch {
     return NextResponse.json(
-      { success: false, error: { message: "Invalid request body" } },
+      { success: false, error: { code: "INVALID_JSON", message: "Request body must be valid JSON." } },
       { status: 400 }
     );
+  }
+
+  if (!body?.reviewType?.toString().trim()) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: { code: "INVALID_INPUT", message: "reviewType is required." },
+      },
+      { status: 400 }
+    );
+  }
+
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) {
+    return serviceUnavailable();
+  }
+
+  const deepseek = new OpenAI({ apiKey, baseURL: "https://api.deepseek.com" });
+
+  try {
+    const completion = await deepseek.chat.completions.create(
+      {
+        model: MODEL,
+        temperature: 0.6,
+        max_tokens: 1500,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: buildUserPrompt(body) },
+        ],
+      },
+      { signal: AbortSignal.timeout(DEEPSEEK_TIMEOUT_MS) }
+    );
+
+    const content = completion.choices?.[0]?.message?.content;
+    if (!content) return serviceUnavailable();
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      return serviceUnavailable();
+    }
+
+    const response = sanitizeResponse(parsed);
+    if (!response) return serviceUnavailable();
+
+    return NextResponse.json(
+      { success: true, data: { response } },
+      { headers: { "Cache-Control": "no-store" } }
+    );
+  } catch (err) {
+    console.error("[review-response] DeepSeek call failed:", err);
+    return serviceUnavailable();
   }
 }

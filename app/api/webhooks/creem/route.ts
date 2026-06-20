@@ -1,213 +1,75 @@
+// app/api/webhooks/creem/route.ts
+//
+// ⚠️ 兜底降级版本（2026-06-15 切 Dodo Payments 时改造）：
+//
+// 历史：sellermind 原本走 Creem 收款，2026-06-10 Creem 账户被永久封禁，
+//      2026-06-15 切到 Dodo Payments（live mode 已上线）。
+// 当前角色：本路由保留至 2026-07-15（30 天兜底窗口），用于：
+//   1. Creem 服务器若仍向本端点重发历史 retry 事件，给 200 防止 Creem 端无限重试堆积
+//   2. 抓取 raw payload 落日志，方便事后人肉对账退款
+//
+// 严禁：
+//   * 不要再删除本路由（30 天内）
+//   * 不要再写 Supabase（用户订阅已 100% 由 Dodo webhook 接管）
+//   * 不要再校验签名 —— Creem secret 仍在 env，但触发的写库副作用已不需要
+//
+// 30 天后（约 2026-07-15）操作：删本路由 + Vercel env 删 CREEM_*。
+// 但 sellermind_users 表里 creem_* 三列**保留不动**（task 严禁删除，对账要查）。
+
 import { NextRequest, NextResponse } from 'next/server'
-import crypto from 'crypto'
-import { supabaseAdmin } from '@/lib/supabase'
 
-function verifyCreemSignature(
-  payload: string,
-  signature: string,
-  secret: string
-): boolean {
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex')
-
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    )
-  } catch {
-    return false
-  }
-}
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
-  const webhookSecret = process.env.CREEM_WEBHOOK_SECRET
-  if (!webhookSecret) {
-    console.error('CREEM_WEBHOOK_SECRET not configured')
-    return NextResponse.json(
-      { error: 'Webhook secret not configured' },
-      { status: 500 }
-    )
-  }
+  // 抓 raw body + 关键 header，落日志后直接 200
+  const rawBody = await request.text().catch(() => '')
+  const sig = request.headers.get('creem-signature') || ''
+  const ua = request.headers.get('user-agent') || ''
 
-  const signature = request.headers.get('creem-signature')
-  if (!signature) {
-    return NextResponse.json({ error: 'Missing signature' }, { status: 401 })
-  }
-
-  const rawBody = await request.text()
-
-  if (!verifyCreemSignature(rawBody, signature, webhookSecret)) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-  }
-
+  let eventType = ''
+  let eventId = ''
+  let email = ''
   try {
-    const event = JSON.parse(rawBody)
-    const eventType = event.eventType
-    const eventData = event.object || event.data || event
-
-    // Filter: only process events for SellerMind products
-    const productId =
-      eventData?.product?.id ||
-      eventData?.product_id ||
-      eventData?.product
-
-    const sellerMindProductIds = [
-      process.env.CREEM_PRODUCT_ID_MONTHLY,
-      process.env.CREEM_PRODUCT_ID_YEARLY,
-    ].filter(Boolean)
-
-    if (
-      productId &&
-      sellerMindProductIds.length > 0 &&
-      !sellerMindProductIds.includes(productId)
-    ) {
-      return NextResponse.json({ received: true, skipped: true })
+    if (rawBody) {
+      const parsed = JSON.parse(rawBody)
+      eventType = parsed?.eventType || parsed?.type || ''
+      eventId = parsed?.id || parsed?.object?.id || parsed?.data?.id || ''
+      email =
+        parsed?.metadata?.email ||
+        parsed?.object?.metadata?.email ||
+        parsed?.data?.metadata?.email ||
+        parsed?.customer?.email ||
+        parsed?.object?.customer?.email ||
+        ''
     }
-
-    // Extract email from metadata or customer data
-    const email =
-      eventData?.metadata?.email ||
-      eventData?.customer?.email ||
-      eventData?.customer_email ||
-      eventData?.custom_data?.email
-
-    if (!email) {
-      console.log('No email in webhook data, skipping')
-      return NextResponse.json({ received: true })
-    }
-
-    const normalizedEmail = email.toLowerCase()
-    const now = new Date().toISOString()
-
-    switch (eventType) {
-      case 'checkout.completed': {
-        const planProductId = eventData?.product?.id || eventData?.product_id || ''
-        const isMonthly = planProductId === process.env.CREEM_PRODUCT_ID_MONTHLY
-        const planName = isMonthly ? 'Pro Monthly' : 'Pro Yearly'
-
-        await supabaseAdmin
-          .from('sellermind_users')
-          .upsert({
-            email: normalizedEmail,
-            subscription_status: 'active',
-            subscription_plan: planName,
-            creem_checkout_id: eventData?.id,
-            creem_customer_id: eventData?.customer?.id || eventData?.customer_id,
-            current_period_end: eventData?.billing_period?.end || eventData?.current_period_end_date,
-            updated_at: now,
-          }, { onConflict: 'email' })
-
-        console.log(`Checkout completed for ${normalizedEmail}: ${planName}`)
-        break
-      }
-
-      case 'subscription.active': {
-        await supabaseAdmin
-          .from('sellermind_users')
-          .upsert({
-            email: normalizedEmail,
-            subscription_status: 'active',
-            creem_subscription_id: eventData?.id,
-            creem_customer_id: eventData?.customer?.id || eventData?.customer_id,
-            current_period_end: eventData?.current_period_end_date,
-            updated_at: now,
-          }, { onConflict: 'email' })
-
-        console.log(`Subscription activated for ${normalizedEmail}`)
-        break
-      }
-
-      case 'subscription.paid': {
-        await supabaseAdmin
-          .from('sellermind_users')
-          .update({
-            subscription_status: 'active',
-            current_period_end: eventData?.current_period_end_date,
-            updated_at: now,
-          })
-          .eq('email', normalizedEmail)
-
-        console.log(`Subscription payment received for ${normalizedEmail}`)
-        break
-      }
-
-      case 'subscription.update': {
-        await supabaseAdmin
-          .from('sellermind_users')
-          .update({
-            subscription_status: 'active',
-            current_period_end: eventData?.current_period_end_date,
-            updated_at: now,
-          })
-          .eq('email', normalizedEmail)
-
-        console.log(`Subscription updated for ${normalizedEmail}`)
-        break
-      }
-
-      case 'subscription.canceled': {
-        await supabaseAdmin
-          .from('sellermind_users')
-          .update({
-            subscription_status: 'cancelled',
-            current_period_end: eventData?.current_period_end_date || now,
-            updated_at: now,
-          })
-          .eq('email', normalizedEmail)
-
-        console.log(`Subscription cancelled for ${normalizedEmail}`)
-        break
-      }
-
-      case 'subscription.expired': {
-        await supabaseAdmin
-          .from('sellermind_users')
-          .update({
-            subscription_status: 'expired',
-            updated_at: now,
-          })
-          .eq('email', normalizedEmail)
-
-        console.log(`Subscription expired for ${normalizedEmail}`)
-        break
-      }
-
-      case 'subscription.paused': {
-        await supabaseAdmin
-          .from('sellermind_users')
-          .update({
-            subscription_status: 'paused',
-            updated_at: now,
-          })
-          .eq('email', normalizedEmail)
-
-        console.log(`Subscription paused for ${normalizedEmail}`)
-        break
-      }
-
-      case 'refund.created': {
-        console.log(`Refund created for ${normalizedEmail}`)
-        break
-      }
-
-      case 'dispute.created': {
-        console.log(`Dispute/chargeback for ${normalizedEmail}`)
-        break
-      }
-
-      default:
-        console.log('Unhandled Creem webhook event:', eventType)
-    }
-
-    return NextResponse.json({ received: true })
-  } catch (error) {
-    console.error('Creem webhook processing error:', error)
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    )
+  } catch {
+    // ignore parse failures, still log raw size
   }
+
+  console.log(
+    '[creem-webhook-fallback]',
+    JSON.stringify({
+      eventType,
+      eventId,
+      email,
+      ua,
+      hasSig: !!sig,
+      bodyBytes: rawBody.length,
+      ts: new Date().toISOString(),
+      note: 'Creem migrated to Dodo on 2026-06-15; this is a 30d no-op sink',
+    }),
+  )
+
+  // 200 防止 Creem 端无限重试
+  return NextResponse.json({ received: true, deprecated: true })
+}
+
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    route: '/api/webhooks/creem',
+    deprecated: true,
+    note: 'Sellermind switched to Dodo Payments on 2026-06-15. This endpoint is a 30-day no-op sink and will be removed around 2026-07-15.',
+  })
 }

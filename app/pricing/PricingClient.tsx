@@ -22,31 +22,31 @@ export default function PricingClient() {
     }
   }
 
-  const handleSubscribe = async (planId: string) => {
+  // Dodo Payments direct checkout (replaces /api/checkout flow on 2026-06-15)
+  const DODO_CHECKOUT_URLS: Record<string, string> = {
+    monthly:
+      'https://checkout.dodopayments.com/buy/pdt_0Nh4as9LEJmfoZNpeaHC6?quantity=1&redirect_url=https://thesellermind.com/payment-success',
+    yearly:
+      'https://checkout.dodopayments.com/buy/pdt_0Nh4asKyfYxPzDnExvRVo?quantity=1&redirect_url=https://thesellermind.com/payment-success',
+  }
+
+  const handleSubscribe = (planId: string) => {
     if (!email || !email.includes('@')) {
       alert('Please enter a valid email address first.')
       return
     }
-
-    // Save email before checkout
-    localStorage.setItem('sellermind_email', email.toLowerCase())
-    setSavedEmail(email.toLowerCase())
-
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: planId, email: email.toLowerCase() }),
-      })
-      const data = await response.json()
-      if (data.url) {
-        window.location.href = data.url
-      } else {
-        alert(data.error || 'Failed to create checkout. Please try again.')
-      }
-    } catch {
-      alert('Failed to create checkout. Please try again.')
+    const target = DODO_CHECKOUT_URLS[planId]
+    if (!target) {
+      alert('Invalid plan selected.')
+      return
     }
+    const normalized = email.toLowerCase()
+    // Persist email so post-checkout return can re-link the session
+    localStorage.setItem('sellermind_email', normalized)
+    setSavedEmail(normalized)
+    // Pre-fill email on Dodo checkout page (Dodo accepts ?email= in URL)
+    const url = `${target}&email=${encodeURIComponent(normalized)}`
+    window.location.href = url
   }
 
   // Check for checkout success redirect
@@ -229,25 +229,6 @@ export default function PricingClient() {
         </div>
       </div>
 
-      {/* Money Back Guarantee */}
-      <div className="mt-12 max-w-4xl mx-auto px-4">
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-green-800">7-Day Money-Back Guarantee</h3>
-              <p className="text-green-700 text-sm">Not satisfied? Get a full refund within 7 days (for accounts with ≤10 AI uses).</p>
-            </div>
-          </div>
-          <p className="text-sm text-green-700">
-            <strong>EU Customers:</strong> You have 14 days to request a refund under EU consumer protection laws.
-          </p>
-        </div>
-      </div>
 
       {/* FAQ */}
       <div className="mt-16 max-w-3xl mx-auto px-4">
@@ -310,7 +291,7 @@ export default function PricingClient() {
               </svg>
             </summary>
             <p className="mt-4 text-foreground-secondary">
-              Yes! We offer a 7-day money-back guarantee for accounts with 10 or fewer AI uses. EU customers have 14 days under consumer protection laws.
+              You can cancel your subscription at any time. EU/EEA customers also have a statutory 14-day right of withdrawal under EU Consumer Rights Directive 2011/83/EU. Outside of statutory rights, refunds are at our sole discretion.
             </p>
           </details>
         </div>

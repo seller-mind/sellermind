@@ -312,17 +312,17 @@ export default function TermsPage() {
             We want you to be satisfied with SellerMind. Below is our refund policy:
           </p>
 
-          <h3 className="text-base font-semibold text-foreground-primary mt-4">7-Day Money-Back Guarantee</h3>
+          <h3 className="text-base font-semibold text-foreground-primary mt-4">Refund Policy</h3>
           <p>
-            We offer a <strong>7-day money-back guarantee</strong> for all new subscribers. If you are not satisfied with the Service within the first 7 days of your subscription, you may request a full refund. To request a refund, contact us at <strong>legal@thesellermind.com</strong> within 7 days of your initial subscription date.
+            All Pro subscriptions are non-refundable except where required by applicable law (including the EU 14-day right of withdrawal described below). Subscriptions can be cancelled at any time and will remain active until the end of the current billing period.
           </p>
           <p className="mt-4">
-            After the 7-day period, refunds are provided at our sole discretion on a case-by-case basis.
+            Outside of statutory rights (such as the EU 14-day withdrawal right), refunds are provided solely at our discretion on a case-by-case basis.
           </p>
 
           <h3 className="text-base font-semibold text-foreground-primary mt-4">EU Consumer 14-Day Withdrawal Right</h3>
           <p>
-            EU and EEA consumers have a statutory <strong>14-day right of withdrawal</strong> under the EU Consumer Rights Directive 2011/83/EU. This right allows EU consumers to cancel their subscription contract within 14 days without penalty. This right is in addition to our voluntary 7-day money-back guarantee.
+            EU and EEA consumers have a statutory <strong>14-day right of withdrawal</strong> under the EU Consumer Rights Directive 2011/83/EU. This right allows EU consumers to cancel their subscription contract within 14 days without penalty.
           </p>
           <p className="mt-4">
             To exercise your EU withdrawal right, contact us at <strong>legal@thesellermind.com</strong>. We will process your refund within 14 days of receiving your withdrawal notice.
@@ -333,7 +333,7 @@ export default function TermsPage() {
             Approved refunds will be processed using the original payment method. Refunds are typically processed within 5–10 business days, depending on your payment provider.
           </p>
           <p className="mt-4">
-            <strong>Non-Refundable Items:</strong> Refunds are not available for: (a) digital content that has been accessed and used; (b) subscriptions that have been active for more than 7 days (except for EU consumer withdrawal rights); (c) services already rendered.
+            <strong>Non-Refundable Items:</strong> Refunds are not available for: (a) digital content that has been accessed and used; (b) subscriptions that have been active beyond any applicable statutory withdrawal window (e.g., the EU 14-day right of withdrawal); (c) services already rendered.
           </p>
         </CardContent>
       </Card>

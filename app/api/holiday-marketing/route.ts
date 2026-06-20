@@ -1,99 +1,188 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import OpenAI from "openai";
+
+// Runtime declarations (also addresses BUG-19).
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/**
+ * Holiday Marketing Kit — DeepSeek-backed implementation (2026-06-14, Y2).
+ *
+ * Replaces the original template-only handler (and the 503 stub from Y).
+ * Front-end contract (app/tools/etsy-holiday-marketing/page.tsx) is unchanged:
+ *   request:  { holiday, productDescription, targetAudience }
+ *   response: { success: true, data: {
+ *     titles: string[],          // 5 holiday-themed Etsy titles
+ *     tags: string[],            // 13 holiday-tuned Etsy tags (<= 20 chars each)
+ *     emailTemplate: string,     // ready-to-send buyer email (4-8 lines)
+ *     timingTips: string         // 1-3 sentence timing/strategy tip
+ *   } }
+ *
+ * On any DeepSeek failure the route returns 503 + AI_SERVICE_UNAVAILABLE,
+ * which the front-end falls back gracefully.
+ */
+
+const DEEPSEEK_TIMEOUT_MS = 30_000;
+const MODEL = "deepseek-chat";
+
+const SYSTEM_PROMPT = `You are an expert Etsy holiday-marketing strategist. You help small handmade shops turn seasonal moments (Christmas, Valentine's Day, Mother's Day, Father's Day, Halloween, etc.) into top-converting listings.
+
+Your task: given a holiday, product description, and target audience, produce a complete marketing kit.
+
+Constraints for each field:
+- "titles": exactly 5 Etsy listing titles, each 70-140 chars, holiday-themed, front-loaded keyword in first 30 chars, natural human phrasing, no emoji spam. Pipe ( | ) or comma separators.
+- "tags": exactly 13 lowercase Etsy tag phrases, each <= 20 chars (Etsy hard limit), 2-3 words preferred, mix of buyer-intent ("<holiday> gift"), audience ("gift for mom"), style/material, and long-tail occasion phrases. No duplicates.
+- "emailTemplate": a single string containing a buyer-facing email (subject is allowed inline as "Subject: ..."), 4-8 lines, with a clear holiday hook, value prop, urgency (e.g. shipping deadline), and a soft CTA. Use \n for line breaks. Keep it warm and personal, not corporate.
+- "timingTips": 1-3 sentences advising when to launch, what shipping cutoff to communicate, and one pro tip for the holiday's specific buying-cycle.
+
+OUTPUT FORMAT - return STRICT JSON only, no markdown, no commentary:
+{
+  "titles": ["...", "...", "...", "...", "..."],
+  "tags": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "..."],
+  "emailTemplate": "...",
+  "timingTips": "..."
+}
+
+Only those four keys. No extras.`;
 
 interface HolidayRequest {
-  holiday: string;
-  productDescription: string;
+  holiday?: string;
+  productDescription?: string;
   targetAudience?: string;
 }
 
-const HOLIDAYS: Record<string, { emoji: string; peak: string; start: string }> = {
-  "Christmas": { emoji: "🎄", peak: "Nov 1 - Dec 25", start: "October 15" },
-  "Valentine's Day": { emoji: "💝", peak: "Jan 15 - Feb 14", start: "December 1" },
-  "Mother's Day": { emoji: "🌷", peak: "Apr 20 - May 10", start: "March 1" },
-  "Easter": { emoji: "🐰", peak: "Mar 15 - Apr 20", start: "February 1" },
-  "Halloween": { emoji: "🎃", peak: "Sep 15 - Oct 31", start: "August 1" },
-  "Father's Day": { emoji: "👔", peak: "May 25 - Jun 15", start: "April 15" },
-  "Thanksgiving": { emoji: "🦃", peak: "Nov 15 - Nov 28", start: "October 1" },
-  "Back to School": { emoji: "📚", peak: "Aug 1 - Sep 15", start: "July 1" },
-};
-
-function generateHolidayMarketingKit(data: HolidayRequest) {
-  const { holiday, productDescription, targetAudience } = data;
-  const holidayInfo = HOLIDAYS[holiday] || HOLIDAYS["Christmas"];
-  const productSnippet = productDescription.substring(0, 40);
-  
-  const titles = [
-    `${holidayInfo.emoji} Perfect ${holiday} Gift - ${productSnippet}...`,
-    `Handmade ${productSnippet} - ${holiday} Special Edition ${holidayInfo.emoji}`,
-    `${productSnippet} Gift for ${holiday} - Limited Time!`,
-    `Unique ${holiday} Gift - ${productSnippet}...`,
-    `Premium ${productSnippet} - Perfect ${holiday} Present ${holidayInfo.emoji}`,
-  ];
-
-  const tags = [
-    `${holiday.toLowerCase()} gift`,
-    `${holiday.toLowerCase()} present`,
-    `gift for ${targetAudience?.toLowerCase() || 'her'}`,
-    `${holiday.toLowerCase()} decoration`,
-    "holiday special",
-    "limited edition",
-    "handmade gift",
-    "unique gift",
-    `${holiday.toLowerCase()} sale`,
-    `must have ${holiday.toLowerCase()}`,
-    `best ${holiday.toLowerCase()}`,
-    `${holiday.toLowerCase()} shopping`,
-    "perfect gift",
-  ];
-
-  const emailTemplate = `${holidayInfo.emoji} ${holiday} is coming!
-
-Our ${productSnippet} makes the perfect ${holiday} gift!
-
-🎁 Order by ${holidayInfo.start} to receive it in time!
-🎁 Use code HOLIDAY15 for 15% off!
-
-Don't miss out on making someone's ${holiday} special! 💝`;
-
-  const timingTips = `📅 ${holiday} Marketing Timeline:
-
-• 8 weeks before: Update tags with holiday keywords
-• 6 weeks before: Launch holiday listings
-• 4 weeks before: Push social media and email marketing
-• 2 weeks before: Offer last-minute deals
-• 1 week before: Remind customers of shipping deadlines
-
-Start preparing your ${holiday} listings by ${holidayInfo.start} for maximum visibility!`;
-
-  return {
-    titles,
-    tags,
-    emailTemplate,
-    timingTips
-  };
+interface MarketingKit {
+  titles: string[];
+  tags: string[];
+  emailTemplate: string;
+  timingTips: string;
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body: HolidayRequest = await request.json();
-    
-    if (!body.holiday || !body.productDescription) {
-      return NextResponse.json(
-        { success: false, error: { message: "Holiday and product description are required" } },
-        { status: 400 }
-      );
-    }
+function serviceUnavailable() {
+  return NextResponse.json(
+    {
+      success: false,
+      error: {
+        code: "AI_SERVICE_UNAVAILABLE",
+        message: "AI service temporarily unavailable, please try again in a moment",
+      },
+    },
+    { status: 503, headers: { "Cache-Control": "no-store" } }
+  );
+}
 
-    const marketingKit = generateHolidayMarketingKit(body);
-    
-    return NextResponse.json({
-      success: true,
-      data: marketingKit
-    });
+function buildUserPrompt(body: HolidayRequest): string {
+  const holiday = (body.holiday || "").trim();
+  const productDescription = (body.productDescription || "").trim();
+  const targetAudience = (body.targetAudience || "").trim();
+
+  return `Build a holiday-marketing kit for the following:
+
+- Holiday: ${holiday || "(not specified)"}
+- Product description: ${productDescription || "(not specified)"}
+- Target audience: ${targetAudience || "(not specified)"}
+
+Return strict JSON exactly matching the schema in the system prompt.`;
+}
+
+function sanitizeKit(raw: unknown): MarketingKit | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+
+  const titlesArr = Array.isArray(r.titles) ? r.titles : [];
+  const titles = titlesArr
+    .filter((t): t is string => typeof t === "string" && t.trim().length > 0)
+    .map((t) => t.trim())
+    .slice(0, 5);
+
+  const tagsArr = Array.isArray(r.tags) ? r.tags : [];
+  const seen = new Set<string>();
+  const tags: string[] = [];
+  for (const t of tagsArr) {
+    if (typeof t !== "string") continue;
+    const cleaned = t.trim().toLowerCase().slice(0, 20);
+    if (!cleaned || seen.has(cleaned)) continue;
+    seen.add(cleaned);
+    tags.push(cleaned);
+    if (tags.length >= 13) break;
+  }
+
+  const emailTemplate =
+    typeof r.emailTemplate === "string" && r.emailTemplate.trim()
+      ? r.emailTemplate.trim()
+      : "";
+  const timingTips =
+    typeof r.timingTips === "string" && r.timingTips.trim() ? r.timingTips.trim() : "";
+
+  if (titles.length === 0 || tags.length === 0 || !emailTemplate) {
+    return null;
+  }
+
+  return { titles, tags, emailTemplate, timingTips };
+}
+
+export async function POST(request: Request) {
+  let body: HolidayRequest;
+  try {
+    body = (await request.json()) as HolidayRequest;
   } catch {
     return NextResponse.json(
-      { success: false, error: { message: "Invalid request body" } },
+      { success: false, error: { code: "INVALID_JSON", message: "Request body must be valid JSON." } },
       { status: 400 }
     );
+  }
+
+  if (!body?.holiday?.trim() || !body?.productDescription?.trim()) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: { code: "INVALID_INPUT", message: "holiday and productDescription are required." },
+      },
+      { status: 400 }
+    );
+  }
+
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) {
+    return serviceUnavailable();
+  }
+
+  const deepseek = new OpenAI({ apiKey, baseURL: "https://api.deepseek.com" });
+
+  try {
+    const completion = await deepseek.chat.completions.create(
+      {
+        model: MODEL,
+        temperature: 0.8,
+        max_tokens: 1500,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: buildUserPrompt(body) },
+        ],
+      },
+      { signal: AbortSignal.timeout(DEEPSEEK_TIMEOUT_MS) }
+    );
+
+    const content = completion.choices?.[0]?.message?.content;
+    if (!content) return serviceUnavailable();
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      return serviceUnavailable();
+    }
+
+    const kit = sanitizeKit(parsed);
+    if (!kit) return serviceUnavailable();
+
+    return NextResponse.json(
+      { success: true, data: kit },
+      { headers: { "Cache-Control": "no-store" } }
+    );
+  } catch (err) {
+    console.error("[holiday-marketing] DeepSeek call failed:", err);
+    return serviceUnavailable();
   }
 }
