@@ -15,6 +15,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Copy, Check, RefreshCw } from "lucide-react";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
+
+interface ReviewResponseApiData {
+  response: string;
+}
+
+interface ReviewRequestPayload extends Record<string, unknown> {
+  reviewType: string;
+  reviewContent: string;
+  responseTone: string;
+}
 
 const TOOL_INFO = {
   toolName: "Free Etsy Review Response Generator",
@@ -119,6 +131,7 @@ export default function EtsyReviewResponsePage() {
 
   const [response, setResponse] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [copied, setCopied] = React.useState(false);
   const [showSEOSection, setShowSEOSection] = React.useState(false);
 
@@ -129,39 +142,32 @@ export default function EtsyReviewResponsePage() {
 
     setIsLoading(true);
     setResponse("");
+    setApiError(null);
 
-    try {
-      const response_data = await fetch("/api/review-response", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reviewType,
-          reviewContent,
-          responseTone,
-        }),
-      });
+    const payload: ReviewRequestPayload = {
+      reviewType,
+      reviewContent,
+      responseTone,
+    };
 
-      const json = await response_data.json();
+    const result = await callToolApi<ReviewRequestPayload, ReviewResponseApiData>(
+      "/api/review-response",
+      payload
+    );
 
-      if (json.success && json.data?.response) {
-        setResponse(json.data.response);
-      } else {
-        setResponse(generateDemoResponse());
-      }
-    } catch {
-      setResponse(generateDemoResponse());
-    } finally {
+    if (result.ok === false) {
+      // P0 fix (etsy-*): surface 403 LIMIT_EXCEEDED + every other failure as
+      // a persistent red banner with an Upgrade CTA. We deliberately do NOT
+      // populate `response` with a hardcoded thank-you template — that
+      // previously shipped fake "AI" replies to free-tier users hitting
+      // the IP quota, who could publish them verbatim on their Etsy shop.
+      setApiError(result.error);
       setIsLoading(false);
+      return;
     }
-  };
 
-  const generateDemoResponse = (): string => {
-    const tone = responseTone || "Professional";
-    if (reviewType === "5" || reviewType === "4") {
-      return `Thank you so much for your wonderful ${reviewType}-star review! We're thrilled to hear you enjoyed your experience. Our team puts so much care into every piece we create, and it's moments like this that make it all worth it. We hope your purchase brings you joy for years to come! 💚`;
-    } else {
-      return `We sincerely appreciate your feedback and we're sorry to hear your experience didn't meet expectations. We take all feedback seriously and would like to make this right. Please message us directly so we can resolve any issues. Thank you for giving us the opportunity to improve.`;
-    }
+    setResponse(result.data.response);
+    setIsLoading(false);
   };
 
   const copyToClipboard = async () => {
@@ -177,6 +183,11 @@ export default function EtsyReviewResponsePage() {
 
   return (
     <ToolLayout {...TOOL_INFO}>
+      <ApiErrorBanner
+        error={apiError}
+        onDismiss={() => setApiError(null)}
+        className="mb-4"
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Input Form */}
         <Card>

@@ -8,6 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy, Check, RefreshCw, AlertCircle, CheckCircle, AlertTriangle } from "lucide-react";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
+
+interface SEORequestPayload extends Record<string, unknown> {
+  title: string;
+  tags: string;
+  description: string;
+}
 
 interface SEORecommendation {
   type: "success" | "warning" | "improvement";
@@ -126,6 +134,7 @@ export default function EtsySEOToolPage() {
 
   const [analysis, setAnalysis] = React.useState<SEOAnalysis | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [copied, setCopied] = React.useState(false);
   const [showSEOSection, setShowSEOSection] = React.useState(false);
 
@@ -136,85 +145,28 @@ export default function EtsySEOToolPage() {
 
     setIsLoading(true);
     setAnalysis(null);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/seo-analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, tags, description }),
-      });
+    const payload: SEORequestPayload = { title, tags, description };
 
-      const json = await response.json();
+    const result = await callToolApi<SEORequestPayload, SEOAnalysis>(
+      "/api/seo-analyze",
+      payload
+    );
 
-      if (json.success && json.data) {
-        setAnalysis(json.data);
-      } else {
-        setAnalysis(generateDemoAnalysis());
-      }
-    } catch {
-      setAnalysis(generateDemoAnalysis());
-    } finally {
+    if (result.ok === false) {
+      // P0 fix (etsy-*): surface 403 LIMIT_EXCEEDED + every other failure as
+      // a persistent red banner with an Upgrade CTA. We deliberately do NOT
+      // populate `analysis` with a client-side scoring estimate — that
+      // previously shipped a fake "AI" SEO score to free-tier users hitting
+      // the IP quota, completely bypassing the paywall.
+      setApiError(result.error);
       setIsLoading(false);
-    }
-  };
-
-  const generateDemoAnalysis = (): SEOAnalysis => {
-    const titleLength = title.length;
-    const tagCount = tags.split("\n").filter(t => t.trim()).length;
-    
-    let score = 50;
-    const strengths: string[] = [];
-    const weaknesses: SEORecommendation[] = [];
-
-    if (titleLength >= 120 && titleLength <= 140) {
-      score += 20;
-      strengths.push("Good title length (120-140 characters)");
-    } else if (titleLength >= 100) {
-      score += 10;
-      weaknesses.push({ type: "warning", message: "Title could be longer for better SEO", impact: "Medium" });
-    } else {
-      weaknesses.push({ type: "improvement", message: "Add more keywords to maximize 140 character limit", impact: "High" });
+      return;
     }
 
-    if (tagCount === 13) {
-      score += 25;
-      strengths.push("All 13 tags filled");
-    } else if (tagCount > 0) {
-      score += Math.min(tagCount * 2, 20);
-      weaknesses.push({ type: "improvement", message: `Only ${tagCount} tags filled. Use all 13 for maximum visibility.`, impact: "High" });
-    } else {
-      weaknesses.push({ type: "improvement", message: "No tags provided. Add 13 relevant tags.", impact: "High" });
-    }
-
-    const hasIntentKeywords = /\b(gift|for her|for him|birthday|wedding)\b/i.test(title);
-    if (hasIntentKeywords) {
-      score += 15;
-      strengths.push("Includes buyer intent keywords");
-    } else {
-      weaknesses.push({ type: "improvement", message: "Add buyer intent keywords like 'gift', 'for her'", impact: "Medium" });
-    }
-
-    if (description.length > 200) {
-      score += 10;
-      strengths.push("Good description length");
-    }
-
-    const additionalTags: string[] = [];
-    if (!title.toLowerCase().includes("handmade")) additionalTags.push("handmade");
-    if (!title.toLowerCase().includes("gift")) additionalTags.push("gift for her");
-    if (!title.toLowerCase().includes("unique")) additionalTags.push("unique");
-
-    return {
-      score: Math.min(score, 100),
-      strengths,
-      weaknesses,
-      additionalTags,
-      overallFeedback: score >= 80 
-        ? "Great optimization! Your listing is well-positioned for search."
-        : score >= 60 
-        ? "Good foundation, but there's room for improvement."
-        : "Needs optimization. Follow the recommendations below."
-    };
+    setAnalysis(result.data);
+    setIsLoading(false);
   };
 
   const copyReport = async () => {
@@ -264,6 +216,11 @@ Feedback: ${analysis.overallFeedback}
 
   return (
     <ToolLayout {...TOOL_INFO}>
+      <ApiErrorBanner
+        error={apiError}
+        onDismiss={() => setApiError(null)}
+        className="mb-4"
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Input Form */}
         <Card>

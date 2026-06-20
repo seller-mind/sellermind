@@ -15,11 +15,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Copy, Check } from "lucide-react";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface GeneratedTag {
   text: string;
   volume: string;
   competition: "Low" | "Medium" | "High";
+}
+
+interface TagApiResponse {
+  tags: GeneratedTag[];
+}
+
+interface TagRequestPayload extends Record<string, unknown> {
+  productDescription: string;
+  currentTitle: string;
+  category: string;
 }
 
 const TOOL_INFO = {
@@ -125,6 +137,7 @@ export default function EtsyTagGeneratorPage() {
 
   const [tags, setTags] = React.useState<GeneratedTag[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [copiedIndex, setCopiedIndex] = React.useState<number | null>(null);
   const [copiedAll, setCopiedAll] = React.useState(false);
   const [showSEOSection, setShowSEOSection] = React.useState(false);
@@ -136,48 +149,32 @@ export default function EtsyTagGeneratorPage() {
 
     setIsLoading(true);
     setTags([]);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/tag-generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productDescription,
-          currentTitle,
-          category,
-        }),
-      });
+    const payload: TagRequestPayload = {
+      productDescription,
+      currentTitle,
+      category,
+    };
 
-      const json = await response.json();
+    const result = await callToolApi<TagRequestPayload, TagApiResponse>(
+      "/api/tag-generate",
+      payload
+    );
 
-      if (json.success && json.data?.tags) {
-        setTags(json.data.tags);
-      } else {
-        setTags(generateDemoTags());
-      }
-    } catch {
-      setTags(generateDemoTags());
-    } finally {
+    if (result.ok === false) {
+      // P0 fix (etsy-*): surface 403 LIMIT_EXCEEDED + every other failure as
+      // a persistent red banner with an Upgrade CTA. We deliberately do NOT
+      // populate `tags` with hardcoded "ceramic mug" demo data — that
+      // previously shipped fake tag suggestions to free-tier users hitting
+      // the IP quota and could damage their listings if pasted into Etsy.
+      setApiError(result.error);
       setIsLoading(false);
+      return;
     }
-  };
 
-  const generateDemoTags = (): GeneratedTag[] => {
-    return [
-      { text: "handmade ceramic mug", volume: "2,900", competition: "Low" },
-      { text: "coffee mug gift", volume: "1,800", competition: "Medium" },
-      { text: "blue glaze pottery", volume: "620", competition: "Low" },
-      { text: "gold rim coffee cup", volume: "320", competition: "Low" },
-      { text: "artisan kitchen decor", volume: "450", competition: "Low" },
-      { text: "gift for her", volume: "8,500", competition: "High" },
-      { text: "birthday gift", volume: "12,000", competition: "High" },
-      { text: "morning coffee mug", volume: "580", competition: "Low" },
-      { text: "boho kitchen accessories", volume: "890", competition: "Medium" },
-      { text: "handmade cup", volume: "1,200", competition: "Medium" },
-      { text: "unique mug for mom", volume: "340", competition: "Low" },
-      { text: "glazed ceramic", volume: "410", competition: "Low" },
-      { text: "housewarming gift", volume: "2,100", competition: "Medium" },
-    ];
+    setTags(result.data.tags);
+    setIsLoading(false);
   };
 
   const copyToClipboard = async (text: string, index?: number) => {
@@ -205,6 +202,11 @@ export default function EtsyTagGeneratorPage() {
 
   return (
     <ToolLayout {...TOOL_INFO}>
+      <ApiErrorBanner
+        error={apiError}
+        onDismiss={() => setApiError(null)}
+        className="mb-4"
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Input Form */}
         <Card>

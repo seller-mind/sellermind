@@ -15,11 +15,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Copy, RefreshCw, Check } from "lucide-react";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface GeneratedTitle {
   text: string;
   chars: number;
   score: "Excellent" | "Good" | "Fair";
+}
+
+interface TitleApiResponse {
+  titles: GeneratedTitle[];
+}
+
+interface TitleRequestPayload extends Record<string, unknown> {
+  productType: string;
+  keyFeatures: string;
+  targetAudience: string;
+  useCase: string;
+  materials: string;
+  style: string;
 }
 
 const TOOL_INFO = {
@@ -128,6 +143,7 @@ export default function EtsyTitleGeneratorPage() {
 
   const [titles, setTitles] = React.useState<GeneratedTitle[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [copiedIndex, setCopiedIndex] = React.useState<number | null>(null);
   const [copiedAll, setCopiedAll] = React.useState(false);
   const [showSEOSection, setShowSEOSection] = React.useState(false);
@@ -139,43 +155,34 @@ export default function EtsyTitleGeneratorPage() {
 
     setIsLoading(true);
     setTitles([]);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/title-generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productType,
-          keyFeatures,
-          targetAudience,
-          useCase,
-          materials,
-          style,
-        }),
-      });
+    const payload: TitleRequestPayload = {
+      productType,
+      keyFeatures,
+      targetAudience,
+      useCase,
+      materials,
+      style,
+    };
 
-      const json = await response.json();
+    const result = await callToolApi<TitleRequestPayload, TitleApiResponse>(
+      "/api/title-generate",
+      payload
+    );
 
-      if (json.success && json.data?.titles) {
-        setTitles(json.data.titles);
-      } else {
-        setTitles(generateDemoTitles());
-      }
-    } catch {
-      setTitles(generateDemoTitles());
-    } finally {
+    if (result.ok === false) {
+      // P0 fix (etsy-*): surface 403 LIMIT_EXCEEDED + every other failure as
+      // a persistent red banner with an Upgrade CTA. We deliberately do NOT
+      // populate `titles` with template-stitched demo data — that previously
+      // shipped fake "AI" output to free-tier users who hit the IP quota.
+      setApiError(result.error);
       setIsLoading(false);
+      return;
     }
-  };
 
-  const generateDemoTitles = (): GeneratedTitle[] => {
-    return [
-      { text: `${productType} | ${keyFeatures} | Perfect Gift | Handmade`, chars: 78, score: "Excellent" },
-      { text: `Handmade ${productType} - ${keyFeatures} - Ideal ${useCase || "Gift"}`, chars: 82, score: "Excellent" },
-      { text: `${productType}, ${keyFeatures}, ${materials || "Handmade"} ${style || ""} Style Gift`, chars: 95, score: "Good" },
-      { text: `Unique ${productType} | ${keyFeatures} | ${targetAudience || "Perfect for Everyone"}`, chars: 88, score: "Good" },
-      { text: `${style || "Handmade"} ${productType} - ${keyFeatures} - ${useCase || "Gift for Her"}`, chars: 92, score: "Good" },
-    ];
+    setTitles(result.data.titles);
+    setIsLoading(false);
   };
 
   const copyToClipboard = async (text: string, index?: number) => {
@@ -203,6 +210,11 @@ export default function EtsyTitleGeneratorPage() {
 
   return (
     <ToolLayout {...TOOL_INFO}>
+      <ApiErrorBanner
+        error={apiError}
+        onDismiss={() => setApiError(null)}
+        className="mb-4"
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Input Form */}
         <Card>
