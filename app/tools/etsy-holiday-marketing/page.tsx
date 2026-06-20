@@ -15,12 +15,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Copy, Check } from "lucide-react";
+import { ApiErrorBanner } from "@/components/tools/ApiErrorBanner";
+import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface MarketingKit {
   titles: string[];
   tags: string[];
   emailTemplate: string;
   timingTips: string;
+}
+
+interface HolidayApiData {
+  titles: string[];
+  tags: string[];
+  emailTemplate: string;
+  timingTips: string;
+}
+
+interface HolidayRequestPayload extends Record<string, unknown> {
+  holiday: string;
+  productDescription: string;
+  targetAudience: string;
 }
 
 const TOOL_INFO = {
@@ -137,6 +152,7 @@ export default function EtsyHolidayMarketingPage() {
 
   const [marketingKit, setMarketingKit] = React.useState<MarketingKit | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [apiError, setApiError] = React.useState<ToolApiError | null>(null);
   const [copiedSection, setCopiedSection] = React.useState<string | null>(null);
   const [showSEOSection, setShowSEOSection] = React.useState(false);
 
@@ -147,75 +163,32 @@ export default function EtsyHolidayMarketingPage() {
 
     setIsLoading(true);
     setMarketingKit(null);
+    setApiError(null);
 
-    try {
-      const response = await fetch("/api/holiday-marketing", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          holiday,
-          productDescription,
-          targetAudience,
-        }),
-      });
-
-      const json = await response.json();
-
-      if (json.success && json.data) {
-        setMarketingKit(json.data);
-      } else {
-        setMarketingKit(generateDemoKit());
-      }
-    } catch {
-      setMarketingKit(generateDemoKit());
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const generateDemoKit = (): MarketingKit => {
-    const holidayInfo = HOLIDAYS.find(h => h.name === holiday) || HOLIDAYS[0];
-    return {
-      titles: [
-        `${holidayInfo.emoji} Perfect ${holiday} Gift - ${productDescription.substring(0, 30)}...`,
-        `Handmade ${productDescription.substring(0, 25)} - ${holiday} Special Edition ${holidayInfo.emoji}`,
-        `${productDescription.substring(0, 20)} Gift for ${holiday} - Limited Time!`,
-        `Unique ${holidayInfo.name} Gift - ${productDescription.substring(0, 30)}...`,
-        `Premium ${productDescription.substring(0, 25)} - Perfect ${holiday} Present ${holidayInfo.emoji}`,
-      ],
-      tags: [
-        `${holiday.toLowerCase()} gift`,
-        `${holiday.toLowerCase()} present`,
-        `gift for ${targetAudience || 'her'}`,
-        `${holiday.toLowerCase()} decoration`,
-        `holiday special`,
-        `limited edition`,
-        `handmade gift`,
-        `unique gift`,
-        `${holiday.toLowerCase()} sale`,
-        `must have ${holiday.toLowerCase()}`,
-        `best ${holiday.toLowerCase()}`,
-        `${holiday.toLowerCase()} shopping`,
-        `perfect gift`,
-      ],
-      emailTemplate: `${holidayInfo.emoji} Ho Ho Ho! ${holiday} is coming!
-
-Our ${productDescription.substring(0, 50)} makes the perfect ${holiday} gift!
-
-🎁 Order by ${holidayInfo.start} to receive it in time!
-🎁 Use code HOLIDAY15 for 15% off!
-
-Don't miss out on making someone's ${holiday} special! 💝`,
-      timingTips: `📅 ${holiday} ${holidayInfo.name} Marketing Timeline:
-
-• 8 weeks before: Update tags with holiday keywords
-• 6 weeks before: Launch holiday listings
-• 4 weeks before: Push social media and email marketing
-• 2 weeks before: Offer last-minute deals
-• 1 week before: Remind customers of shipping deadlines
-
-Start preparing your ${holiday} listings by ${holidayInfo.start} for maximum visibility!`,
+    const payload: HolidayRequestPayload = {
+      holiday,
+      productDescription,
+      targetAudience,
     };
+
+    const result = await callToolApi<HolidayRequestPayload, HolidayApiData>(
+      "/api/holiday-marketing",
+      payload
+    );
+
+    if (result.ok === false) {
+      // P0 fix (etsy-*): surface 403 LIMIT_EXCEEDED + every other failure as
+      // a persistent red banner with an Upgrade CTA. We deliberately do NOT
+      // populate `marketingKit` with a holiday-specific hardcoded template —
+      // that previously shipped fake "AI" holiday content to free-tier users
+      // hitting the IP quota, completely bypassing the paywall conversion.
+      setApiError(result.error);
+      setIsLoading(false);
+      return;
+    }
+
+    setMarketingKit(result.data);
+    setIsLoading(false);
   };
 
   const copyToClipboard = async (text: string, section: string) => {
@@ -226,6 +199,11 @@ Start preparing your ${holiday} listings by ${holidayInfo.start} for maximum vis
 
   return (
     <ToolLayout {...TOOL_INFO}>
+      <ApiErrorBanner
+        error={apiError}
+        onDismiss={() => setApiError(null)}
+        className="mb-4"
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Input Form */}
         <Card>
