@@ -46,11 +46,6 @@ const TOOL_INFO = {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "ratingCount": "654"
     }
   },
   features: ["100% Free", "No Signup", "AI-Powered", "Professional", "Instant"],

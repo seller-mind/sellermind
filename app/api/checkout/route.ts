@@ -1,114 +1,73 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-async function createCreemCheckout(params: {
-  productId: string
-  requestId: string
-  successUrl: string
-  email: string
-}) {
-  const apiKey = process.env.CREEM_API_KEY
-  if (!apiKey) {
-    throw new Error('Creem API key not configured')
-  }
+// P0-02 fix (full audit 20260625):
+// Switched from Creem (account permanently suspended 2026-06-10) to Dodo Payments.
+// Front-end already points users to Dodo via hardcoded URLs; this API endpoint
+// is the canonical server-side path and must mirror that.
+const DODO_PRODUCT_IDS = {
+  monthly: 'pdt_0Nh4as9LEJmfoZNpeaHC6',
+  yearly: 'pdt_0Nh4asKyfYxPzDnExvRVo',
+} as const
 
-  const baseUrl = process.env.NODE_ENV === 'production'
-    ? 'https://api.creem.io'
-    : 'https://test-api.creem.io'
+type PlanKey = keyof typeof DODO_PRODUCT_IDS
 
-  const response = await fetch(`${baseUrl}/v1/checkouts`, {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      product_id: params.productId,
-      request_id: params.requestId,
-      success_url: params.successUrl,
-      customer: {
-        email: params.email,
-      },
-      metadata: {
-        email: params.email,
-      },
-    }),
-  })
-
-  const data = await response.json()
-
-  if (!response.ok) {
-    console.error('Creem checkout API error:', data)
-    throw new Error(data.message || 'Failed to create checkout session')
-  }
-
-  return {
-    checkoutId: data.id,
-    checkoutUrl: data.checkout_url,
-  }
+function isPlan(value: unknown): value is PlanKey {
+  return value === 'monthly' || value === 'yearly'
 }
 
-export async function POST(request: Request) {
-  let productId: string
-  let email: string
-
+export async function POST(req: NextRequest) {
+  let body: Record<string, unknown> = {}
   try {
-    const body = await request.json()
-    productId = body.productId || body.variantId || ''
-    email = body.email || ''
+    body = await req.json()
   } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
-  }
-
-  // Validate email
-  if (!email || !email.includes('@')) {
     return NextResponse.json(
-      { error: 'Please provide a valid email address' },
+      { error: { code: 'INVALID_BODY', message: 'Body must be JSON' } },
       { status: 400 }
     )
   }
 
-  // Map plan names to Creem product IDs
-  const productIdMap: Record<string, string> = {
-    monthly: process.env.CREEM_PRODUCT_ID_MONTHLY || '',
-    yearly: process.env.CREEM_PRODUCT_ID_YEARLY || '',
-  }
+  // Accept either { plan: 'monthly' | 'yearly' } (preferred)
+  // or legacy { productId | variantId } from older clients.
+  const raw =
+    (typeof body.plan === 'string' && body.plan) ||
+    (typeof body.productId === 'string' && body.productId) ||
+    (typeof body.variantId === 'string' && body.variantId) ||
+    ''
 
-  const creemProductId = productIdMap[productId] || productId
-
-  if (!creemProductId) {
+  if (!isPlan(raw)) {
     return NextResponse.json(
-      { error: 'Invalid product selection' },
+      {
+        error: {
+          code: 'INVALID_PLAN',
+          message: 'plan must be one of: monthly, yearly',
+        },
+      },
       { status: 400 }
     )
   }
 
-  if (!process.env.CREEM_API_KEY) {
-    console.error('Creem API key not configured')
-    return NextResponse.json(
-      { error: 'Payment service not configured' },
-      { status: 500 }
-    )
-  }
+  const productId = DODO_PRODUCT_IDS[raw]
+  const email =
+    (typeof body.email === 'string' ? body.email : '').trim().toLowerCase()
 
-  try {
-    const siteUrl = process.env.SITE_URL || 'https://thesellermind.com'
-    const checkout = await createCreemCheckout({
-      productId: creemProductId,
-      requestId: `sellermind_${email}_${Date.now()}`,
-      successUrl: `${siteUrl}/pricing?checkout=success&email=${encodeURIComponent(email)}`,
-      email: email.toLowerCase(),
-    })
+  const params = new URLSearchParams()
+  const siteUrl = process.env.SITE_URL || 'https://thesellermind.com'
+  params.set('redirect_url', `${siteUrl}/payment-success`)
+  if (email) params.set('email', email)
 
-    if (!checkout.checkoutUrl) {
-      throw new Error('No checkout URL returned from Creem')
-    }
+  const url = `https://checkout.dodopayments.com/buy/${productId}?${params.toString()}`
 
-    return NextResponse.json({ url: checkout.checkoutUrl })
-  } catch (error) {
-    console.error('Checkout error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create checkout' },
-      { status: 500 }
-    )
-  }
+  return NextResponse.json({ url })
+}
+
+export async function GET() {
+  return NextResponse.json(
+    {
+      error: {
+        code: 'METHOD_NOT_ALLOWED',
+        message: 'Use POST with { plan: "monthly" | "yearly" }',
+      },
+    },
+    { status: 405 }
+  )
 }

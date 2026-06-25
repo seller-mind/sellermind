@@ -6,24 +6,30 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Etsy Tag Generator — DeepSeek-backed implementation (2026-06-14, Y2).
+ * Etsy Tag Generator — DeepSeek-backed implementation.
  *
- * Replaces the original template-only handler (and the 503 stub from Y).
- * Front-end contract (app/tools/etsy-tag-generator/page.tsx) is unchanged:
+ * P0-04 fix (full audit 20260625): removed the prompt instruction that asked
+ * DeepSeek to "estimate monthly search volume" because we have NO live Etsy
+ * search-volume data feed. Fabricating volume numbers misled users (FTC §5).
+ * The API now returns AI-suggested tags plus a qualitative `competition`
+ * estimate based on length/specificity heuristics; `volume` is no longer in
+ * the response. The front-end has been updated accordingly. The legacy
+ * GeneratedTag response shape keeps a `volume` field set to "—" purely for
+ * backward compatibility with any cached front-end bundle that hasn't picked
+ * up the new build yet; new front-end code ignores it.
+ *
+ * Front-end contract:
  *   request:  { productDescription, currentTitle, category }
- *   response: { success: true, data: { tags: [{text, volume, competition}] } }
- *     - tags: exactly 13 entries, each text <= 20 chars (Etsy limit)
- *     - competition: "High" | "Medium" | "Low"
- *     - volume: estimated monthly search volume label, e.g. "5,200" or "1.2K"
- *
- * On any DeepSeek failure the route returns 503 + AI_SERVICE_UNAVAILABLE,
- * which the front-end falls back gracefully.
+ *   response: { success: true, data: { tags: [{text, competition}] } }
+ *     - tags: up to 13 entries, each text <= 20 chars (Etsy limit)
+ *     - competition: "High" | "Medium" | "Low" — qualitative estimate only,
+ *       based on tag length/specificity, NOT live Etsy search data.
  */
 
 const DEEPSEEK_TIMEOUT_MS = 30_000;
 const MODEL = "deepseek-chat";
 
-const SYSTEM_PROMPT = `You are an expert Etsy SEO specialist focused on tag/keyword optimization. You have analyzed millions of Etsy listings and search trends.
+const SYSTEM_PROMPT = `You are an expert Etsy SEO specialist focused on tag/keyword optimization, drawing on publicly documented Etsy SEO best practices.
 
 Your task: given a product description (and optional title/category), produce EXACTLY 13 Etsy tags optimized for the 13 tag slots Etsy gives every listing.
 
@@ -33,21 +39,20 @@ Hard constraints:
 - Each tag is multi-word lowercase, separated by spaces (no commas, no hyphens unless the keyword itself contains one).
 - Do not repeat the same tag, and do not include single-letter or pure stop-word tags.
 - Distribute the 13 tags across:
-   * 4-5 broad/high-volume buyer terms (e.g. "personalized gift", "handmade jewelry"),
+   * 4-5 broad buyer terms (e.g. "personalized gift", "handmade jewelry"),
    * 5-6 mid-tail descriptive terms (style + product, material + product, audience + product),
    * 2-3 long-tail / niche terms (specific occasion, recipient).
-- For each tag, estimate "volume" as a realistic monthly search-volume label string. Examples: "12,000", "5,400", "2,100", "850", "320". Bigger phrases get smaller volumes.
-- For each tag, set "competition" to "High", "Medium", or "Low" — broad terms tend to be High, niche long-tail tends to be Low. Aim for a healthy mix (rough target: 3 High, 6 Medium, 4 Low).
+- For each tag, set "competition" to "High", "Medium", or "Low" as a QUALITATIVE estimate based on tag specificity and length: shorter / broader phrases tend to be "High", longer / more specific phrases tend to be "Low". Aim for a healthy mix (rough target: 3 High, 6 Medium, 4 Low). This is an AI heuristic, not live Etsy data.
 
 OUTPUT FORMAT - return STRICT JSON only, no markdown, no commentary:
 {
   "tags": [
-    { "text": "<tag string, <= 20 chars>", "volume": "<volume label>", "competition": "High" | "Medium" | "Low" },
+    { "text": "<tag string, <= 20 chars>", "competition": "High" | "Medium" | "Low" },
     ... 13 items total
   ]
 }
 
-Only those three fields per tag. Do not output any extra commentary or keys.`;
+Only those two fields per tag. Do not output any extra commentary or keys.`;
 
 interface TagRequest {
   productDescription?: string;
@@ -57,7 +62,7 @@ interface TagRequest {
 
 interface GeneratedTag {
   text: string;
-  volume: string;
+  volume: string; // legacy field, always "—"; deprecated
   competition: "Low" | "Medium" | "High";
 }
 
@@ -102,20 +107,15 @@ function sanitizeTags(raw: unknown): GeneratedTag[] | null {
 
   for (const item of arr) {
     if (!item || typeof item !== "object") continue;
-    const t = item as { text?: unknown; volume?: unknown; competition?: unknown };
+    const t = item as { text?: unknown; competition?: unknown };
     if (typeof t.text !== "string") continue;
     const text = t.text.trim().toLowerCase().slice(0, 20);
     if (!text || seen.has(text)) continue;
     seen.add(text);
 
-    const volume =
-      typeof t.volume === "string" && t.volume.trim()
-        ? t.volume.trim()
-        : typeof t.volume === "number"
-          ? String(t.volume)
-          : "—";
     const competition = isValidCompetition(t.competition) ? t.competition : "Medium";
-    cleaned.push({ text, volume, competition });
+    // volume kept as "—" placeholder to avoid breaking legacy front-end consumers
+    cleaned.push({ text, volume: "—", competition });
   }
 
   if (cleaned.length === 0) return null;

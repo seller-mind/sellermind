@@ -20,7 +20,7 @@ import { callToolApi, type ToolApiError } from "@/lib/api-client";
 
 interface GeneratedTag {
   text: string;
-  volume: string;
+  volume?: string; // legacy, deprecated — no longer displayed (P0-04 fix)
   competition: "Low" | "Medium" | "High";
 }
 
@@ -36,15 +36,15 @@ interface TagRequestPayload extends Record<string, unknown> {
 
 const TOOL_INFO = {
   toolName: "Free Etsy Tag Generator",
-  toolDescription: "Generate all 13 Etsy tags with search volume data and competition scores. Find the best keyword tags for your listings in seconds.",
-  metaTitle: "Free Etsy Tag Generator | Generate All 13 Etsy Tags with Search Volume Data",
-  metaDescription: "Generate all 13 Etsy tags in seconds. Free AI tag generator with real search volume data, competition scores & one-click copy. Fill every slot for maximum visibility!",
+  toolDescription: "Generate all 13 Etsy tags with AI-powered suggestions. Find SEO-friendly tag candidates for your listings in seconds.",
+  metaTitle: "Free Etsy Tag Generator | AI-Powered 13-Tag Suggestions for Etsy Listings",
+  metaDescription: "Generate all 13 Etsy tags in seconds. Free AI tag generator that suggests SEO-friendly tag candidates with one-click copy. Suggestions are AI-generated based on best practices, not live Etsy search data.",
   canonicalUrl: "https://thesellermind.com/tools/etsy-tag-generator",
   structuredData: {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Free Etsy Tag Generator",
-    "description": "Generate all 13 Etsy tags with search volume and competition data. Find the best keyword tags for maximum search visibility.",
+    "description": "Generate all 13 Etsy tags with AI-powered suggestions. Get SEO-friendly tag candidates for maximum search visibility, based on best practices.",
     "url": "https://thesellermind.com/tools/etsy-tag-generator",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web Browser",
@@ -52,14 +52,9 @@ const TOOL_INFO = {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.7",
-      "ratingCount": "892"
     }
   },
-  features: ["100% Free", "No Signup", "13 Tags", "Volume Data", "One-Click Copy"],
+  features: ["100% Free", "No Signup", "13 Tags", "AI-Powered", "One-Click Copy"],
   otherTools: [
     { name: "Etsy Title Generator", slug: "/tools/etsy-title-generator", description: "Create optimized titles" },
     { name: "Etsy SEO Tool", slug: "/tools/etsy-seo-tool", description: "Full listing analysis" },
@@ -99,7 +94,7 @@ const TOOL_INFO = {
         "name": "How do I find the best Etsy tags?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Look for tags that match what buyers actually search for. Focus on long-tail phrases (3-4 words) with moderate search volume and manageable competition. Our tag generator helps identify these opportunities."
+          "text": "Look for tags that match what buyers actually search for. Focus on long-tail phrases (3-4 words) that are specific enough to attract real buyer intent but not so broad they get buried by big-shop competition. Our tag generator helps identify these opportunities using AI-driven best-practice patterns."
         }
       },
       {
@@ -283,9 +278,8 @@ export default function EtsyTagGeneratorPage() {
                       <div className="flex-1">
                         <span className="text-sm font-medium">{tag.text}</span>
                         <div className="flex gap-2 items-center text-xs text-foreground-muted mt-1">
-                          <span>{tag.volume} vol/mo</span>
                           <span className={`px-2 py-0.5 rounded ${getCompetitionColor(tag.competition)}`}>
-                            {tag.competition}
+                            {tag.competition} competition
                           </span>
                         </div>
                       </div>
@@ -369,45 +363,45 @@ export default function EtsyTagGeneratorPage() {
               <tr>
                 <th>Tag Type</th>
                 <th>Example</th>
-                <th>Search Volume</th>
                 <th>Competition</th>
+                <th>Conversion Potential</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Broad</td>
                 <td>jewelry</td>
-                <td>45,000/mo</td>
                 <td>Extremely High</td>
+                <td>Low (browse intent)</td>
               </tr>
               <tr>
                 <td>Medium</td>
                 <td>gold necklace</td>
-                <td>8,500/mo</td>
                 <td>High</td>
+                <td>Moderate</td>
               </tr>
               <tr>
                 <td>Long-tail</td>
                 <td>gold layered necklace for women</td>
-                <td>1,200/mo</td>
                 <td>Medium</td>
+                <td>High (buyer intent)</td>
               </tr>
             </tbody>
           </table>
           <p>
-            <strong>Recommendation:</strong> Long-tail tags convert better despite lower volume. They attract buyers with clear intent who are ready to purchase.
+            <strong>Recommendation:</strong> Long-tail tags convert better even when they attract fewer eyeballs. They reach buyers with clear purchase intent.
           </p>
 
           <h3>How to Choose Etsy Tags That Rank</h3>
           <p>
-            Follow these steps to select tags that balance search volume with realistic ranking potential:
+            Follow these steps to select tags that balance reach with realistic ranking potential:
           </p>
           <ol>
             <li><strong>Identify your main keyword:</strong> What would a buyer type to find your product?</li>
             <li><strong>Add specificity:</strong> Include material, style, size, or color descriptors</li>
             <li><strong>Consider the buyer:</strong> Who is this for? Add occasion and recipient keywords</li>
             <li><strong>Check competition:</strong> If a tag has extremely high competition, find more specific variations</li>
-            <li><strong>Mix with low-competition tags:</strong> Balance high-volume competitive tags with easier wins</li>
+            <li><strong>Mix with low-competition tags:</strong> Balance broader competitive tags with easier, more specific wins</li>
           </ol>
 
           <h3>Etsy Tag Examples by Category</h3>

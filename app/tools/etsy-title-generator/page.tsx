@@ -47,7 +47,7 @@ const TOOL_INFO = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Free Etsy Title Generator",
-    "description": "Generate SEO-optimized Etsy listing titles that rank higher in search results with AI-powered keyword analysis.",
+    "description": "Generate AI-suggested SEO-optimized Etsy listing titles based on Etsy SEO best practices and the keywords you provide.",
     "url": "https://thesellermind.com/tools/etsy-title-generator",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web Browser",
@@ -55,11 +55,6 @@ const TOOL_INFO = {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "ratingCount": "1247"
     }
   },
   features: ["100% Free", "No Signup", "AI-Powered", "SEO Optimized", "Instant Results"],
@@ -468,7 +463,7 @@ export default function EtsyTitleGeneratorPage() {
             For complete Etsy listing optimization, use these free tools from SellerMind:
           </p>
           <ul>
-            <li><a href="/tools/etsy-tag-generator">Etsy Tag Generator</a> - Generate all 13 optimized tags with search volume data</li>
+            <li><a href="/tools/etsy-tag-generator">Etsy Tag Generator</a> - Generate all 13 AI-suggested tag candidates for your listings</li>
             <li><a href="/tools/etsy-seo-tool">Etsy SEO Tool</a> - Analyze your complete listing for SEO improvements</li>
             <li><a href="/tools/etsy-description-generator">Etsy Description Generator</a> - Write keyword-rich descriptions that convert</li>
           </ul>
