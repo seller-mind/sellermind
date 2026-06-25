@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { applyPreUsageChecks, buildLimitExceededResponse } from "@/lib/security";
+import { checkAndIncrementUsage } from "@/lib/usage";
 
 // Runtime declarations (also addresses BUG-19).
 export const runtime = "nodejs";
@@ -52,6 +54,7 @@ interface ReviewRequest {
   reviewType?: string;
   reviewContent?: string;
   responseTone?: string;
+  email?: string;
 }
 
 function serviceUnavailable() {
@@ -90,6 +93,10 @@ function sanitizeResponse(raw: unknown): string | null {
 }
 
 export async function POST(request: Request) {
+  // Security gate — abuse detection, per-IP rate limit, global daily cap
+  const preCheck = await applyPreUsageChecks(request);
+  if (preCheck) return preCheck;
+
   let body: ReviewRequest;
   try {
     body = (await request.json()) as ReviewRequest;
@@ -109,6 +116,11 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
+  // Per-user freemium quota (3/month default)
+  const email = (body.email as string) || "";
+  const { allowed, isSubscribed } = await checkAndIncrementUsage(email);
+  if (!allowed) return buildLimitExceededResponse(isSubscribed);
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
