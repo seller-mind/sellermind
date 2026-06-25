@@ -18,9 +18,9 @@ const TOOLS = [
   {
     name: "Etsy Tag Generator",
     slug: "/etsy-tag-generator",
-    description: "Generate all 13 Etsy tags with search volume data and competition scores",
+    description: "Generate all 13 Etsy tags with AI-suggested candidates and qualitative competition labels",
     icon: "🏷️",
-    features: ["13 tags generated", "Volume data included", "Competition analysis", "Smart suggestions"],
+    features: ["13 tags generated", "AI-powered suggestions", "Competition analysis", "Smart suggestions"],
     keywords: ["etsy tag generator", "etsy keyword tags", "free etsy tags"]
   },
   {
@@ -61,11 +61,6 @@ const structuredData = {
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "USD"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "ratingCount": "3685"
   }
 };
 

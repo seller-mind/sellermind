@@ -49,11 +49,6 @@ const TOOL_INFO = {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.7",
-      "ratingCount": "1089"
     }
   },
   features: ["100% Free", "No Signup", "Title Analysis", "Tag Check", "SEO Score"],
@@ -533,7 +528,7 @@ Feedback: ${analysis.overallFeedback}
           </p>
           <ul>
             <li><a href="/tools/etsy-title-generator">Etsy Title Generator</a> - Create optimized titles with keyword placement</li>
-            <li><a href="/tools/etsy-tag-generator">Etsy Tag Generator</a> - Generate all 13 tags with search volume data</li>
+            <li><a href="/tools/etsy-tag-generator">Etsy Tag Generator</a> - Generate all 13 AI-suggested tag candidates for your listings</li>
             <li><a href="/tools/etsy-holiday-marketing">Holiday Marketing Generator</a> - Get seasonal keywords for peak periods</li>
           </ul>
         </div>

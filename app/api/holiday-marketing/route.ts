@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { applyPreUsageChecks, buildLimitExceededResponse } from "@/lib/security";
+import { checkAndIncrementUsage } from "@/lib/usage";
 
 // Runtime declarations (also addresses BUG-19).
 export const runtime = "nodejs";
@@ -49,6 +51,7 @@ interface HolidayRequest {
   holiday?: string;
   productDescription?: string;
   targetAudience?: string;
+  email?: string;
 }
 
 interface MarketingKit {
@@ -122,6 +125,10 @@ function sanitizeKit(raw: unknown): MarketingKit | null {
 }
 
 export async function POST(request: Request) {
+  // Security gate — abuse detection, per-IP rate limit, global daily cap
+  const preCheck = await applyPreUsageChecks(request);
+  if (preCheck) return preCheck;
+
   let body: HolidayRequest;
   try {
     body = (await request.json()) as HolidayRequest;
@@ -141,6 +148,11 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
+  // Per-user freemium quota (3/month default)
+  const email = (body.email as string) || "";
+  const { allowed, isSubscribed } = await checkAndIncrementUsage(email);
+  if (!allowed) return buildLimitExceededResponse(isSubscribed);
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { applyPreUsageChecks, buildLimitExceededResponse } from "@/lib/security";
+import { checkAndIncrementUsage } from "@/lib/usage";
 
 // Runtime declarations (also addresses BUG-19).
 export const runtime = "nodejs";
@@ -66,6 +68,7 @@ interface SEORequest {
   title?: string;
   tags?: string;
   description?: string;
+  email?: string;
 }
 
 interface SEORecommendation {
@@ -174,6 +177,10 @@ function sanitizeAnalysis(raw: unknown): SEOAnalysis | null {
 }
 
 export async function POST(request: Request) {
+  // Security gate — abuse detection, per-IP rate limit, global daily cap
+  const preCheck = await applyPreUsageChecks(request);
+  if (preCheck) return preCheck;
+
   let body: SEORequest;
   try {
     body = (await request.json()) as SEORequest;
@@ -193,6 +200,11 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
+  // Per-user freemium quota (3/month default)
+  const email = (body.email as string) || "";
+  const { allowed, isSubscribed } = await checkAndIncrementUsage(email);
+  if (!allowed) return buildLimitExceededResponse(isSubscribed);
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {

@@ -60,11 +60,6 @@ export function ToolLayout({
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock"
     },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "ratingCount": "1000"
-    },
     "screenshot": `${canonicalUrl}/screenshot.png`,
     "featureList": features.join(", ")
   };

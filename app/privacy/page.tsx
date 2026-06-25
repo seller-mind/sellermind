@@ -84,7 +84,13 @@ export default function PrivacyPage() {
             <li>Comply with legal obligations</li>
           </ul>
           <p className="mt-4">
-            <strong>Important:</strong> We do not store your product information or generated content after you leave our website. All AI processing is performed in real-time and no data is retained on our servers.
+            <strong>What we retain:</strong> We retain your email address and per-account usage counts (free quota used, subscription status) in our database (Supabase) to enforce free-tier limits and to honor your subscription if you upgrade.
+          </p>
+          <p className="mt-4">
+            <strong>What we do not retain:</strong> We do not retain the content of your Etsy listings, products, customer messages, AI prompts, or AI-generated outputs beyond the immediate API request lifecycle (typically a few seconds). AI processing is performed in real-time and the input/output payloads are not written to long-term storage.
+          </p>
+          <p className="mt-4">
+            You can request deletion of your retained account data (email and usage counts) at any time by emailing <a href="mailto:hello@thesellermind.com" className="text-primary hover:underline">hello@thesellermind.com</a>.
           </p>
         </CardContent>
       </Card>
@@ -99,8 +105,8 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc pl-5 space-y-2 mt-4">
             <li>Your inputs are processed in real-time through AI APIs to generate content</li>
-            <li>We do not store the original data you input into our AI tools</li>
-            <li>AI-generated content is displayed to you and is not retained after your session ends</li>
+            <li>We do not retain the content of your Etsy listings, products, customer messages, or AI prompts; AI generation runs in-memory and is not written to long-term storage</li>
+            <li>AI-generated content is displayed to you and is not retained after the API response is returned</li>
             <li>Your data is processed solely for the purpose of providing AI-generated responses</li>
             <li>We implement appropriate technical safeguards to protect data during transmission</li>
           </ul>
@@ -347,7 +353,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc pl-5 space-y-2 mt-2">
             <li><strong>Email:</strong> privacy@thesellermind.com</li>
-            <li>Using our <Link href="/contact" className="text-primary hover:underline">contact form</Link></li>
+            <li>Or write to us at <a href="mailto:hello@thesellermind.com" className="text-primary hover:underline">hello@thesellermind.com</a></li>
           </ul>
           <p className="mt-4">
             If you withdraw from a subscription contract within the 14-day period, we will reimburse all payments received from you, without undue delay and in any event no later than 14 days from the day on which we are informed about your decision to withdraw.

@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getAllPosts } from '@/lib/blog/posts'
+import { etsySeoSlugs } from '@/data/etsy-seo-slugs'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.SITE_URL || 'https://thesellermind.com'
@@ -113,5 +114,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }))
 
-  return [...staticRoutes, ...blogRoutes]
+  // 30 programmatic Etsy SEO guides served from public/etsy-seo/<slug>.html
+  // via next.config.js rewrite (/etsy-seo/:slug → /etsy-seo/:slug.html).
+  const etsySeoRoutes: MetadataRoute.Sitemap = etsySeoSlugs.map((slug) => ({
+    url: `${baseUrl}/etsy-seo/${slug}`,
+    lastModified: new Date('2026-06-25'),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }))
+
+  return [...staticRoutes, ...blogRoutes, ...etsySeoRoutes]
 }

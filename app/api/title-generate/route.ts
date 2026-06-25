@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { applyPreUsageChecks, buildLimitExceededResponse } from "@/lib/security";
+import { checkAndIncrementUsage } from "@/lib/usage";
 
 // Runtime declarations (also addresses BUG-19).
 export const runtime = "nodejs";
@@ -53,6 +55,7 @@ interface TitleRequest {
   useCase?: string;
   materials?: string;
   style?: string;
+  email?: string;
 }
 
 interface GeneratedTitle {
@@ -121,6 +124,10 @@ function sanitizeTitles(raw: unknown): GeneratedTitle[] | null {
 }
 
 export async function POST(request: Request) {
+  // Security gate — abuse detection, per-IP rate limit, global daily cap
+  const preCheck = await applyPreUsageChecks(request);
+  if (preCheck) return preCheck;
+
   let body: TitleRequest;
   try {
     body = (await request.json()) as TitleRequest;
@@ -140,6 +147,11 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
+  // Per-user freemium quota (3/month default)
+  const email = (body.email as string) || "";
+  const { allowed, isSubscribed } = await checkAndIncrementUsage(email);
+  if (!allowed) return buildLimitExceededResponse(isSubscribed);
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {

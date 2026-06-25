@@ -6,6 +6,7 @@ import {
   buildReviewUserPrompt,
 } from "@/lib/api/prompts";
 import { checkAndIncrementUsage } from "@/lib/usage";
+import { applyPreUsageChecks } from "@/lib/security";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -25,6 +26,10 @@ function checkRateLimit(ip: string) {
 
 
 export async function POST(req: NextRequest) {
+  // Security gate — abuse detection, per-IP rate limit, global daily cap
+  const preCheck = await applyPreUsageChecks(req);
+  if (preCheck) return preCheck;
+
   const startTime = Date.now();
   const ip = req.headers.get("x-forwarded-for") || "anonymous";
   const rateLimit = checkRateLimit(ip);
