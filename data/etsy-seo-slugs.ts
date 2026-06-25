@@ -1,0 +1,36 @@
+// AUTO-GENERATED from prod sitemap 2026-06-25 — 30 etsy-seo programmatic pages
+// rescued from CLI-only deploy; HTML files live in public/etsy-seo/<slug>.html
+// served via next.config.js rewrite: /etsy-seo/:slug → /etsy-seo/:slug.html
+
+export const etsySeoSlugs: string[] = [
+  "etsy-seo-guide-for-bathroom-decor-handmade-sellers",
+  "etsy-seo-guide-for-bedroom-decor-handmade-sellers",
+  "etsy-seo-guide-for-handmade-anklets-sellers",
+  "etsy-seo-guide-for-handmade-body-jewelry-sellers",
+  "etsy-seo-guide-for-handmade-bracelets-sellers",
+  "etsy-seo-guide-for-handmade-brooches-sellers",
+  "etsy-seo-guide-for-handmade-candles-sellers",
+  "etsy-seo-guide-for-handmade-charms-sellers",
+  "etsy-seo-guide-for-handmade-cufflinks-sellers",
+  "etsy-seo-guide-for-handmade-earrings-sellers",
+  "etsy-seo-guide-for-handmade-necklaces-sellers",
+  "etsy-seo-guide-for-handmade-pendants-sellers",
+  "etsy-seo-guide-for-handmade-rings-sellers",
+  "etsy-seo-guide-for-holiday-decor-handmade-sellers",
+  "etsy-seo-guide-for-kitchen-decor-handmade-sellers",
+  "etsy-seo-guide-for-mirror-decor-handmade-sellers",
+  "etsy-seo-guide-for-plant-decor-handmade-sellers",
+  "etsy-seo-guide-for-printable-art-prints-sellers",
+  "etsy-seo-guide-for-printable-business-templates-sellers",
+  "etsy-seo-guide-for-printable-home-organizers-sellers",
+  "etsy-seo-guide-for-printable-invitations-sellers",
+  "etsy-seo-guide-for-printable-journal-pages-sellers",
+  "etsy-seo-guide-for-printable-kids-activities-sellers",
+  "etsy-seo-guide-for-printable-planners-sellers",
+  "etsy-seo-guide-for-printable-stickers-sellers",
+  "etsy-seo-guide-for-printable-wall-art-sellers",
+  "etsy-seo-guide-for-printable-wedding-suite-sellers",
+  "etsy-seo-guide-for-throw-blankets-handmade-sellers",
+  "etsy-seo-guide-for-throw-pillows-handmade-sellers",
+  "etsy-seo-guide-for-wall-art-handmade-sellers",
+];
