@@ -71,7 +71,15 @@ export default function RootLayout({
                 SellerMind is not responsible for any outcomes resulting from the use of AI-generated content. The tool is provided &quot;as is&quot; without warranties of any kind.
               </p>
               {/* Legal page links */}
-              <div className="flex justify-center gap-4 pt-2">
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 pt-2">
+                <Link href="/blog" className="text-xs text-foreground-muted hover:text-primary transition-colors">
+                  Blog
+                </Link>
+                <span className="text-xs text-foreground-muted">|</span>
+                <Link href="/pricing" className="text-xs text-foreground-muted hover:text-primary transition-colors">
+                  Pricing
+                </Link>
+                <span className="text-xs text-foreground-muted">|</span>
                 <Link href="/privacy" className="text-xs text-foreground-muted hover:text-primary transition-colors">
                   Privacy Policy
                 </Link>

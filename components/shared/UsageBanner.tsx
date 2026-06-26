@@ -50,7 +50,8 @@ export function UsageBanner() {
     return (
       <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
         <p className="text-sm text-amber-800 text-center">
-          <span className="font-medium">You&apos;ve used your {usageInfo.freeLimit} free AI uses this month.</span>{' '}
+          <span className="font-medium">You&apos;ve used all {usageInfo.freeLimit} free AI uses this month.</span>{' '}
+          Free uses reset on the 1st of each month.{' '}
           <Link href="/pricing" className="underline hover:text-amber-600">
             Upgrade to Pro for unlimited access →
           </Link>
@@ -63,7 +64,7 @@ export function UsageBanner() {
     return (
       <div className="bg-blue-50 border-b border-blue-200 px-4 py-2">
         <p className="text-sm text-blue-700 text-center">
-          You have <span className="font-bold">{usageInfo.remaining}</span> free use{usageInfo.remaining !== 1 ? 's' : ''} remaining this month.{' '}
+          You have <span className="font-bold">{usageInfo.remaining}</span> of {usageInfo.freeLimit} free AI use{usageInfo.remaining !== 1 ? 's' : ''} left this month (resets on the 1st).{' '}
           <Link href="/pricing" className="underline hover:text-blue-600">
             Get unlimited access →
           </Link>
@@ -72,5 +73,18 @@ export function UsageBanner() {
     )
   }
 
-  return null
+  // Supplementary P1 (2026-06-26): always surface the freemium rule for
+  // logged-in free users so they understand the 3/month cap before they
+  // hit it — also fulfils the "显眼位置写清楚" requirement. Lower-key
+  // tone (slate, single line) to avoid hurting happy-path UX.
+  return (
+    <div className="bg-slate-50 border-b border-slate-200 px-4 py-2">
+      <p className="text-xs text-slate-600 text-center">
+        Free plan: <span className="font-medium">{usageInfo.remaining} of {usageInfo.freeLimit}</span> AI uses left this month · resets on the 1st ·{' '}
+        <Link href="/pricing" className="underline hover:text-slate-900">
+          See Pro plans
+        </Link>
+      </p>
+    </div>
+  )
 }
