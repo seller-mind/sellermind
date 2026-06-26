@@ -31,6 +31,24 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 // ============================================================
+// PII redaction for logs (P0-B fix · 2026-06-26)
+//
+// Never emit a raw user email into Vercel Function Logs:
+//   - logs are visible to anyone with project access
+//   - logs may flow to 3rd-party log drains (Datadog/Sentry/Logflare/...)
+//   - violates GDPR Art.5(1)(f) integrity-and-confidentiality and Art.32
+//   - violates GDPR Art.25 data-minimisation: email belongs in DB, not ops log
+//
+// Strategy: sha256(email).slice(0,12) — short, stable, unlinkable to email
+// without a brute-force rainbow. We log this `eidHash` alongside event type
+// so on-call can still correlate "same user across events" via DB lookup.
+// ============================================================
+function maskEmail(email: string | undefined | null): string {
+  if (!email) return 'anon'
+  return 'e:' + crypto.createHash('sha256').update(email.toLowerCase()).digest('hex').slice(0, 12)
+}
+
+// ============================================================
 // Standard Webhooks 签名校验
 // ============================================================
 
@@ -329,7 +347,7 @@ export async function POST(request: NextRequest) {
           current_period_end: currentPeriodEnd,
           updated_at: now,
         })
-        console.log(`[dodo-webhook] ${eventType} for ${normalizedEmail}: ${planName}`)
+        console.log(`[dodo-webhook] ${eventType} for ${maskEmail(normalizedEmail)}: ${planName}`)
         break
       }
 
@@ -341,7 +359,7 @@ export async function POST(request: NextRequest) {
           dodo_subscription_id: dodoSubscriptionId,
           updated_at: now,
         })
-        console.log(`[dodo-webhook] subscription renewed for ${normalizedEmail}`)
+        console.log(`[dodo-webhook] subscription renewed for ${maskEmail(normalizedEmail)}`)
         break
       }
 
@@ -353,7 +371,7 @@ export async function POST(request: NextRequest) {
           current_period_end: currentPeriodEnd,
           updated_at: now,
         })
-        console.log(`[dodo-webhook] subscription updated for ${normalizedEmail}`)
+        console.log(`[dodo-webhook] subscription updated for ${maskEmail(normalizedEmail)}`)
         break
       }
 
@@ -364,7 +382,7 @@ export async function POST(request: NextRequest) {
           current_period_end: currentPeriodEnd || now,
           updated_at: now,
         })
-        console.log(`[dodo-webhook] subscription cancelled for ${normalizedEmail}`)
+        console.log(`[dodo-webhook] subscription cancelled for ${maskEmail(normalizedEmail)}`)
         break
       }
 
@@ -373,7 +391,7 @@ export async function POST(request: NextRequest) {
           subscription_status: 'expired',
           updated_at: now,
         })
-        console.log(`[dodo-webhook] subscription expired for ${normalizedEmail}`)
+        console.log(`[dodo-webhook] subscription expired for ${maskEmail(normalizedEmail)}`)
         break
       }
 
@@ -382,7 +400,7 @@ export async function POST(request: NextRequest) {
           subscription_status: 'paused',
           updated_at: now,
         })
-        console.log(`[dodo-webhook] subscription on_hold for ${normalizedEmail}`)
+        console.log(`[dodo-webhook] subscription on_hold for ${maskEmail(normalizedEmail)}`)
         break
       }
 
@@ -391,14 +409,14 @@ export async function POST(request: NextRequest) {
           subscription_status: 'expired',
           updated_at: now,
         })
-        console.warn(`[dodo-webhook] subscription failed for ${normalizedEmail}`)
+        console.warn(`[dodo-webhook] subscription failed for ${maskEmail(normalizedEmail)}`)
         break
       }
 
       case 'refund.succeeded':
       case 'refund.failed': {
         console.log(
-          `[dodo-webhook] ${eventType} for ${normalizedEmail}, sub=${dodoSubscriptionId}`,
+          `[dodo-webhook] ${eventType} for ${maskEmail(normalizedEmail)}, sub=${dodoSubscriptionId}`,
         )
         break
       }
@@ -406,7 +424,7 @@ export async function POST(request: NextRequest) {
       case 'dispute.opened':
       case 'dispute.lost':
       case 'dispute.won': {
-        console.log(`[dodo-webhook] ${eventType} for ${normalizedEmail}`)
+        console.log(`[dodo-webhook] ${eventType} for ${maskEmail(normalizedEmail)}`)
         break
       }
 

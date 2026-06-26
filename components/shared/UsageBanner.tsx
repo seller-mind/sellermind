@@ -18,9 +18,28 @@ export function UsageBanner() {
     const email = localStorage.getItem('sellermind_email')
     if (!email) return
 
-    fetch(`/api/usage?email=${encodeURIComponent(email)}`)
-      .then(res => res.json())
-      .then(setUsageInfo)
+    // P0-C fix (2026-06-26): POST instead of GET so the email never enters
+    // the URL → Vercel access logs / CF analytics / browser history / Referer.
+    // Body is JSON; server (app/api/usage/route.ts) rejects any ?email= query.
+    fetch('/api/usage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Hint to any intermediate CDN to bypass cache for this per-user call.
+        'Cache-Control': 'no-store',
+      },
+      body: JSON.stringify({ email }),
+      // Don't send cookies on this internal anon endpoint — email is the key.
+      credentials: 'same-origin',
+    })
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (data && typeof data.remaining === 'number') {
+          setUsageInfo(data)
+        } else {
+          setUsageInfo(null)
+        }
+      })
       .catch(() => setUsageInfo(null))
   }, [])
 

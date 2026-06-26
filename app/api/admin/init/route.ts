@@ -1,10 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// /api/admin/init  — one-off Supabase table sanity check
+//
+// P0-D fix (2026-06-26):
+//   Previously authenticated against `process.env.CREEM_WEBHOOK_SECRET`.
+//   After the Creem→Dodo migration (2026-06-15) that env var is still
+//   present in Vercel (legacy fallback for the deprecated creem webhook
+//   replay sink), but its semantic meaning is "Creem webhook signing
+//   key", not "admin init auth". If anyone removed it, the strict
+//   inequality `undefined !== undefined` becomes `false`, and any
+//   unauthenticated POST would have bypassed auth and reached the
+//   downstream supabase check — which in turn leaked the full sellermind
+//   schema in its error response.
+//
+//   We now:
+//     1. Require a dedicated `ADMIN_INIT_SECRET` env (with a non-empty
+//        check so an unset var fails closed, not open).
+//     2. Use a constant-time compare to avoid timing oracles.
+//     3. Stop returning the raw CREATE TABLE SQL on error — it was
+//        enumerating every internal column name (incl. creem_*/dodo_*
+//        ids) and giving attackers free reconnaissance.
+
+import crypto from 'crypto'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
+function timingSafeStringEqual(a: string, b: string): boolean {
+  // Defence against length-leak side channel by hashing both sides first.
+  const ha = crypto.createHash('sha256').update(a).digest()
+  const hb = crypto.createHash('sha256').update(b).digest()
+  return crypto.timingSafeEqual(ha, hb)
+}
+
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  const token = authHeader?.replace('Bearer ', '')
-  
-  if (token !== process.env.CREEM_WEBHOOK_SECRET) {
+  const expected = process.env.ADMIN_INIT_SECRET
+  // Fail closed: if the env var is missing/empty in this environment, we
+  // refuse the call rather than treat both sides as `undefined` (which
+  // would silently authenticate).
+  if (!expected || expected.length < 16) {
+    return NextResponse.json({ error: 'Admin endpoint disabled' }, { status: 503 })
+  }
+
+  const authHeader = request.headers.get('authorization') || ''
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : ''
+  if (!token || !timingSafeStringEqual(token, expected)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -24,13 +64,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Table already exists', status: 'ok' })
     }
 
-    return NextResponse.json({ 
-      error: 'Table does not exist. Create it in Supabase Dashboard SQL Editor with this SQL:',
-      sql: "CREATE TABLE IF NOT EXISTS sellermind_users (email TEXT PRIMARY KEY, subscription_status TEXT DEFAULT 'free', subscription_plan TEXT, monthly_count INT DEFAULT 0, monthly_reset_date TIMESTAMPTZ, total_lifetime_count INT DEFAULT 0, creem_customer_id TEXT, creem_subscription_id TEXT, creem_checkout_id TEXT, current_period_end TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW()); ALTER TABLE sellermind_users ENABLE ROW LEVEL SECURITY;",
-      status: 'needs_manual_setup'
-    }, { status: 400 })
+    // Schema-enumeration hardening: never echo the CREATE TABLE SQL.
+    // Operator should pull the SQL from `migrations/` in the repo, not
+    // from a public production endpoint.
+    return NextResponse.json(
+      {
+        error: 'Required table is missing. Apply migrations/init_sellermind_users.sql via the Supabase Dashboard SQL editor.',
+        status: 'needs_manual_setup',
+      },
+      { status: 400 }
+    )
   } catch (error) {
     console.error('Init error:', error)
     return NextResponse.json({ error: 'Init failed' }, { status: 500 })
   }
+}
+
+// Explicit GET handler so accidental browser hits don't leak the route's
+// existence with a generic Next 404 page — and so monitoring won't flag
+// this route as broken. Returns 405 + Allow header per RFC 7231 §6.5.5.
+export async function GET() {
+  return NextResponse.json(
+    { error: 'Method Not Allowed' },
+    { status: 405, headers: { Allow: 'POST' } }
+  )
 }

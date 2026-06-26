@@ -71,7 +71,7 @@ export default function PricingClient() {
           Simple, Transparent Pricing
         </h1>
         <p className="text-lg text-foreground-secondary max-w-2xl mx-auto">
-          Start with 3 free AI uses every month. Upgrade to Pro for unlimited access to all tools.
+          Start with 3 free AI uses every month across all 10 tools. Upgrade to Pro for unlimited access.
         </p>
       </div>
 
@@ -127,7 +127,7 @@ export default function PricingClient() {
               <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-foreground-secondary">All SEO tools (unlimited)</span>
+              <span className="text-foreground-secondary">Access to all 10 AI tools</span>
             </li>
             <li className="flex items-start gap-3">
               <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,7 +255,7 @@ export default function PricingClient() {
               </svg>
             </summary>
             <p className="mt-4 text-foreground-secondary">
-              Each time you generate content using our AI tools (listing, reply, marketing, review, batch), it counts as one use. SEO tools like tag generator and SEO analyzer are always free and unlimited.
+              Each time you generate content using any of our AI tools (listing, tag generator, SEO analyzer, reply, marketing, review, batch, etc.), it counts as one use. All 10 AI tools share the same 3 free uses per month.
             </p>
           </details>
 

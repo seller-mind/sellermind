@@ -17,9 +17,19 @@
 // 但 sellermind_users 表里 creem_* 三列**保留不动**（task 严禁删除，对账要查）。
 
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
+// PII redaction (P0-B fix · 2026-06-26): never log raw user email.
+// Even on this deprecated 30d fallback sink — Creem replay events still
+// carry real payer emails. Log a sha256-truncated hash so on-call can
+// correlate via DB lookup, but the raw PII never enters Vercel logs.
+function maskEmail(email: string | undefined | null): string {
+  if (!email) return 'anon'
+  return 'e:' + crypto.createHash('sha256').update(String(email).toLowerCase()).digest('hex').slice(0, 12)
+}
 
 export async function POST(request: NextRequest) {
   // 抓 raw body + 关键 header，落日志后直接 200
@@ -52,7 +62,7 @@ export async function POST(request: NextRequest) {
     JSON.stringify({
       eventType,
       eventId,
-      email,
+      emailHash: maskEmail(email),
       ua,
       hasSig: !!sig,
       bodyBytes: rawBody.length,
