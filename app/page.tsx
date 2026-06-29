@@ -190,8 +190,8 @@ export default function HomePage() {
             {[
               { icon: "⚡", title: "Lightning Fast", desc: "Generate professional content in seconds, not hours." },
               { icon: "🎯", title: "SEO Optimized", desc: "Every output is crafted to rank higher in Etsy search." },
-              { icon: "💰", title: "Cost Effective", desc: "No subscriptions. No credit card. Just results." },
-              { icon: "🔒", title: "Privacy First", desc: "Your data is never stored or shared with anyone." },
+              { icon: "💰", title: "Cost Effective", desc: "Start free with 3 AI generations/month. Affordable plans for every shop size." },
+              { icon: "🔒", title: "Privacy First", desc: "We minimize data collection to email and usage quota. See Privacy Policy for details." },
               { icon: "🌍", title: "Etsy Native", desc: "Built specifically for Etsy sellers, not generic AI." },
               { icon: "✨", title: "No Learning Curve", desc: "Start creating immediately. No tutorials needed." },
             ].map((item) => (

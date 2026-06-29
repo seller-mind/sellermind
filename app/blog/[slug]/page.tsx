@@ -132,7 +132,7 @@ export default function BlogPostPage({ params }: PageProps) {
           >
             Start with the AI title generator
           </Link>{" "}
-          — no card, no subscription.
+          — Free tier, no card needed.
         </p>
       </footer>
     </article>

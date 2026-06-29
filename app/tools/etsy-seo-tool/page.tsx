@@ -448,12 +448,15 @@ Feedback: ${analysis.overallFeedback}
             Etsy considers many factors when ranking listings in search:
           </p>
           <ol>
-            <li><strong>Keyword Relevance (35%)</strong> - How well your title and tags match what buyers search for</li>
-            <li><strong>Listing Quality (25%)</strong> - Price, shipping, and listing completeness</li>
-            <li><strong>Customer Experience (20%)</strong> - Your shop's review score and history</li>
-            <li><strong>Recency (10%)</strong> - How recently you listed or updated the item</li>
-            <li><strong>Exterior Search Factors (10%)</strong> - Click-through rate and conversion from search</li>
+            <li><strong>Keyword Relevance</strong> - How well your title and tags match what buyers search for</li>
+            <li><strong>Listing Quality</strong> - Price, shipping, and listing completeness</li>
+            <li><strong>Customer & Market Experience</strong> - Your shop's review score, history, and customer service signals</li>
+            <li><strong>Recency</strong> - How recently you listed or updated the item</li>
+            <li><strong>Exterior Search Factors</strong> - Click-through rate and conversion from search</li>
           </ol>
+          <p className="text-muted text-sm">
+            <em>Note: Etsy does not publish exact weights for these factors. The order shown reflects the generally accepted relative importance based on Etsy&apos;s official documentation and community observation.</em>
+          </p>
 
           <h3>How to Research Etsy Keywords</h3>
           <p>

@@ -396,7 +396,7 @@ export default function EtsyTitleGeneratorPage() {
         <div className="p-4 pt-0 prose prose-sm max-w-none text-foreground-secondary">
           <h2>Why Your Etsy Title Matters for SEO</h2>
           <p>
-            Your Etsy title accounts for approximately 70% of your listing's search ranking weight. A well-optimized title can increase visibility by 300-500%, appear in 3-5x more search results, and boost click-through rates by 40-60%. The difference between a good title and a great title can mean hundreds of extra views per month.
+            Etsy titles are widely considered the single most important ranking factor on the platform — Etsy's own *How Etsy Search Works* documentation calls out keyword relevance as a core search signal. While Etsy does not publish exact algorithm weights, a well-optimized title consistently correlates with stronger search visibility and higher click-through rates than a generic or duplicate-of-product-name title.
           </p>
           
           <h3>How Etsy Ranks Titles: The Algorithm Explained</h3>

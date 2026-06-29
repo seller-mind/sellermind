@@ -88,7 +88,7 @@ const TOOL_INFO = {
         "name": "Does responding to reviews help my Etsy shop?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. Review responses demonstrate excellent customer service, which can improve your shop's ranking. Studies show 95% of consumers find reviews with seller responses more trustworthy."
+          "text": "Yes. Review responses demonstrate excellent customer service, which can improve your shop's ranking. According to BrightLocal's Local Consumer Review Survey, a large majority of consumers say seller responses influence how trustworthy a shop appears."
         }
       },
       {
@@ -308,7 +308,7 @@ export default function EtsyReviewResponsePage() {
         <CardContent className="space-y-4 text-sm text-foreground-secondary">
           <div>
             <h4 className="font-semibold text-foreground-primary">Build Customer Trust</h4>
-            <p>94% of shoppers read reviews before purchasing. When they see you actively respond to reviews, it demonstrates excellent customer service and builds trust with potential buyers.</p>
+            <p>A large majority of shoppers read reviews before making a purchase. When they see you actively respond to reviews, it demonstrates excellent customer service and builds trust with potential buyers.</p>
           </div>
           <div>
             <h4 className="font-semibold text-foreground-primary">Improve Search Ranking</h4>
@@ -316,7 +316,7 @@ export default function EtsyReviewResponsePage() {
           </div>
           <div>
             <h4 className="font-semibold text-foreground-primary">Recover from Negative Reviews</h4>
-            <p>A professional response to a negative review can actually boost credibility. Studies show 95% of consumers find reviews with seller responses more trustworthy.</p>
+            <p>A professional response to a negative review can actually boost credibility. According to BrightLocal's Local Consumer Review Survey, a large majority of consumers say seller responses influence how trustworthy a shop appears.</p>
           </div>
           <div>
             <h4 className="font-semibold text-foreground-primary">The SOLVE Method for Negative Reviews</h4>

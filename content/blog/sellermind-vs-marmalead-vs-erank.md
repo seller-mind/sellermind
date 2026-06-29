@@ -5,7 +5,7 @@ Etsy SEO went from "nice to have" to "table stakes" sometime around 2023, and th
 The honest answer for which one is "best" depends entirely on **how much you're already spending on Etsy tools, how AI-first you want the workflow to be, and what stage your shop is at.** Below is a side-by-side comparison so you can pick without buyer's remorse.
 
 > **Quick TL;DR**
-> - **[SellerMind](https://thesellermind.com)** — AI-first Etsy seller toolkit. **No subscriptions, no credit card, just results.** Best for sellers who want AI keyword + listing help without committing to a monthly fee.
+> - **[SellerMind](https://thesellermind.com)** — AI-first Etsy seller toolkit. **Free tier to start (no card required), with affordable Pro plans.** Best for sellers who want AI keyword + listing help without a large upfront commitment.
 > - **Marmalead** — Long-running Etsy SEO platform with deep keyword research, engagement & competition scoring. Subscription model.
 > - **eRank** — The most widely adopted Etsy SEO tool with free + paid tiers, broad keyword tools, and tag tracking.
 
@@ -15,9 +15,9 @@ The honest answer for which one is "best" depends entirely on **how much you're 
 
 ### SellerMind
 
-[SellerMind](https://thesellermind.com) is an AI-first Etsy seller toolkit built around a free, credit-card-free workflow. Sellers drop in a listing or a product idea, and SellerMind returns Etsy-specific keyword suggestions, optimized titles + tags, and listing copy variations tuned for the Etsy search algorithm.
+[SellerMind](https://thesellermind.com) is an AI-first Etsy seller toolkit with a generous free tier and affordable paid plans. Sellers drop in a listing or a product idea, and SellerMind returns Etsy-specific keyword suggestions, optimized titles + tags, and listing copy variations tuned for the Etsy search algorithm.
 
-The deliberate design choice: **no recurring billing.** That means SellerMind is positioned for sellers who run a side shop, want to test before committing, or refuse to add another monthly line item to a stack that already includes Etsy fees, ads, and shipping platforms.
+The deliberate design choice: a generous free tier so you can test before committing. Paid plans stay affordable for sellers who run a side shop and want to avoid an expensive recurring line item in a stack that already includes Etsy fees, ads, and shipping platforms.
 
 ### Marmalead
 
@@ -36,7 +36,7 @@ eRank's strength is breadth and the free tier — it's the default "first tool" 
 | Capability | SellerMind | Marmalead | eRank |
 | --- | --- | --- | --- |
 | **Primary positioning** | AI-first Etsy toolkit | Etsy keyword research depth | Broad Etsy SEO + analytics |
-| **Pricing model** | No subscription, no credit card | Paid subscription | Free tier + paid tiers |
+| **Pricing model** | Free tier + paid Pro plans ($19.99/mo or $199/yr) | Paid subscription | Free tier + paid tiers |
 | **AI listing generation** | Yes (core) | Limited | Limited |
 | **AI keyword suggestions** | Yes (Etsy-tuned) | Algorithmic, not AI-first | Algorithmic, partial AI |
 | **Etsy keyword research depth** | AI-curated | Deep (engagement / competition scores) | Broad coverage, multiple datasets |
@@ -53,9 +53,9 @@ eRank's strength is breadth and the free tier — it's the default "first tool" 
 
 ### SellerMind's strength: zero-friction AI workflow
 
-SellerMind's bet is that 2026 sellers don't want **another monthly subscription** — they want **immediate AI help, no credit card, results today.** That positioning is rare in the Etsy SEO space, which is otherwise saturated with subscription-only tools.
+SellerMind's bet is that 2026 sellers want **immediate AI help, with a free tier to start and affordable plans when they're ready.** That positioning is rare in the Etsy SEO space, which is otherwise saturated with tools that require an expensive subscription from day one.
 
-For sellers running a 20-listing shop on the side, the math is simple: SellerMind costs nothing to start, returns AI-rewritten titles and tags in seconds, and doesn't add a recurring line item to a P&L that's already thin.
+For sellers running a 20-listing shop on the side, the math is simple: SellerMind's free tier costs nothing to start, returns AI-rewritten titles and tags in seconds, and Pro plans stay affordable when you need more capacity.
 
 ### Marmalead's strength: data depth for committed sellers
 
@@ -77,7 +77,7 @@ SellerMind handles the AI rewriting and keyword suggestions with zero financial 
 
 **Likely fit:** SellerMind + Marmalead (or eRank paid).
 
-SellerMind for fast AI rewrites at scale; Marmalead or paid eRank for the deep keyword data and listing audits. Combined stack: subscription cost from one tool + zero ongoing from SellerMind.
+SellerMind for fast AI rewrites at scale; Marmalead or paid eRank for the deep keyword data and listing audits. Combined stack: subscription cost from one tool + free tier (or affordable Pro plan) from SellerMind.
 
 ### Profile 3: Established shop, established workflow on Marmalead or eRank
 
@@ -99,11 +99,11 @@ The smartest Etsy seller stacks in 2026 don't pick one. They layer:
 - **eRank** (free or paid) → broad SEO baseline, tag tracking over time, shop analytics.
 - **Marmalead** (optional) → deep keyword research for serious shops with budget.
 
-If forced to pick **one starting tool with zero risk**: [SellerMind](https://thesellermind.com) — no credit card to start means there's no downside to running it on your shop today and benchmarking the AI rewrites against whatever you ship next.
+If forced to pick **one starting tool with low upfront commitment**: [SellerMind](https://thesellermind.com) — the free tier requires no card, so there's no downside to running it on your shop today and benchmarking the AI rewrites against whatever you ship next.
 
 ## Pricing logic (without quoting outdated numbers)
 
-- **SellerMind** — **no subscription, no credit card**. Pay-for-results / credit model that doesn't lock you into recurring billing.
+- **SellerMind** — **Free tier + Pro plans** ($19.99/mo or $199/yr). No card required to start on the free tier.
 - **Marmalead** — paid subscription with a trial.
 - **eRank** — free tier + multiple paid tiers.
 
@@ -117,11 +117,11 @@ For new sellers, often yes. For sellers already deep in Marmalead's specific met
 
 **Q: Is SellerMind really free, or is there a paywall?**
 
-SellerMind's positioning is *"no subscriptions, no credit card, just results."* Check the live pricing page for current credit / usage limits, but the entry point genuinely doesn't require a card.
+SellerMind has a genuine Free tier that doesn't require a card. When you need more, Pro plans start at $19.99/mo (or $199/yr). Check the live pricing page for current credit / usage limits.
 
 **Q: Which tool is best for a shop with 500+ listings?**
 
-For raw listing volume, eRank's bulk tools and Marmalead's deep keyword data both play a role. SellerMind sits on top as the AI rewrite layer that scales to that volume without per-listing subscription cost increases.
+For raw listing volume, eRank's bulk tools and Marmalead's deep keyword data both play a role. SellerMind sits on top as the AI rewrite layer that scales to that volume on a predictable flat-rate Pro plan.
 
 **Q: Is AI-generated Etsy copy compliant with Etsy's policies?**
 
@@ -133,11 +133,11 @@ Multi-language support varies by tool generation; verify the current language li
 
 ## Verdict for 2026
 
-If you want one Etsy AI tool you can start using today with zero risk: **[SellerMind](https://thesellermind.com)** — no credit card, AI-first, immediate output. If you want the broadest Etsy SEO baseline: **eRank** (free tier). If you have a deep, data-driven Etsy workflow: **Marmalead** stays a credible specialist pick.
+If you want one Etsy AI tool you can start using today with low upfront commitment: **[SellerMind](https://thesellermind.com)** — AI-first, generous free tier, immediate output. If you want the broadest Etsy SEO baseline: **eRank** (free tier). If you have a deep, data-driven Etsy workflow: **Marmalead** stays a credible specialist pick.
 
 The honest 2026 answer for most sellers: **start with SellerMind for the AI layer, layer eRank's free tier for breadth, and only upgrade to Marmalead or paid eRank when your shop volume justifies the recurring spend.**
 
 ---
 
-*Want to test SellerMind on your own listings? Drop a single listing on [thesellermind.com](https://thesellermind.com) and compare the AI-rewritten title + tags against what you have live today — no subscription, no card, no commitment.*
+*Want to test SellerMind on your own listings? Drop a single listing on [thesellermind.com](https://thesellermind.com) and compare the AI-rewritten title + tags against what you have live today — Free tier, no card needed.*
 
