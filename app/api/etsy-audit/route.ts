@@ -227,14 +227,17 @@ export async function POST(req: Request) {
     });
     const _host = req.headers.get("host") || "";
     const _isPreview = _host.endsWith(".vercel.app");
+    const _dbgSuffix = _isPreview
+      ? ` [DBG status=${fetchResult.status} err=${fetchResult.error}]`
+      : "";
     return jsonResponse(
       {
         success: false,
         error: {
           code: isNotFound ? "ETSY_NOT_FOUND" : "ETSY_FETCH_FAILED",
           message: isNotFound
-            ? "Etsy returned 404 for this listing. Make sure the URL is current and public."
-            : "Couldn't read this listing from Etsy right now (they may be busy). Try again in ~30s, or paste your title/tags/description into our other free tool /tools/etsy-seo-tool.",
+            ? `Etsy returned 404 for this listing. Make sure the URL is current and public.${_dbgSuffix}`
+            : `Couldn't read this listing from Etsy right now (they may be busy). Try again in ~30s, or paste your title/tags/description into our other free tool /tools/etsy-seo-tool.${_dbgSuffix}`,
           ...(_isPreview
             ? {
                 debug: {
