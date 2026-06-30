@@ -12,9 +12,23 @@
 (function () {
   "use strict";
 
-  var API_BASE = "https://thesellermind.com";
+  // Resolve API_BASE from the URL of *this* script. The bookmarklet loader
+  // injects <script src="<origin>/sm-bookmarklet.js?..."> so we trust the
+  // origin we were fetched from. Falls back to canonical production domain.
+  var BUILD_TAG = "sm-bm-2026-06-30-v2";
+  var API_BASE = (function () {
+    try {
+      var cs = document.currentScript;
+      if (cs && cs.src) {
+        var u = new URL(cs.src);
+        if (u.protocol === "https:" && /(?:thesellermind\.com|sellermind-[a-z0-9-]+-sellermind-s-projects\.vercel\.app)$/i.test(u.hostname)) {
+          return u.origin;
+        }
+      }
+    } catch (e) { /* noop */ }
+    return "https://thesellermind.com";
+  })();
   var RETURN_URL = API_BASE + "/free-etsy-seo-checker";
-  var BUILD_TAG = "sm-bm-2026-06-30-v1";
 
   function isEtsyListing() {
     return /(^|\.)etsy\.com$/i.test(location.hostname) &&
