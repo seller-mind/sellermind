@@ -95,7 +95,34 @@ export default function EtsyAuditWidget() {
   const [error, setError] = useState<string | null>(null);
   const [audit, setAudit] = useState<AuditResult | null>(null);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+
   const resultRef = useRef<HTMLDivElement | null>(null);
+
+  // === Bookmarklet result hash receiver ===
+  // sm-bookmarklet.js POSTs to /api/etsy-audit-from-browser, then opens
+  // /free-etsy-seo-checker?from=bm#r=<base64-json>. We decode it on mount.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.location.hash.startsWith("#r=")) return;
+    try {
+      const b64 = window.location.hash.substring(3);
+      const json = decodeURIComponent(escape(window.atob(b64)));
+      const parsed = JSON.parse(json) as AuditResult;
+      if (
+        parsed &&
+        typeof parsed.total_score === "number" &&
+        parsed.dimensions &&
+        parsed.dimensions.title
+      ) {
+        setAudit(parsed);
+        // Strip the payload from the URL bar so refresh doesn't replay it.
+        const { pathname, search } = window.location;
+        window.history.replaceState(null, "", pathname + search);
+      }
+    } catch {
+      /* malformed — ignore silently */
+    }
+  }, []);
 
   const urlValid = useMemo(() => ETSY_URL_RE.test(url.trim()), [url]);
 
@@ -205,6 +232,15 @@ export default function EtsyAuditWidget() {
         onSubmit={handleSubmit}
         className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm md:p-8"
       >
+        {/* Banner — recommend the bookmarklet flow (more reliable than URL fetch) */}
+        <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+          <strong>⚡ Faster, more reliable:</strong> install the{" "}
+          <a href="#install-bookmarklet" className="font-semibold text-[#B45309] underline">
+            SellerMind bookmarklet
+          </a>{" "}
+          (30s, one-time). Then click it on any Etsy listing tab to audit
+          instantly — no URL pasting, no fetch failures.
+        </div>
         <label htmlFor="etsy-url" className="block text-sm font-medium text-stone-800">
           Your Etsy listing URL
         </label>
@@ -234,7 +270,7 @@ export default function EtsyAuditWidget() {
           {submitting ? LOADING_PHASES[phase].text : "Get my SEO score →"}
         </button>
         <p className="mt-3 text-center text-xs text-stone-500">
-          Free • No signup • Privacy-first • 5 audits per IP per day
+          Free • No signup • Privacy-first • 5 audits/IP/day · URL fetch may fail (Etsy DataDome) — bookmarklet is the reliable path
         </p>
       </form>
 
@@ -389,3 +425,4 @@ export default function EtsyAuditWidget() {
     </div>
   );
 }
+
