@@ -43,8 +43,8 @@ import type { AuditApiResponse, AuditResult } from "@/lib/etsy-types";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const DEEPSEEK_TIMEOUT_MS = 25_000; // leaves headroom under Vercel 30s
-const MODEL = "deepseek-chat";
+const GROQ_TIMEOUT_MS = 6_000; // Groq Llama 4 Scout P50 ~2-4s; hobby 10s budget, Etsy fetch ~1-3s, leave 1s buffer
+const MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
 const ALLOWED_ORIGINS = new Set([
   "https://thesellermind.com",
@@ -225,14 +225,28 @@ export async function POST(req: Request) {
       fetch_status: fetchResult.status,
       latency_ms: Date.now() - t0,
     });
+    const _host = req.headers.get("host") || "";
+    const _isPreview = _host.endsWith(".vercel.app");
+    const _dbgSuffix = _isPreview
+      ? ` [DBG status=${fetchResult.status} err=${fetchResult.error}]`
+      : "";
     return jsonResponse(
       {
         success: false,
         error: {
           code: isNotFound ? "ETSY_NOT_FOUND" : "ETSY_FETCH_FAILED",
           message: isNotFound
-            ? "Etsy returned 404 for this listing. Make sure the URL is current and public."
-            : "Couldn't read this listing from Etsy right now (they may be busy). Try again in ~30s, or paste your title/tags/description into our other free tool /tools/etsy-seo-tool.",
+            ? `Etsy returned 404 for this listing. Make sure the URL is current and public.${_dbgSuffix}`
+            : `Couldn't read this listing from Etsy right now (they may be busy). Try again in ~30s, or paste your title/tags/description into our other free tool /tools/etsy-seo-tool.${_dbgSuffix}`,
+          ...(_isPreview
+            ? {
+                debug: {
+                  fetch_status: fetchResult.status,
+                  fetch_error: fetchResult.error,
+                  fetch_url: canonical,
+                },
+              }
+            : {}),
         },
       },
       isNotFound ? 404 : 502,
@@ -267,7 +281,7 @@ export async function POST(req: Request) {
   }
 
   // ---- 7. DeepSeek ----
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     await rollbackForIp(ip);
     logAudit({ status: 503, cached: false, latency_ms: Date.now() - t0 });
@@ -284,11 +298,11 @@ export async function POST(req: Request) {
     );
   }
 
-  const deepseek = new OpenAI({ apiKey, baseURL: "https://api.deepseek.com" });
+  const groq = new OpenAI({ apiKey, baseURL: "https://api.groq.com/openai/v1" });
 
   let analysis: AuditResult | null = null;
   try {
-    const completion = await deepseek.chat.completions.create(
+    const completion = await groq.chat.completions.create(
       {
         model: MODEL,
         temperature: 0.3,
@@ -299,7 +313,7 @@ export async function POST(req: Request) {
           { role: "user", content: buildEtsyUserPrompt(snapshot) },
         ],
       },
-      { signal: AbortSignal.timeout(DEEPSEEK_TIMEOUT_MS) }
+      { signal: AbortSignal.timeout(GROQ_TIMEOUT_MS) }
     );
 
     const content = completion.choices?.[0]?.message?.content || "";
@@ -307,14 +321,14 @@ export async function POST(req: Request) {
     try {
       parsed = JSON.parse(content);
     } catch {
-      throw new Error("DeepSeek returned non-JSON");
+      throw new Error("Groq returned non-JSON");
     }
     analysis = sanitizeAuditResult(parsed, snapshot);
-    if (!analysis) throw new Error("DeepSeek response failed schema validation");
+    if (!analysis) throw new Error("Groq response failed schema validation");
   } catch (err) {
     await rollbackForIp(ip);
     console.error(
-      "[etsy-audit] DeepSeek failure:",
+      "[etsy-audit] Groq failure:",
       err instanceof Error ? err.message : "unknown"
     );
     logAudit({
@@ -343,9 +357,9 @@ export async function POST(req: Request) {
     /* swallow — caching is best-effort */
   }
 
-  // Rough DeepSeek cost estimate for telemetry only (not user-facing).
-  // ~$0.27/1M input + $1.10/1M output tokens for deepseek-chat.
-  const approxCost = 0.0040;
+  // Rough Groq cost estimate for telemetry only (not user-facing).
+  // Llama 4 Scout: $0.11/1M input + $0.34/1M output. ~1k in + 0.8k out per audit.
+  const approxCost = 0.00038;
   logAudit({
     status: 200,
     cached: false,
