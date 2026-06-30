@@ -1,35 +1,58 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
- * Drag-to-bookmarks button. Must be a client component because the
- * `<a href="javascript:...">` element uses `onClick={(e)=>e.preventDefault()}`
- * to suppress single-click navigation (users should drag, not click).
+ * Drag-to-bookmarks button. Client component because:
+ *   1) `<a href="javascript:...">` uses `onClick={(e)=>e.preventDefault()}`
+ *   2) The bookmarklet src must be the current origin so preview deploys
+ *      load `sm-bookmarklet.js` from the same preview domain (CORS in the
+ *      new audit API already allowlists preview origins).
  *
- * The bookmarklet is intentionally short: it loads sm-bookmarklet.js from
- * the same domain so we can update the DOM extractor without users
- * having to re-install the bookmark.
+ * Production (thesellermind.com) and preview
+ * (sellermind-git-*-sellermind-s-projects.vercel.app) both work.
  */
-const BOOKMARKLET_HREF =
-  // eslint-disable-next-line @typescript-eslint/no-implied-eval
-  "javascript:(function(){var s=document.createElement('script');s.src='https://thesellermind.com/sm-bookmarklet.js?'+Date.now();s.charset='utf-8';document.body.appendChild(s);})();";
+function buildHref(origin: string): string {
+  // Strict allowlist: only use HTTPS Vercel hostnames or the canonical
+  // production domain. Anything else falls back to production.
+  const safe =
+    /^https:\/\/(?:thesellermind\.com|www\.thesellermind\.com|sellermind-[a-z0-9-]+-sellermind-s-projects\.vercel\.app)$/i.test(
+      origin,
+    )
+      ? origin
+      : 'https://thesellermind.com';
+  // Single-line javascript: URL — must avoid line breaks or browsers will
+  // refuse to bookmark it.
+  return (
+    "javascript:(function(){var s=document.createElement('script');s.src='" +
+    safe +
+    "/sm-bookmarklet.js?'+Date.now();s.charset='utf-8';document.body.appendChild(s);})();"
+  );
+}
+
+const FALLBACK_HREF = buildHref('https://thesellermind.com');
 
 export default function BookmarkletButton() {
   const [clicked, setClicked] = useState(false);
+  const [href, setHref] = useState<string>(FALLBACK_HREF);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      setHref(buildHref(window.location.origin));
+    }
+  }, []);
 
   return (
     <div className="mt-3 flex flex-wrap items-center gap-3">
       <a
-        href={BOOKMARKLET_HREF}
+        href={href}
         onClick={(e) => {
           e.preventDefault();
           setClicked(true);
-          // Auto-hide hint after a few seconds
-          setTimeout(() => setClicked(false), 4000);
+          setTimeout(() => setClicked(false), 5000);
         }}
         className="inline-block cursor-grab rounded-lg bg-[#E07A5F] px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-[#C96A52] active:cursor-grabbing"
-        title="Drag me to your bookmarks bar"
+        title="Drag me to your bookmarks bar — don't click"
         draggable
       >
         📌 Etsy SEO Checker
@@ -45,7 +68,8 @@ export default function BookmarkletButton() {
       </p>
       {clicked && (
         <p className="mt-1 w-full text-xs font-medium text-[#C96A52]">
-          ☝️ Don&apos;t click — <em>drag</em> the button into your bookmarks bar.
+          ☝️ Don&apos;t click — please <em>drag</em> the orange button into your
+          bookmarks bar instead.
         </p>
       )}
     </div>
