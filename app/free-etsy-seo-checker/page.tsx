@@ -6,6 +6,7 @@ import {
   FAQ_JSONLD,
 } from "./metadata";
 import EtsyAuditWidget from "./EtsyAuditWidget";
+import BookmarkletButton from './BookmarkletButton';
 
 export const metadata: Metadata = etsySeoCheckerMetadata;
 export const dynamic = "force-static";
@@ -85,22 +86,7 @@ export default function FreeEtsySeoCheckerPage() {
           <p className="text-sm font-semibold text-stone-800">
             Step 1 — Drag this button to your bookmarks bar:
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <a
-              href={'javascript:(function(){var s=document.createElement(\'script\');s.src=\'https://thesellermind.com/sm-bookmarklet.js?\'+Date.now();s.charset=\'utf-8\';document.body.appendChild(s);})();'}
-              onClick={(e) => e.preventDefault()}
-              className="inline-block cursor-grab rounded-lg bg-[#E07A5F] px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-[#C96A52] active:cursor-grabbing"
-              title="Drag me to your bookmarks bar"
-            >
-              📌 Etsy SEO Checker
-            </a>
-            <p className="text-xs text-stone-600">
-              ← Drag this orange button into your browser&apos;s bookmarks bar.
-              <br />
-              On Chrome/Edge: press <kbd className="rounded border border-stone-300 bg-stone-50 px-1.5 py-0.5 font-mono text-[10px]">Ctrl/⌘+Shift+B</kbd>{" "}
-              first to show the bar.
-            </p>
-          </div>
+          <BookmarkletButton />
 
           <p className="mt-5 text-sm font-semibold text-stone-800">
             Step 2 — Open any Etsy listing and click the bookmark.
