@@ -225,6 +225,8 @@ export async function POST(req: Request) {
       fetch_status: fetchResult.status,
       latency_ms: Date.now() - t0,
     });
+    const _host = req.headers.get("host") || "";
+    const _isPreview = _host.endsWith(".vercel.app");
     return jsonResponse(
       {
         success: false,
@@ -233,6 +235,15 @@ export async function POST(req: Request) {
           message: isNotFound
             ? "Etsy returned 404 for this listing. Make sure the URL is current and public."
             : "Couldn't read this listing from Etsy right now (they may be busy). Try again in ~30s, or paste your title/tags/description into our other free tool /tools/etsy-seo-tool.",
+          ...(_isPreview
+            ? {
+                debug: {
+                  fetch_status: fetchResult.status,
+                  fetch_error: fetchResult.error,
+                  fetch_url: canonical,
+                },
+              }
+            : {}),
         },
       },
       isNotFound ? 404 : 502,
