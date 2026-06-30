@@ -22,12 +22,12 @@ import type { EtsyListingSnapshot } from "./etsy-types";
 export const ETSY_URL_RE =
   /^https?:\/\/(www\.)?etsy\.com\/listing\/(\d+)(\/[^?#]*)?(\?[^#]*)?(#.*)?$/i;
 
-const FETCH_TIMEOUT_MS = 5_000;
+const FETCH_TIMEOUT_MS = 6_000;
 const MAX_BODY_BYTES = 500 * 1024; // 500 KB
 const MAX_REDIRECTS = 3;
 const ALLOWED_HOSTS = new Set(["www.etsy.com", "etsy.com"]);
 const USER_AGENT =
-  "SellerMindAudit/1.0 (+https://thesellermind.com/free-etsy-seo-checker; contact: hello@thesellermind.com)";
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 // ============ Public API ============
 
@@ -353,8 +353,18 @@ export async function fetchEtsyListing(canonicalUrl: string): Promise<FetchResul
         signal: controller.signal,
         headers: {
           "User-Agent": USER_AGENT,
-          Accept: "text/html,application/xhtml+xml",
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
           "Accept-Language": "en-US,en;q=0.9",
+          "Sec-Ch-Ua":
+            '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+          "Sec-Ch-Ua-Mobile": "?0",
+          "Sec-Ch-Ua-Platform": '"macOS"',
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-Site": "none",
+          "Sec-Fetch-User": "?1",
+          "Upgrade-Insecure-Requests": "1",
         },
       });
 
