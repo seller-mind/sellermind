@@ -1,7 +1,7 @@
 // app/api/webhooks/dodo/route.ts
 //
 // Dodo Payments webhook endpoint - sellermind 项目
-// 切 Dodo 后的主收款回调入口，与旧 app/api/webhooks/creem/route.ts 并排（旧 route 保留 30 天兜底）。
+// 收款回调主入口（也是唯一入口）。2026-06-15 起 Dodo Payments 为唯一收款提供方。
 //
 // Standard Webhooks 签名规范实现：
 //   header webhook-id / webhook-signature / webhook-timestamp

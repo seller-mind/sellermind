@@ -6,9 +6,10 @@ import {
 } from '@/lib/ip-rate-limit'
 
 // P0-02 fix (full audit 20260625):
-// Switched from Creem (account permanently suspended 2026-06-10) to Dodo Payments.
-// Front-end already points users to Dodo via hardcoded URLs; this API endpoint
-// is the canonical server-side path and must mirror that.
+// Canonical server-side checkout path. Uses Dodo Payments as the payment
+// provider (single provider since 2026-06-15). Front-end pricing CTAs
+// deep-link to Dodo directly; this endpoint mirrors that flow for
+// programmatic / retry cases and enforces the same product-ID matrix.
 const DODO_PRODUCT_IDS = {
   monthly: 'pdt_0Nh4as9LEJmfoZNpeaHC6',
   yearly: 'pdt_0Nh4asKyfYxPzDnExvRVo',

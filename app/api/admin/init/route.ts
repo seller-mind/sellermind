@@ -8,23 +8,21 @@ import {
 // /api/admin/init  — one-off Supabase table sanity check
 //
 // P0-D fix (2026-06-26):
-//   Previously authenticated against `process.env.CREEM_WEBHOOK_SECRET`.
-//   After the Creem→Dodo migration (2026-06-15) that env var is still
-//   present in Vercel (legacy fallback for the deprecated creem webhook
-//   replay sink), but its semantic meaning is "Creem webhook signing
-//   key", not "admin init auth". If anyone removed it, the strict
-//   inequality `undefined !== undefined` becomes `false`, and any
-//   unauthenticated POST would have bypassed auth and reached the
-//   downstream supabase check — which in turn leaked the full sellermind
-//   schema in its error response.
+//   Previously authenticated against a payment-provider webhook secret
+//   (semantic meaning: "webhook signing key", not "admin init auth").
+//   If anyone removed that env, the strict inequality
+//   `undefined !== undefined` becomes `false`, and any unauthenticated
+//   POST would have bypassed auth and reached the downstream Supabase
+//   check — which in turn leaked the full sellermind schema in its
+//   error response.
 //
 //   We now:
 //     1. Require a dedicated `ADMIN_INIT_SECRET` env (with a non-empty
 //        check so an unset var fails closed, not open).
 //     2. Use a constant-time compare to avoid timing oracles.
 //     3. Stop returning the raw CREATE TABLE SQL on error — it was
-//        enumerating every internal column name (incl. creem_*/dodo_*
-//        ids) and giving attackers free reconnaissance.
+//        enumerating every internal column name and giving attackers
+//        free reconnaissance.
 
 import crypto from 'crypto'
 
