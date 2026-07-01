@@ -465,7 +465,11 @@ export function EtsyTitleGeneratorClient() {
           <ul>
             <li><a href="/tools/etsy-tag-generator">Etsy Tag Generator</a> - Generate all 13 AI-suggested tag candidates for your listings</li>
             <li><a href="/tools/etsy-seo-tool">Etsy SEO Tool</a> - Analyze your complete listing for SEO improvements</li>
-            <li><a href="/tools/etsy-description-generator">Etsy Description Generator</a> - Write keyword-rich descriptions that convert</li>
+            {/* F-17 fix: /tools/etsy-description-generator does not exist —
+                Google was crawling this as a 404 from a high-authority page
+                (priority 0.9). Repointed to the existing legacy listing
+                generator, which is the actual tool for description writing. */}
+            <li><a href="/tools/listing">Etsy Listing Description Generator</a> - Write keyword-rich descriptions that convert</li>
           </ul>
         </div>
       </details>

@@ -18,34 +18,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly' as const,
       priority: 0.9,
     },
+    // F-05 fix: legacy tool pages updated with fresh SEO metadata (F-07);
+    // bump changeFrequency from monthly → weekly so Google re-crawls the
+    // new titles/descriptions on the same cadence as etsy-* SEO landing pages.
     {
       url: `${baseUrl}/tools/listing`,
       lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
+      changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/tools/reply`,
       lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
+      changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/tools/holiday`,
       lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
+      changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/tools/review`,
       lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
+      changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/tools/batch`,
       lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
+      changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
     // SEO Free Tools
@@ -101,6 +104,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.3,
+    },
+    // F-03 / F-18 / F-22 fix: /dmca and /cookies were fully orphan (page
+    // existed but not in sitemap and 0 internal links). Adding both with
+    // priority 0.3, yearly (matching /privacy and /terms).
+    {
+      url: `${baseUrl}/dmca`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly' as const,
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/cookies`,
       lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.3,

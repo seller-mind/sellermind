@@ -5,11 +5,14 @@ import { Header, MobileNav } from "@/components/shared/Header";
 import { CookieConsentBanner } from "@/components/shared/CookieConsentBanner";
 import { UsageBanner } from "@/components/shared/UsageBanner";
 
+// F-UX-06 fix: removed `maximumScale: 1` (WCAG 2.1 SC 1.4.4 Resize Text).
+// Users must be able to pinch-zoom on mobile; blocking it fails Level AA a11y
+// and creates EAA/ADA compliance risk. If any layout breaks under zoom, fix
+// it in CSS (overflow-x, min-width) — do not disable user scaling.
 export const viewport: Viewport = {
   themeColor: "#E07A5F",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export const metadata: Metadata = {
@@ -90,6 +93,13 @@ export default function RootLayout({
                 <span className="text-xs text-foreground-muted">|</span>
                 <Link href="/dmca" className="text-xs text-foreground-muted hover:text-primary transition-colors">
                   DMCA Policy
+                </Link>
+                {/* F-003 fix: /cookies page existed as an orphan (canonical
+                    declared but no inbound link). Adding footer entry so both
+                    users and crawlers can reach it. */}
+                <span className="text-xs text-foreground-muted">|</span>
+                <Link href="/cookies" className="text-xs text-foreground-muted hover:text-primary transition-colors">
+                  Cookie Policy
                 </Link>
               </div>
             </div>

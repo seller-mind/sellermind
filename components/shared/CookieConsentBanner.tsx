@@ -36,8 +36,12 @@ export function CookieConsentBanner() {
       expires={365}
     >
       We use cookies to enhance your experience and analyze site traffic.{' '}
-      <Link href="/privacy" style={{ color: '#E07A5F', textDecoration: 'underline' }}>
-        Privacy Policy
+      {/* F-18 fix: cookie banner previously linked to /privacy, but the
+          detailed cookie disclosure lives on /cookies. GDPR Art.13 requires
+          the "cookie information" link to point at the actual cookie policy.
+          This also gives /cookies its first real inbound link. */}
+      <Link href="/cookies" style={{ color: '#E07A5F', textDecoration: 'underline' }}>
+        Cookie Policy
       </Link>
     </CookieConsent>
   )
