@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
+import { JsonLdScript } from "@/components/shared/JsonLdScript";
 
 export const metadata: Metadata = {
   title: 'Free Etsy Seller Tools — 10 AI Tools for Titles, SEO, Tags, Reviews · SellerMind',
@@ -234,14 +235,8 @@ export default function ToolsHubPage() {
   return (
     <>
       {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <JsonLdScript data={structuredData} />
+      <JsonLdScript data={breadcrumbSchema} />
 
       {/* Breadcrumb Navigation */}
       <nav className="mb-4 text-sm" aria-label="Breadcrumb">

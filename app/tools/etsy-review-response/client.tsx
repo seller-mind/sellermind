@@ -119,7 +119,7 @@ const TOOL_INFO = {
   }
 };
 
-export function EtsyReviewResponseClient() {
+export function EtsyReviewResponseClient({ nonce }: { nonce?: string } = {}) {
   const [reviewType, setReviewType] = React.useState("");
   const [reviewContent, setReviewContent] = React.useState("");
   const [responseTone, setResponseTone] = React.useState("");
@@ -177,7 +177,7 @@ export function EtsyReviewResponseClient() {
   };
 
   return (
-    <ToolLayout {...TOOL_INFO}>
+    <ToolLayout nonce={nonce} {...TOOL_INFO}>
       <ApiErrorBanner
         error={apiError}
         onDismiss={() => setApiError(null)}

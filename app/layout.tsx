@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 import "./globals.css";
 import { Header, MobileNav } from "@/components/shared/Header";
@@ -44,6 +45,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // CSP nonce injected by middleware.ts (2026-07-01 P3 fix). Reading the
+  // header via next/headers() has two effects:
+  //   (1) it opts this layout into dynamic rendering, which is required
+  //       for the nonce to be fresh on every request;
+  //   (2) it signals Next.js to auto-apply the nonce attribute to all of
+  //       its own framework-injected hydration <script> tags.
+  // We ALSO thread the nonce through any manually-authored <script> below
+  // (currently: SW registration) so those are accepted by the CSP too.
+  const nonce = headers().get("x-nonce") || undefined;
   return (
     <html lang="en">
       <head>
@@ -109,6 +119,7 @@ export default function RootLayout({
         <CookieConsentBanner />
 
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {

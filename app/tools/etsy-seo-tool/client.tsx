@@ -122,7 +122,7 @@ const TOOL_INFO = {
   }
 };
 
-export function EtsySeoToolClient() {
+export function EtsySeoToolClient({ nonce }: { nonce?: string } = {}) {
   const [title, setTitle] = React.useState("");
   const [tags, setTags] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -210,7 +210,7 @@ Feedback: ${analysis.overallFeedback}
   };
 
   return (
-    <ToolLayout {...TOOL_INFO}>
+    <ToolLayout nonce={nonce} {...TOOL_INFO}>
       <ApiErrorBanner
         error={apiError}
         onDismiss={() => setApiError(null)}

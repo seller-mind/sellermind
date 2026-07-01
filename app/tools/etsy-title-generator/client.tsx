@@ -128,7 +128,7 @@ const TOOL_INFO = {
   }
 };
 
-export function EtsyTitleGeneratorClient() {
+export function EtsyTitleGeneratorClient({ nonce }: { nonce?: string } = {}) {
   const [productType, setProductType] = React.useState("");
   const [keyFeatures, setKeyFeatures] = React.useState("");
   const [targetAudience, setTargetAudience] = React.useState("");
@@ -204,7 +204,7 @@ export function EtsyTitleGeneratorClient() {
   };
 
   return (
-    <ToolLayout {...TOOL_INFO}>
+    <ToolLayout nonce={nonce} {...TOOL_INFO}>
       <ApiErrorBanner
         error={apiError}
         onDismiss={() => setApiError(null)}

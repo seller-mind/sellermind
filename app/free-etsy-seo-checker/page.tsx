@@ -7,9 +7,14 @@ import {
 } from "./metadata";
 import EtsyAuditWidget from "./EtsyAuditWidget";
 import BookmarkletButton from './BookmarkletButton';
+import { JsonLdScript } from "@/components/shared/JsonLdScript";
 
 export const metadata: Metadata = etsySeoCheckerMetadata;
-export const dynamic = "force-static";
+// P3 fix (2026-07-01): switched from "force-static" to "force-dynamic"
+// because JsonLdScript now reads the per-request CSP nonce via
+// next/headers(), which is incompatible with static rendering. Edge
+// caching still works via response Cache-Control (see revalidate below).
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 const FAQS = [
@@ -38,14 +43,8 @@ const FAQS = [
 export default function FreeEtsySeoCheckerPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 md:py-16" data-tool-version="etsy-seo-v0.1">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_APPLICATION_JSONLD) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSONLD) }}
-      />
+      <JsonLdScript data={SOFTWARE_APPLICATION_JSONLD} />
+      <JsonLdScript data={FAQ_JSONLD} />
 
       {/* Hero */}
       <header className="mb-8 text-center md:mb-10">

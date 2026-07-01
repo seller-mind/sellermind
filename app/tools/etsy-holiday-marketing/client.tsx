@@ -140,7 +140,7 @@ const HOLIDAYS = [
   { name: "Back to School", emoji: "📚", peak: "Aug 1 - Sep 15", start: "July 1" },
 ];
 
-export function EtsyHolidayMarketingClient() {
+export function EtsyHolidayMarketingClient({ nonce }: { nonce?: string } = {}) {
   const [holiday, setHoliday] = React.useState("");
   const [productDescription, setProductDescription] = React.useState("");
   const [targetAudience, setTargetAudience] = React.useState("");
@@ -193,7 +193,7 @@ export function EtsyHolidayMarketingClient() {
   };
 
   return (
-    <ToolLayout {...TOOL_INFO}>
+    <ToolLayout nonce={nonce} {...TOOL_INFO}>
       <ApiErrorBanner
         error={apiError}
         onDismiss={() => setApiError(null)}

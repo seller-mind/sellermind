@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { JsonLdScript } from "@/components/shared/JsonLdScript";
 import {
   getAllPosts,
   getPostBySlug,
@@ -91,10 +92,7 @@ export default function BlogPostPage({ params }: PageProps) {
 
   return (
     <article className="mx-auto max-w-3xl py-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLdScript data={structuredData} />
 
       <nav className="mb-6 text-sm text-foreground-muted">
         <Link href="/blog" className="hover:text-primary">

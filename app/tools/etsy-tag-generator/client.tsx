@@ -125,7 +125,7 @@ const TOOL_INFO = {
   }
 };
 
-export function EtsyTagGeneratorClient() {
+export function EtsyTagGeneratorClient({ nonce }: { nonce?: string } = {}) {
   const [productDescription, setProductDescription] = React.useState("");
   const [currentTitle, setCurrentTitle] = React.useState("");
   const [category, setCategory] = React.useState("");
@@ -196,7 +196,7 @@ export function EtsyTagGeneratorClient() {
   };
 
   return (
-    <ToolLayout {...TOOL_INFO}>
+    <ToolLayout nonce={nonce} {...TOOL_INFO}>
       <ApiErrorBanner
         error={apiError}
         onDismiss={() => setApiError(null)}

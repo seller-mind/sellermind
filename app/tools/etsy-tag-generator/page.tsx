@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { EtsyTagGeneratorClient } from "./client";
 
 export const metadata: Metadata = {
@@ -22,5 +23,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <EtsyTagGeneratorClient />;
+  // P3 fix (2026-07-01): read the per-request CSP nonce set by
+  // middleware.ts and thread it through the client component so any
+  // inline <script> (JSON-LD schemas etc.) can be nonce-attributed.
+  const nonce = headers().get("x-nonce") || undefined;
+  return <EtsyTagGeneratorClient nonce={nonce} />;
 }

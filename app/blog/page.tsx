@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog/posts";
+import { JsonLdScript } from "@/components/shared/JsonLdScript";
 
 export const metadata: Metadata = {
   title: "SellerMind Blog | Etsy SEO, AI Tools & Seller Playbooks",
@@ -52,10 +53,7 @@ export default function BlogIndexPage() {
 
   return (
     <div className="mx-auto max-w-3xl py-10">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLdScript data={structuredData} />
       <header className="mb-10 text-center">
         <h1 className="text-4xl font-bold text-foreground-primary sm:text-5xl">
           SellerMind Blog

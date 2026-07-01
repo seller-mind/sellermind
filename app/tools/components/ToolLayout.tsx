@@ -31,6 +31,12 @@ interface ToolLayoutProps {
       };
     }>;
   };
+  // CSP nonce injected by middleware.ts (2026-07-01 P3 fix). Passed in
+  // from the tool's Server-Component page.tsx (which reads it via
+  // next/headers), threaded through client.tsx, and applied to every
+  // inline <script> emitted below so the strict nonce-based CSP accepts
+  // them. Kept optional so unit tests / storybook can render without it.
+  nonce?: string;
 }
 
 export function ToolLayout({
@@ -44,6 +50,7 @@ export function ToolLayout({
   structuredData,
   otherTools,
   faqSchema,
+  nonce,
 }: ToolLayoutProps) {
   // SoftwareApplication schema
   const softwareSchema = {
@@ -162,22 +169,27 @@ export function ToolLayout({
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
       />
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(activeFaqSchema) }}
       />
 

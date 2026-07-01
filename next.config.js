@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 
-// === 安全 Headers（P2 fix from 06-26 02:50 attack audit）===
-// 来源: marketing/attack_test_20260626 — SM 单独缺安全 header (HSTS 之外全无)
-// 对比 PodCrisp 全套已有，本次搬来同款
+// === 安全 Headers ===
+// 来源：06-26 02:50 attack audit — SM 单独缺安全 header (HSTS 之外全无)。
+//
+// Content-Security-Policy 已迁出到 middleware.ts (2026-07-01 P3 fix)：
+// 静态 CSP 无法带 per-request nonce，故 CSP header 现在由 middleware 每次
+// 请求即时生成并附加。此文件仅保留与请求无关的静态安全 header。
 const securityHeaders = [
   {
     key: 'Strict-Transport-Security',
@@ -23,22 +26,6 @@ const securityHeaders = [
   {
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), payment=()',
-  },
-  {
-    key: 'Content-Security-Policy',
-    value: [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://rsms.me",
-      "img-src 'self' data: blob: https:",
-      "font-src 'self' data: https://fonts.gstatic.com https://rsms.me",
-      "connect-src 'self' https://thesellermind.com https://*.thesellermind.com https://vitals.vercel-insights.com",
-      "frame-ancestors 'self'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "object-src 'none'",
-      "upgrade-insecure-requests",
-    ].join('; '),
   },
 ];
 
