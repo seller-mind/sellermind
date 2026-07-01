@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 export default function PricingClient() {
   const [email, setEmail] = useState('')
@@ -161,9 +162,15 @@ export default function PricingClient() {
             </li>
           </ul>
 
-          <div className="text-center">
-            <p className="text-sm text-foreground-muted">
-              Just enter your email above to get started — no sign-up required.
+          <div className="space-y-3">
+            <Link
+              href="/tools"
+              className="block w-full py-3 px-4 text-center font-medium rounded-lg bg-white text-[#E07A5F] border-2 border-[#E07A5F] hover:bg-[#E07A5F]/5 transition-colors"
+            >
+              Start Free →
+            </Link>
+            <p className="text-xs text-center text-foreground-muted">
+              No signup · Uses tracked by email
             </p>
           </div>
         </div>
