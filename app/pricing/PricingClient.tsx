@@ -3,9 +3,15 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+// Client-side email format validation regex.
+// Note: intentionally kept simple + widely-accepted; the source of truth is still Dodo/webhook validation.
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function PricingClient() {
   const [email, setEmail] = useState('')
   const [savedEmail, setSavedEmail] = useState('')
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   useEffect(() => {
     // Load saved email from localStorage
@@ -16,11 +22,17 @@ export default function PricingClient() {
     }
   }, [])
 
+  const isValidEmail = (value: string) => EMAIL_REGEX.test(value.trim())
+
   const saveEmail = () => {
-    if (email && email.includes('@')) {
-      localStorage.setItem('sellermind_email', email.toLowerCase())
-      setSavedEmail(email.toLowerCase())
+    setErrorMsg(null)
+    const trimmed = email.trim()
+    if (!isValidEmail(trimmed)) {
+      setErrorMsg('Please enter a valid email address (e.g., you@example.com).')
+      return
     }
+    localStorage.setItem('sellermind_email', trimmed.toLowerCase())
+    setSavedEmail(trimmed.toLowerCase())
   }
 
   // Dodo Payments direct checkout (replaces /api/checkout flow on 2026-06-15)
@@ -32,21 +44,28 @@ export default function PricingClient() {
   }
 
   const handleSubscribe = (planId: string) => {
-    if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address first.')
+    setErrorMsg(null)
+    const trimmed = email.trim()
+    if (!isValidEmail(trimmed)) {
+      setErrorMsg('Please enter a valid email address first (e.g., you@example.com).')
       return
     }
     const target = DODO_CHECKOUT_URLS[planId]
     if (!target) {
-      alert('Invalid plan selected.')
+      setErrorMsg('Invalid plan selected. Please refresh and try again.')
       return
     }
-    const normalized = email.toLowerCase()
+    // Prevent double-click / concurrent redirects
+    if (loadingPlan) return
+    setLoadingPlan(planId)
+
+    const normalized = trimmed.toLowerCase()
     // Persist email so post-checkout return can re-link the session
     localStorage.setItem('sellermind_email', normalized)
     setSavedEmail(normalized)
     // Pre-fill email on Dodo checkout page (Dodo accepts ?email= in URL)
     const url = `${target}&email=${encodeURIComponent(normalized)}`
+    // window.location.href triggers navigation; loadingPlan stays true until page unloads.
     window.location.href = url
   }
 
@@ -65,6 +84,8 @@ export default function PricingClient() {
     }
   }, [])
 
+  const emailInputValid = email.trim().length === 0 || isValidEmail(email)
+
   return (
     <div className="py-12">
       <div className="text-center mb-12">
@@ -76,6 +97,35 @@ export default function PricingClient() {
         </p>
       </div>
 
+      {/* Inline error banner (replaces alert()) */}
+      {errorMsg && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="max-w-md mx-auto mb-6 px-4"
+        >
+          <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            <svg
+              className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+            </svg>
+            <div className="flex-1">{errorMsg}</div>
+            <button
+              type="button"
+              onClick={() => setErrorMsg(null)}
+              className="text-red-500 hover:text-red-700 text-lg leading-none"
+              aria-label="Dismiss error"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Email Input Section */}
       <div className="max-w-md mx-auto mb-12 px-4">
         <div className="bg-white rounded-xl border border-border p-6">
@@ -86,20 +136,32 @@ export default function PricingClient() {
             <input
               id="email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              aria-invalid={!emailInputValid}
+              className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 ${
+                emailInputValid
+                  ? 'border-border focus:ring-primary/50'
+                  : 'border-red-300 focus:ring-red-300'
+              }`}
             />
             <button
               onClick={saveEmail}
-              disabled={!email || !email.includes('@') || email.toLowerCase() === savedEmail}
+              disabled={!isValidEmail(email) || email.trim().toLowerCase() === savedEmail}
               className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save
             </button>
           </div>
-          {savedEmail && (
+          {!emailInputValid && (
+            <p className="mt-2 text-xs text-red-600">
+              That doesn't look like a valid email address.
+            </p>
+          )}
+          {savedEmail && emailInputValid && (
             <p className="mt-2 text-xs text-foreground-muted">
               ✓ Using {savedEmail} — your free uses are tracked by this email.
             </p>
@@ -116,7 +178,7 @@ export default function PricingClient() {
               $0<span className="text-lg font-normal text-foreground-muted">/month</span>
             </p>
           </div>
-          
+
           <ul className="space-y-4 mb-8">
             <li className="flex items-start gap-3">
               <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,7 +244,7 @@ export default function PricingClient() {
               Most Popular
             </span>
           </div>
-          
+
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-foreground-primary">Pro</h2>
             <div className="flex items-baseline gap-2 mt-2">
@@ -191,7 +253,7 @@ export default function PricingClient() {
             </div>
             <p className="text-sm text-foreground-muted mt-1">or $199/year (save $40)</p>
           </div>
-          
+
           <ul className="space-y-4 mb-8">
             <li className="flex items-start gap-3">
               <svg className="w-5 h-5 text-[#E07A5F] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -222,16 +284,38 @@ export default function PricingClient() {
           <div className="space-y-3">
             <button
               onClick={() => handleSubscribe('monthly')}
-              className="w-full py-3 px-4 text-center font-medium rounded-lg bg-[#E07A5F] text-white hover:bg-[#d46a50] transition-colors"
+              disabled={loadingPlan !== null}
+              aria-busy={loadingPlan === 'monthly'}
+              className={`w-full py-3 px-4 text-center font-medium rounded-lg bg-[#E07A5F] text-white hover:bg-[#d46a50] transition-colors ${
+                loadingPlan !== null ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Subscribe Monthly
+              {loadingPlan === 'monthly' ? 'Redirecting…' : 'Subscribe Monthly'}
             </button>
             <button
               onClick={() => handleSubscribe('yearly')}
-              className="w-full py-3 px-4 text-center font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+              disabled={loadingPlan !== null}
+              aria-busy={loadingPlan === 'yearly'}
+              className={`w-full py-3 px-4 text-center font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors ${
+                loadingPlan !== null ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Subscribe Yearly (Save $40)
+              {loadingPlan === 'yearly' ? 'Redirecting…' : 'Subscribe Yearly (Save $40)'}
             </button>
+
+            {/* PCI-DSS trust microcopy (F-002) */}
+            <p className="text-xs text-center text-foreground-muted mt-3 leading-relaxed">
+              🔒 Payments securely processed by{' '}
+              <a
+                href="https://dodopayments.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground-primary"
+              >
+                Dodo Payments
+              </a>
+              , a PCI-DSS Level 1 compliant Merchant of Record (Stripe-backed). We never see or store your card details.
+            </p>
           </div>
         </div>
       </div>
@@ -240,7 +324,7 @@ export default function PricingClient() {
       {/* FAQ */}
       <div className="mt-16 max-w-3xl mx-auto px-4">
         <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-        
+
         <div className="space-y-4">
           <details className="bg-white rounded-xl border border-border p-6 group">
             <summary className="font-medium cursor-pointer list-none flex justify-between items-center">

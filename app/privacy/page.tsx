@@ -165,6 +165,7 @@ export default function PrivacyPage() {
             <li><strong>Dodo Payments:</strong> Payment processing and subscription management — servers located in the United States (Merchant of Record / payment processor)</li>
             <li><strong>Supabase:</strong> Database and user data storage - servers located in Tokyo, Japan</li>
             <li><strong>Vercel:</strong> Website hosting and deployment - servers located in the United States</li>
+            <li><strong>Cloudflare, Inc.:</strong> Content Delivery Network (CDN), Web Application Firewall (WAF), and DDoS protection — servers located globally. Data processed: IP address, request metadata, TLS handshake information. Retention: less than 30 days. Subject to Cloudflare's <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">privacy policy</a>.</li>
           </ul>
         </CardContent>
       </Card>

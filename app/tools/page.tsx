@@ -7,30 +7,33 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Free Etsy Seller Tools — AI Title, SEO, Tags, Reviews · SellerMind',
-  description: 'Boost your Etsy shop with free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+  title: 'Free Etsy Seller Tools — 10 AI Tools for Titles, SEO, Tags, Reviews · SellerMind',
+  description: 'Boost your Etsy shop with 10 free AI seller tools — generate titles, tags, reviews, SEO audits, and listing optimizations in seconds. No signup, no credit card, unlimited use.',
   alternates: {
     canonical: 'https://thesellermind.com/tools',
   },
   openGraph: {
-    title: 'Free Etsy Seller Tools — AI Title, SEO, Tags, Reviews · SellerMind',
-    description: 'Boost your Etsy shop with free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+    title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
+    description: 'Boost your Etsy shop with 10 free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
     url: 'https://thesellermind.com/tools',
     type: "website",
     siteName: "SellerMind",
   },
   twitter: {
     card: "summary_large_image",
-    title: 'Free Etsy Seller Tools — AI Title, SEO, Tags, Reviews · SellerMind',
-    description: 'Boost your Etsy shop with free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+    title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
+    description: 'Boost your Etsy shop with 10 free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
   },
 };
 
 
-const TOOLS = [
+// ============================================================
+// pSEO landing tools (single-purpose, keyword-optimized pages)
+// ============================================================
+const PSEO_TOOLS = [
   {
     name: "Etsy Title Generator",
-    slug: "/etsy-title-generator",
+    slug: "/tools/etsy-title-generator",
     description: "Create SEO-optimized Etsy listing titles that rank higher in search results",
     icon: "📝",
     features: ["AI-powered generation", "140-character optimization", "SEO scoring", "One-click copy"],
@@ -38,7 +41,7 @@ const TOOLS = [
   },
   {
     name: "Etsy Tag Generator",
-    slug: "/etsy-tag-generator",
+    slug: "/tools/etsy-tag-generator",
     description: "Generate all 13 Etsy tags with AI-suggested candidates and qualitative competition labels",
     icon: "🏷️",
     features: ["13 tags generated", "AI-powered suggestions", "Competition analysis", "Smart suggestions"],
@@ -46,7 +49,7 @@ const TOOLS = [
   },
   {
     name: "Etsy SEO Tool",
-    slug: "/etsy-seo-tool",
+    slug: "/tools/etsy-seo-tool",
     description: "Analyze and optimize your Etsy listings for maximum search visibility",
     icon: "🔍",
     features: ["Instant analysis", "SEO score calculation", "Improvement tips", "Full listing check"],
@@ -54,7 +57,7 @@ const TOOLS = [
   },
   {
     name: "Etsy Review Response",
-    slug: "/etsy-review-response",
+    slug: "/tools/etsy-review-response",
     description: "Generate professional review responses for positive and negative reviews",
     icon: "💬",
     features: ["AI-powered replies", "Professional tone", "Template options", "Instant generation"],
@@ -62,7 +65,7 @@ const TOOLS = [
   },
   {
     name: "Etsy Holiday Marketing",
-    slug: "/etsy-holiday-marketing",
+    slug: "/tools/etsy-holiday-marketing",
     description: "Generate seasonal keywords and marketing templates for every holiday",
     icon: "🎄",
     features: ["8+ holidays covered", "Seasonal keywords", "Marketing templates", "Timing tips"],
@@ -70,11 +73,61 @@ const TOOLS = [
   }
 ];
 
+// ============================================================
+// Legacy flagship tools (full-workflow tools launched with SellerMind Pro)
+// F-21 · Batch 2: promote these onto Tools hub as first-class cards
+// ============================================================
+const LEGACY_TOOLS = [
+  {
+    name: "Listing Generator",
+    slug: "/tools/listing",
+    description: "Create complete SEO-optimized Etsy listings — title, description, and 13 tags in one workflow.",
+    icon: "✨",
+    features: ["Full listing bundle", "Title + description + tags", "AI-powered", "Copy-ready"],
+    keywords: ["etsy listing generator", "etsy listing creator", "full etsy listing"]
+  },
+  {
+    name: "Auto Reply",
+    slug: "/tools/reply",
+    description: "Generate warm, professional customer service replies for any Etsy inquiry scenario.",
+    icon: "💌",
+    features: ["Multiple tones", "Scenario templates", "Instant generation", "One-click copy"],
+    keywords: ["etsy customer reply", "etsy auto reply", "etsy message template"]
+  },
+  {
+    name: "Holiday Marketing",
+    slug: "/tools/holiday",
+    description: "Create compelling holiday marketing copy for Christmas, Valentine's, Black Friday and more.",
+    icon: "🎉",
+    features: ["12+ holidays", "Campaign copy", "Social captions", "Email snippets"],
+    keywords: ["etsy holiday copy", "etsy campaign generator", "seasonal marketing copy"]
+  },
+  {
+    name: "Review Handler",
+    slug: "/tools/review",
+    description: "Transform negative reviews into opportunities with expert response strategies.",
+    icon: "⭐",
+    features: ["Negative review recovery", "Empathy templates", "Damage control", "5-star replies"],
+    keywords: ["etsy review handler", "negative review response", "etsy reputation"]
+  },
+  {
+    name: "Batch Optimizer",
+    slug: "/tools/batch",
+    description: "Analyze and optimize multiple Etsy listings at once with AI-powered SEO suggestions.",
+    icon: "🚀",
+    features: ["Bulk analysis", "Multi-listing SEO", "Ranked suggestions", "Pro-tier speed"],
+    keywords: ["etsy batch optimizer", "bulk listing seo", "etsy shop audit"]
+  }
+];
+
+// Combined for structured data + counts
+const ALL_TOOLS = [...PSEO_TOOLS, ...LEGACY_TOOLS];
+
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Free Etsy Seller Tools - SellerMind",
-  "description": "Complete suite of free AI-powered Etsy seller tools. Generate titles, tags, analyze SEO, respond to reviews, and create holiday marketing campaigns.",
+  "description": "Complete suite of 10 free AI-powered Etsy seller tools. Generate titles, tags, listings, tags, analyze SEO, respond to reviews, and create holiday marketing campaigns.",
   "url": "https://thesellermind.com/tools",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web Browser",
@@ -104,6 +157,79 @@ const breadcrumbSchema = {
   ]
 };
 
+function ToolCard({
+  tool,
+  index,
+  variant,
+}: {
+  tool: (typeof ALL_TOOLS)[number];
+  index: number;
+  variant: "pseo" | "legacy";
+}) {
+  const iconBg =
+    variant === "legacy"
+      ? "bg-gradient-to-br from-orange-50 to-amber-50"
+      : "bg-gradient-to-br from-green-50 to-emerald-50";
+  const buttonBg =
+    variant === "legacy"
+      ? "bg-[#E07A5F] hover:bg-[#d46a50]"
+      : "bg-green-600 hover:bg-green-700";
+  const badgeLabel = variant === "legacy" ? "FLAGSHIP" : "FREE";
+  const badgeClass =
+    variant === "legacy"
+      ? "bg-amber-100 text-amber-800"
+      : "bg-green-100 text-green-800";
+
+  return (
+    <Card key={tool.slug} className="overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="flex flex-col md:flex-row">
+        {/* Icon Section */}
+        <div className={`${iconBg} p-6 flex items-center justify-center md:w-32`}>
+          <span className="text-5xl">{tool.icon}</span>
+        </div>
+
+        {/* Content Section */}
+        <div className="flex-1 p-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="outline" className="text-xs">
+                  Tool #{index + 1}
+                </Badge>
+                <Badge variant="secondary" className={`${badgeClass} text-xs`}>
+                  {badgeLabel}
+                </Badge>
+              </div>
+              <h3 className="text-xl font-bold text-foreground-primary mb-2">
+                {tool.name}
+              </h3>
+              <p className="text-foreground-secondary mb-3">
+                {tool.description}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {tool.features.map((feature, i) => (
+                  <span
+                    key={i}
+                    className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
+                  >
+                    ✓ {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <Link
+              href={tool.slug}
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 text-white shadow-sm hover:shadow-md px-5 h-10 ${buttonBg}`}
+            >
+              Use Tool <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export default function ToolsHubPage() {
   return (
     <>
@@ -116,19 +242,6 @@ export default function ToolsHubPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-
-      {/* SEO Meta Tags */}
-      <title>Free Etsy Seller Tools — AI-Powered Listing Optimization | SellerMind</title>
-      <meta name="description" content="Complete suite of free Etsy seller tools. Generate titles, tags, analyze SEO, respond to reviews & create holiday marketing. 100% free, no signup required." />
-      <meta property="og:title" content="Free Etsy Seller Tools — AI-Powered Listing Optimization | SellerMind" />
-      <meta property="og:description" content="Complete suite of free Etsy seller tools. Generate titles, tags, analyze SEO, respond to reviews & create holiday marketing. 100% free, no signup." />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://thesellermind.com/tools" />
-      <meta property="og:site_name" content="SellerMind" />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Free Etsy Seller Tools | SellerMind" />
-      <meta name="twitter:description" content="Complete suite of free Etsy seller tools. Generate titles, tags, analyze SEO & more. 100% free." />
-      <link rel="canonical" href="https://thesellermind.com/tools" />
 
       {/* Breadcrumb Navigation */}
       <nav className="mb-4 text-sm" aria-label="Breadcrumb">
@@ -163,7 +276,7 @@ export default function ToolsHubPage() {
             Free Etsy Seller Tools
           </h1>
           <p className="mt-4 text-lg text-foreground-secondary max-w-2xl mx-auto">
-            Complete suite of AI-powered tools to optimize your Etsy listings, 
+            10 AI-powered tools to optimize your Etsy listings,
             boost search rankings, and grow your handmade business — all free, no signup required.
           </p>
         </div>
@@ -208,57 +321,43 @@ export default function ToolsHubPage() {
           </Card>
         </div>
 
-        {/* Tools Grid */}
+        {/* pSEO Tools Grid */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-foreground-primary text-center">
-            All Free Etsy Tools
-          </h2>
-          
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-foreground-primary">
+              Free Single-Purpose Tools
+            </h2>
+            <p className="text-sm text-foreground-muted mt-1">
+              Focused, keyword-optimized landing tools for specific SEO tasks
+            </p>
+          </div>
+
           <div className="grid gap-6">
-            {TOOLS.map((tool, index) => (
-              <Card key={tool.slug} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="flex flex-col md:flex-row">
-                  {/* Icon Section */}
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 flex items-center justify-center md:w-32">
-                    <span className="text-5xl">{tool.icon}</span>
-                  </div>
-                  
-                  {/* Content Section */}
-                  <div className="flex-1 p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="text-xs">
-                            Tool #{index + 1}
-                          </Badge>
-                          <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-                            FREE
-                          </Badge>
-                        </div>
-                        <h3 className="text-xl font-bold text-foreground-primary mb-2">
-                          {tool.name}
-                        </h3>
-                        <p className="text-foreground-secondary mb-3">
-                          {tool.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {tool.features.map((feature, i) => (
-                            <span 
-                              key={i} 
-                              className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
-                            >
-                              ✓ {feature}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <Link href={tool.slug} className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-sm hover:shadow-md px-5 h-10">
-                          Use Tool <ArrowRight className="w-4 h-4 ml-2" />
-                        </Link>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+            {PSEO_TOOLS.map((tool, index) => (
+              <ToolCard key={tool.slug} tool={tool} index={index} variant="pseo" />
+            ))}
+          </div>
+        </div>
+
+        {/* Legacy / Flagship Tools Grid (F-21 inlinks) */}
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-foreground-primary">
+              Flagship Workflow Tools
+            </h2>
+            <p className="text-sm text-foreground-muted mt-1">
+              Full-workflow tools with the SellerMind Pro engine — 3 free uses / month, unlimited on Pro
+            </p>
+          </div>
+
+          <div className="grid gap-6">
+            {LEGACY_TOOLS.map((tool, index) => (
+              <ToolCard
+                key={tool.slug}
+                tool={tool}
+                index={PSEO_TOOLS.length + index}
+                variant="legacy"
+              />
             ))}
           </div>
         </div>
@@ -268,7 +367,7 @@ export default function ToolsHubPage() {
           <CardHeader>
             <CardTitle className="text-xl">🎯 Target Keywords Covered</CardTitle>
             <CardDescription>
-              Our tools are optimized for these high-value Etsy seller keywords
+              Our 10 tools are optimized for these high-value Etsy seller keywords
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -280,7 +379,7 @@ export default function ToolsHubPage() {
                 "etsy holiday marketing", "etsy christmas keywords", "etsy tag optimization",
                 "etsy seo tips", "etsy listing optimization", "etsy seasonal marketing"
               ].map((keyword, i) => (
-                <span 
+                <span
                   key={i}
                   className="text-sm bg-white border border-gray-200 text-gray-700 px-3 py-1 rounded-full hover:border-green-300 hover:text-green-700 transition-colors cursor-default"
                 >
@@ -298,18 +397,18 @@ export default function ToolsHubPage() {
               💡 Want All-in-One Etsy Listing Creation?
             </h3>
             <p className="text-foreground-secondary mb-6 max-w-xl mx-auto">
-              SellerMind generates complete Etsy listings with titles, descriptions, 
+              SellerMind generates complete Etsy listings with titles, descriptions,
               and tags — all powered by AI. Perfect for sellers who want everything in one place.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="https://thesellermind.com" className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-base font-semibold transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-sm hover:shadow-md px-8 h-12">
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Try SellerMind Free
-                </Link>
+              <Link href="/tools/listing" className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-base font-semibold transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-sm hover:shadow-md px-8 h-12">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Try Listing Generator
+              </Link>
               <Link href="/tools/etsy-seo-tool" className="inline-flex items-center justify-center whitespace-nowrap rounded-xl text-base font-semibold transition-all duration-200 bg-white text-foreground-primary border-2 border-border hover:border-primary hover:text-primary px-8 h-12">
-                  <Zap className="w-5 h-5 mr-2" />
-                  Try SEO Analyzer
-                </Link>
+                <Zap className="w-5 h-5 mr-2" />
+                Try SEO Analyzer
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -322,10 +421,18 @@ export default function ToolsHubPage() {
           <CardContent className="space-y-4">
             <div>
               <h4 className="font-semibold text-foreground-primary mb-2">
+                How many tools does SellerMind offer?
+              </h4>
+              <p className="text-foreground-secondary">
+                SellerMind offers 10 AI-powered Etsy seller tools — 5 focused single-purpose tools and 5 flagship workflow tools. All 10 tools share a shared free tier of 3 AI generations per month.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground-primary mb-2">
                 Are these Etsy tools really free?
               </h4>
               <p className="text-foreground-secondary">
-                Yes, all our Etsy seller tools are 100% free to use. No signup, no credit card, no usage limits. We believe in helping Etsy sellers succeed.
+                Yes, all of the single-purpose tools are 100% free to use, and the flagship workflow tools come with 3 free AI uses per month for every user. Upgrade to Pro for unlimited access.
               </p>
             </div>
             <div>

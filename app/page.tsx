@@ -1,5 +1,35 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title:
+    "SellerMind — AI Tools for Etsy Sellers · 10 Free Tools + Pro Optimizer",
+  description:
+    "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier + Pro plan. Trusted by indie shop owners.",
+  alternates: {
+    canonical: "https://thesellermind.com",
+  },
+  openGraph: {
+    title:
+      "SellerMind — AI Tools for Etsy Sellers · 10 Free Tools + Pro Optimizer",
+    description:
+      "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier + Pro plan. Trusted by indie shop owners.",
+    url: "https://thesellermind.com",
+    siteName: "SellerMind",
+    images: [
+      { url: "https://thesellermind.com/og-image.png", width: 1200, height: 630 },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "SellerMind — AI Tools for Etsy Sellers · 10 Free Tools + Pro Optimizer",
+    description:
+      "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier + Pro plan.",
+  },
+};
 
 const FEATURES = [
   {
@@ -48,7 +78,7 @@ const STEPS = [
   {
     number: "1",
     title: "Choose Your Tool",
-    description: "Select from 5 powerful AI tools designed specifically for Etsy sellers.",
+    description: "Select from 10 powerful AI tools designed specifically for Etsy sellers.",
   },
   {
     number: "2",
@@ -87,7 +117,7 @@ export default function HomePage() {
             Your AI Partner for Thriving Etsy Shop
           </p>
           <p className="mb-8 text-base text-white/80 sm:text-lg max-w-2xl mx-auto">
-            Empower your Etsy business with AI-powered tools that simplify listing creation, customer service, and marketing — all in one intuitive interface.
+            Empower your Etsy business with 10 AI-powered tools that simplify listing creation, customer service, and marketing — all in one intuitive interface.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
@@ -116,7 +146,10 @@ export default function HomePage() {
             Everything You Need to <span className="text-primary">Grow</span>
           </h2>
           <p className="mx-auto max-w-2xl text-foreground-secondary">
-            Five powerful AI tools, purpose-built for Etsy sellers. No more staring at a blank page.
+            10 powerful AI tools, purpose-built for Etsy sellers. No more staring at a blank page.{" "}
+            <Link href="/tools" className="text-primary underline hover:text-primary-hover">
+              See all 10 tools →
+            </Link>
           </p>
         </div>
 

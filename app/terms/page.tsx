@@ -340,6 +340,53 @@ export default function TermsPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Termination</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <h3 className="text-base font-semibold text-foreground-primary">Termination by SellerMind</h3>
+          <p>
+            We reserve the right to suspend or terminate your access to SellerMind, in whole or in part, at any time, with or without prior notice, for any of the following reasons:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-4">
+            <li><strong>Violation of these Terms</strong>, including our Acceptable Use restrictions or applicable laws;</li>
+            <li><strong>Non-payment</strong> or repeated failed billing attempts on a Pro subscription;</li>
+            <li><strong>Fraudulent activity, abuse, or misuse</strong> of our AI generation quotas, checkout flow, or automated systems;</li>
+            <li><strong>Reasonable belief</strong> that continued access would create legal or security risk to SellerMind, our users, or third parties;</li>
+            <li>Extended <strong>inactivity</strong> (12+ months for free accounts) or for any other legitimate business reason.</li>
+          </ul>
+          <p className="mt-4">
+            Where feasible and not prohibited by law, we will provide advance notice via the email associated with your account.
+          </p>
+
+          <h3 className="text-base font-semibold text-foreground-primary mt-6">Termination by You</h3>
+          <p>
+            You may terminate your use of SellerMind at any time by:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-4">
+            <li>Discontinuing use of the Service (free tier);</li>
+            <li>Cancelling your Pro subscription by emailing <strong>support@thesellermind.com</strong> — access continues until the end of the current billing period;</li>
+            <li>Requesting deletion of your account and associated data at <strong>privacy@thesellermind.com</strong> (see also GDPR / CCPA rights in our <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>).</li>
+          </ul>
+
+          <h3 className="text-base font-semibold text-foreground-primary mt-6">Effect of Termination</h3>
+          <p>
+            Upon termination:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-4">
+            <li>Your right to access and use SellerMind ceases immediately;</li>
+            <li>You may request an <strong>export of your generated content and account data within 30 days</strong> of termination by emailing <strong>privacy@thesellermind.com</strong>;</li>
+            <li>After the 30-day export window, we will delete or anonymise personal data associated with your account, except where retention is required by law, for legitimate accounting/tax purposes, or to resolve disputes;</li>
+            <li>Sections of these Terms that by their nature should survive termination (including limitation of liability, indemnification, governing law, and refund policy) will survive.</li>
+          </ul>
+
+          <p className="mt-4">
+            Termination does not entitle you to a refund of prepaid fees, except where required by applicable law (see the EU 14-day withdrawal right and Refund Policy above).
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Contact Information</CardTitle>
         </CardHeader>
         <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
