@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  buildRateLimitResponse,
+  checkIpRateLimit,
+  withRateLimitHeaders,
+} from '@/lib/ip-rate-limit'
 
 // P0-02 fix (full audit 20260625):
 // Switched from Creem (account permanently suspended 2026-06-10) to Dodo Payments.
@@ -9,6 +14,12 @@ const DODO_PRODUCT_IDS = {
   yearly: 'pdt_0Nh4asKyfYxPzDnExvRVo',
 } as const
 
+// P2 fix (2026-07-01): per-IP rate limit — 10 req / 60s. Payment path is the
+// most sensitive endpoint; the tight budget deters URL-enumeration abuse and
+// mass session creation while remaining well above any legitimate one-user
+// click-rate.
+const RL_CFG = { scope: 'checkout', limit: 10, windowSec: 60 } as const
+
 type PlanKey = keyof typeof DODO_PRODUCT_IDS
 
 function isPlan(value: unknown): value is PlanKey {
@@ -16,13 +27,19 @@ function isPlan(value: unknown): value is PlanKey {
 }
 
 export async function POST(req: NextRequest) {
+  const rl = await checkIpRateLimit(req, RL_CFG)
+  if (!rl.allowed) return buildRateLimitResponse(rl)
+
   let body: Record<string, unknown> = {}
   try {
     body = await req.json()
   } catch {
-    return NextResponse.json(
-      { error: { code: 'INVALID_BODY', message: 'Body must be JSON' } },
-      { status: 400 }
+    return withRateLimitHeaders(
+      NextResponse.json(
+        { error: { code: 'INVALID_BODY', message: 'Body must be JSON' } },
+        { status: 400 },
+      ),
+      rl,
     )
   }
 
@@ -35,14 +52,17 @@ export async function POST(req: NextRequest) {
     ''
 
   if (!isPlan(raw)) {
-    return NextResponse.json(
-      {
-        error: {
-          code: 'INVALID_PLAN',
-          message: 'plan must be one of: monthly, yearly',
+    return withRateLimitHeaders(
+      NextResponse.json(
+        {
+          error: {
+            code: 'INVALID_PLAN',
+            message: 'plan must be one of: monthly, yearly',
+          },
         },
-      },
-      { status: 400 }
+        { status: 400 },
+      ),
+      rl,
     )
   }
 
@@ -57,7 +77,7 @@ export async function POST(req: NextRequest) {
 
   const url = `https://checkout.dodopayments.com/buy/${productId}?${params.toString()}`
 
-  return NextResponse.json({ url })
+  return withRateLimitHeaders(NextResponse.json({ url }), rl)
 }
 
 export async function GET() {
@@ -68,6 +88,6 @@ export async function GET() {
         message: 'Use POST with { plan: "monthly" | "yearly" }',
       },
     },
-    { status: 405 }
+    { status: 405 },
   )
 }

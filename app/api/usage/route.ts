@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUsageInfo } from '@/lib/usage'
+import {
+  buildRateLimitResponse,
+  checkIpRateLimit,
+  withRateLimitHeaders,
+} from '@/lib/ip-rate-limit'
 
 // PII / privacy hardening (P0-C fix · 2026-06-26):
 //
@@ -18,6 +23,12 @@ import { getUsageInfo } from '@/lib/usage'
 // do not pass `searchParams.get('email')` through to `getUsageInfo` even
 // though the param may still be present from stale clients/CDN caches.
 
+// P2 fix (2026-07-01): per-IP rate limit — 60 req / 60s. UsageBanner is
+// rendered on every page navigation and legitimately polls this endpoint
+// on route changes, so we allow ~1 req/sec/IP. That still blocks scripted
+// enumeration (which would try to guess valid emails via response shape).
+const RL_CFG = { scope: 'usage', limit: 60, windowSec: 60 } as const
+
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +37,9 @@ function buildEmptyUsage() {
 }
 
 export async function POST(request: NextRequest) {
+  const rl = await checkIpRateLimit(request, RL_CFG)
+  if (!rl.allowed) return buildRateLimitResponse(rl)
+
   try {
     let email = ''
     try {
@@ -40,21 +54,30 @@ export async function POST(request: NextRequest) {
     // Defence-in-depth: even if a sloppy client appends ?email=... to the
     // POST URL, we will NOT honor it — body only.
     if (!email) {
-      return NextResponse.json(buildEmptyUsage(), { status: 200 })
+      return withRateLimitHeaders(
+        NextResponse.json(buildEmptyUsage(), { status: 200 }),
+        rl,
+      )
     }
 
     const info = await getUsageInfo(email)
     // Disable any intermediate caching so per-user usage state can't be
     // served from another user's cached response.
-    return NextResponse.json(info, {
-      status: 200,
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-      },
-    })
+    return withRateLimitHeaders(
+      NextResponse.json(info, {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+        },
+      }),
+      rl,
+    )
   } catch (error) {
     console.error('Usage API error:', error)
-    return NextResponse.json(buildEmptyUsage(), { status: 200 })
+    return withRateLimitHeaders(
+      NextResponse.json(buildEmptyUsage(), { status: 200 }),
+      rl,
+    )
   }
 }
 

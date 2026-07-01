@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  buildRateLimitResponse,
+  checkIpRateLimit,
+  withRateLimitHeaders,
+} from '@/lib/ip-rate-limit'
 
 // /api/admin/init  — one-off Supabase table sanity check
 //
@@ -23,6 +28,15 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import crypto from 'crypto'
 
+// P2 fix (2026-07-01): per-IP rate limit — 5 req / 60s. This is a
+// privileged admin endpoint (secret-gated), so the tight budget deters
+// brute-force secret guessing well before the constant-time compare
+// even has to run. Fail-open here would defeat the guardrail's purpose,
+// but the underlying Upstash helper is intentionally fail-open — that's
+// acceptable because the ADMIN_INIT_SECRET check on the next lines is
+// still constant-time and secret-length-enforced.
+const RL_CFG = { scope: 'admin_init', limit: 5, windowSec: 60 } as const
+
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
@@ -34,18 +48,27 @@ function timingSafeStringEqual(a: string, b: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  const rl = await checkIpRateLimit(request, RL_CFG)
+  if (!rl.allowed) return buildRateLimitResponse(rl)
+
   const expected = process.env.ADMIN_INIT_SECRET
   // Fail closed: if the env var is missing/empty in this environment, we
   // refuse the call rather than treat both sides as `undefined` (which
   // would silently authenticate).
   if (!expected || expected.length < 16) {
-    return NextResponse.json({ error: 'Admin endpoint disabled' }, { status: 503 })
+    return withRateLimitHeaders(
+      NextResponse.json({ error: 'Admin endpoint disabled' }, { status: 503 }),
+      rl,
+    )
   }
 
   const authHeader = request.headers.get('authorization') || ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : ''
   if (!token || !timingSafeStringEqual(token, expected)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return withRateLimitHeaders(
+      NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+      rl,
+    )
   }
 
   try {
@@ -61,22 +84,31 @@ export async function POST(request: NextRequest) {
       .limit(1)
 
     if (!checkError) {
-      return NextResponse.json({ message: 'Table already exists', status: 'ok' })
+      return withRateLimitHeaders(
+        NextResponse.json({ message: 'Table already exists', status: 'ok' }),
+        rl,
+      )
     }
 
     // Schema-enumeration hardening: never echo the CREATE TABLE SQL.
     // Operator should pull the SQL from `migrations/` in the repo, not
     // from a public production endpoint.
-    return NextResponse.json(
-      {
-        error: 'Required table is missing. Apply migrations/init_sellermind_users.sql via the Supabase Dashboard SQL editor.',
-        status: 'needs_manual_setup',
-      },
-      { status: 400 }
+    return withRateLimitHeaders(
+      NextResponse.json(
+        {
+          error: 'Required table is missing. Apply migrations/init_sellermind_users.sql via the Supabase Dashboard SQL editor.',
+          status: 'needs_manual_setup',
+        },
+        { status: 400 }
+      ),
+      rl,
     )
   } catch (error) {
     console.error('Init error:', error)
-    return NextResponse.json({ error: 'Init failed' }, { status: 500 })
+    return withRateLimitHeaders(
+      NextResponse.json({ error: 'Init failed' }, { status: 500 }),
+      rl,
+    )
   }
 }
 
