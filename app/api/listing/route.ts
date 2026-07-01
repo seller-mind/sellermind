@@ -28,6 +28,59 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number; rese
   return { allowed: true, remaining: 10 - limit.count, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
 }
 
+// -----------------------------------------------------------------------------
+// Etsy 20-char tag hard limit — server-side safeguard.
+// The LLM prompt already instructs "≤ 20 chars", but occasional violations slip
+// through (observed on "Personalized Velvet Ring Box" input → "custom velvet
+// ring box" = 22 chars). Etsy silently rejects any tag over 20 chars, so we
+// enforce this on the server before returning to the client.
+//
+// Strategy:
+//   1. Filter DROP any tag > 20 chars (quality-first).
+//   2. Case-insensitive de-duplication.
+//   3. If < 8 valid tags survive, smart-truncate word-by-word from the tail
+//      as a fallback so users still get a usable set.
+//   4. Cap final list at 13.
+// -----------------------------------------------------------------------------
+function enforceTagLimit(rawTags: unknown): string[] {
+  if (!Array.isArray(rawTags)) return [];
+
+  const cleaned = rawTags
+    .filter((t): t is string => typeof t === "string")
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
+
+  const seen = new Set<string>();
+  const valid: string[] = [];
+  for (const t of cleaned) {
+    if (t.length > 20) continue;
+    const k = t.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    valid.push(t);
+  }
+
+  // Fallback: smart-truncate over-limit tags if we ended up with too few.
+  if (valid.length < 8) {
+    for (const t of cleaned) {
+      if (valid.length >= 13) break;
+      if (t.length <= 20) continue;
+      let s = t;
+      while (s.length > 20 && s.includes(" ")) {
+        s = s.slice(0, s.lastIndexOf(" ")).trim();
+      }
+      if (s.length > 20) s = s.slice(0, 20).trim();
+      if (s.length === 0) continue;
+      const k = s.toLowerCase();
+      if (seen.has(k)) continue;
+      seen.add(k);
+      valid.push(s);
+    }
+  }
+
+  return valid.slice(0, 13);
+}
+
 export async function POST(req: NextRequest) {
   // Security gate — abuse detection, per-IP rate limit, global daily cap
   const preCheck = await applyPreUsageChecks(req);
@@ -116,7 +169,13 @@ export async function POST(req: NextRequest) {
       baseURL: "https://api.deepseek.com"
     });
 
-    const systemPrompt = `${LISTING_SYSTEM_PROMPT}\n\n${LISTING_RULES}`;
+    // Extra prompt-layer reinforcement for the 20-char hard limit.
+    // This is appended on TOP of LISTING_RULES (which already contains the rule)
+    // so the constraint appears both at the top of the system prompt and again
+    // right before the model starts generating — belt AND suspenders.
+    const TAG_LIMIT_REINFORCEMENT = `\n\n## FINAL CHECK — ETSY 20-CHAR TAG LIMIT (STRICT, NON-NEGOTIABLE)\nEvery single string in the "tags" array MUST be 20 characters or fewer, INCLUDING spaces. Count each tag character-by-character before emitting it. If a tag would exceed 20 characters, shorten it by dropping the least essential word or using a shorter synonym (e.g. "custom velvet ring box" (22) → "velvet ring box" (15); "personalized ring holder" (24) → "ring holder gift" (16)). This is an Etsy platform hard limit — tags over 20 chars are rejected. The server WILL silently drop any over-limit tag before returning to the user, so violating this rule directly reduces the number of tags the seller receives. NO EXCEPTIONS.`;
+
+    const systemPrompt = `${LISTING_SYSTEM_PROMPT}\n\n${LISTING_RULES}${TAG_LIMIT_REINFORCEMENT}`;
     const userPrompt = buildListingUserPrompt({ productName, sellingPoints, category, tone });
 
     const response = await openai.chat.completions.create({
@@ -136,6 +195,12 @@ export async function POST(req: NextRequest) {
     }
 
     const data = JSON.parse(content);
+
+    // Server-side safeguard: enforce Etsy's 20-char tag limit no matter what.
+    if (data && typeof data === "object" && "tags" in data) {
+      data.tags = enforceTagLimit((data as { tags: unknown }).tags);
+    }
+
     const processingTime = Date.now() - startTime;
 
     return NextResponse.json(
