@@ -1,10 +1,31 @@
-"use client";
+import type { Metadata } from "next";
 
 import * as React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: 'Free Etsy Seller Tools — AI Title, SEO, Tags, Reviews · SellerMind',
+  description: 'Boost your Etsy shop with free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+  alternates: {
+    canonical: 'https://thesellermind.com/tools',
+  },
+  openGraph: {
+    title: 'Free Etsy Seller Tools — AI Title, SEO, Tags, Reviews · SellerMind',
+    description: 'Boost your Etsy shop with free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+    url: 'https://thesellermind.com/tools',
+    type: "website",
+    siteName: "SellerMind",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: 'Free Etsy Seller Tools — AI Title, SEO, Tags, Reviews · SellerMind',
+    description: 'Boost your Etsy shop with free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+  },
+};
+
 
 const TOOLS = [
   {
