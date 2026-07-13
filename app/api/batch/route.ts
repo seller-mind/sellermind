@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { MODEL_FLASH } from "@/lib/deepseek-client";
 import {
   BATCH_SYSTEM_PROMPT,
   BATCH_RULES,
@@ -88,7 +89,7 @@ export async function POST(req: NextRequest) {
     const userPrompt = buildBatchUserPrompt(listingsText);
 
     const response = await openai.chat.completions.create({
-      model: "deepseek-chat",
+      model: MODEL_FLASH,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { MODEL_FLASH } from "@/lib/deepseek-client";
 import { applyPreUsageChecks, buildLimitExceededResponse } from "@/lib/security";
 import { checkAndIncrementUsage } from "@/lib/usage";
 
@@ -29,7 +30,7 @@ export const dynamic = "force-dynamic";
  */
 
 const DEEPSEEK_TIMEOUT_MS = 30_000;
-const MODEL = "deepseek-chat";
+const MODEL = MODEL_FLASH;
 
 const SYSTEM_PROMPT = `You are an expert Etsy SEO specialist focused on tag/keyword optimization, drawing on publicly documented Etsy SEO best practices.
 

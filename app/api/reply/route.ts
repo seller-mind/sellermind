@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { MODEL_FLASH } from "@/lib/deepseek-client";
 import {
   REPLY_SYSTEM_PROMPT,
   REPLY_TONE_GUIDE,
@@ -88,7 +89,7 @@ export async function POST(req: NextRequest) {
     const userPrompt = buildReplyUserPrompt({ scenario, buyerMessage, tone });
 
     const response = await openai.chat.completions.create({
-      model: "deepseek-chat",
+      model: MODEL_FLASH,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

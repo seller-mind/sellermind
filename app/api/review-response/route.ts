@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { MODEL_FLASH } from "@/lib/deepseek-client";
 import { applyPreUsageChecks, buildLimitExceededResponse } from "@/lib/security";
 import { checkAndIncrementUsage } from "@/lib/usage";
 
@@ -22,7 +23,7 @@ export const dynamic = "force-dynamic";
  */
 
 const DEEPSEEK_TIMEOUT_MS = 30_000;
-const MODEL = "deepseek-chat";
+const MODEL = MODEL_FLASH;
 
 const SYSTEM_PROMPT = `You are an experienced Etsy seller and customer-service writer. You craft public review responses that protect the shop's reputation and feel personal, never scripted.
 
