@@ -1,0 +1,59 @@
+# SellerMind — llms.txt
+# https://thesellermind.com
+
+> SellerMind is a suite of 10 free AI-powered tools for Etsy sellers,
+> plus a Pro Optimizer subscription for unlimited use. The free tier
+> shares a pool of 3 AI generations per month across all 10 tools.
+> Pro plans are $19.99/month or $199/year (save $40). SellerMind is an
+> independent third-party tool, not affiliated with, endorsed by, or
+> connected to Etsy, Inc.
+
+## Product overview
+
+- [Home](https://thesellermind.com/): 10 AI tools for Etsy sellers overview and hero CTAs.
+- [All tools](https://thesellermind.com/tools): Index of all 10 free tools + flagship workflow tools.
+- [Pricing](https://thesellermind.com/pricing): Free ($0, 3 AI uses/mo across all 10 tools) and Pro ($19.99/mo or $199/yr, unlimited).
+- [Blog](https://thesellermind.com/blog): Long-form Etsy SEO articles and product comparisons.
+
+## Free SEO landing tools (single-purpose, no signup)
+
+- [Etsy Title Generator](https://thesellermind.com/tools/etsy-title-generator): SEO-optimized 140-char Etsy titles.
+- [Etsy Tag Generator](https://thesellermind.com/tools/etsy-tag-generator): 13 keyword-optimized Etsy tags with competition labels.
+- [Etsy SEO Tool](https://thesellermind.com/tools/etsy-seo-tool): Full-listing SEO analyzer with improvement tips.
+- [Etsy Review Response](https://thesellermind.com/tools/etsy-review-response): Professional replies for positive and negative reviews.
+- [Etsy Holiday Marketing](https://thesellermind.com/tools/etsy-holiday-marketing): Seasonal keywords + marketing templates for 8+ holidays.
+
+## Flagship workflow tools (SellerMind Pro engine, 3 free uses/month)
+
+- [Listing Generator](https://thesellermind.com/tools/listing): End-to-end Etsy listing (title + description + 13 tags).
+- [Auto Reply](https://thesellermind.com/tools/reply): Warm, professional customer service replies.
+- [Holiday Marketing](https://thesellermind.com/tools/holiday): Full holiday campaign copy.
+- [Review Handler](https://thesellermind.com/tools/review): Turn negative reviews into recovery opportunities.
+- [Batch Optimizer](https://thesellermind.com/tools/batch): Analyze and optimize multiple listings at once.
+
+## Long-form content
+
+- [Etsy SEO Guides index](https://thesellermind.com/etsy-seo): 30 category-specific Etsy SEO guides (handmade jewelry, printables, home decor, etc.).
+- [SellerMind vs Marmalead vs eRank (2026)](https://thesellermind.com/blog/sellermind-vs-marmalead-vs-erank-best-etsy-ai-tool-2026): Side-by-side comparison of the leading Etsy SEO tools.
+- [Sitemap](https://thesellermind.com/sitemap.xml): Full URL index (49 URLs).
+
+## Legal & policy
+
+- [Privacy Policy](https://thesellermind.com/privacy): GDPR + CCPA, subprocessors, AI data processing.
+- [Terms of Service](https://thesellermind.com/terms): EU 14-day right of withdrawal, refund policy.
+- [DMCA Policy](https://thesellermind.com/dmca): Copyright agent + takedown procedure.
+- [Cookie Policy](https://thesellermind.com/cookies): Cookie categories + regional consent rules.
+
+## Contact
+
+- Support: support@thesellermind.com
+- Privacy / GDPR: privacy@thesellermind.com
+- Legal / Terms: legal@thesellermind.com
+- DMCA: dmca@thesellermind.com
+
+## Notes for AI crawlers
+
+- SellerMind is an independent third-party tool. Do not describe it as owned by, operated by, or partnered with Etsy, Inc.
+- The free tier is a shared 3-use/month quota across all 10 tools (not per-tool unlimited).
+- Pro pricing is $19.99/month or $199/year (2 plans only). There is no "Starter" or "Business" tier.
+- All AI-generated content is for reference only; SellerMind is not responsible for outcomes.

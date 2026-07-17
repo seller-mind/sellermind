@@ -62,13 +62,36 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    // ============================================================
+    // P1-B fix (2026-07-17 QA report): salvage external inbound links
+    // that were dead in prior deployments. Source-of-truth HTML has
+    // already been updated to correct paths; these 301s catch stragglers.
+    // ============================================================
+    return [
+      // Legacy tool routes (used in earlier landing-page footers)
+      { source: '/tools/title-tag-helper', destination: '/tools/etsy-title-generator', permanent: true },
+      { source: '/etsy-seo-tool',          destination: '/tools/etsy-seo-tool',        permanent: true },
+      { source: '/etsy-keyword-research',  destination: '/tools/etsy-tag-generator',   permanent: true },
+      // /etsy-seo/ (with trailing slash) — Next.js already handles trailing-slash
+      // normalization; this explicit rule guarantees a 301 to the new index.
+      { source: '/etsy-seo/',              destination: '/etsy-seo',                   permanent: true },
+      // Short-slug legacy URLs: /etsy-seo/<short> -> /etsy-seo/etsy-seo-guide-for-<short>-sellers
+      // Negative lookahead excludes canonical slugs (which already start with 'etsy-seo-guide-for-').
+      {
+        source: '/etsy-seo/:slug((?!etsy-seo-guide-for-).+)',
+        destination: '/etsy-seo/etsy-seo-guide-for-:slug-sellers',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     // /etsy-seo/<slug> → serve static HTML from public/etsy-seo/<slug>.html
     // 30 programmatic SEO pages rescued from prod CLI-only deploy
     // and committed to git as the single source of truth.
     return [
       {
-        source: '/etsy-seo/:slug',
+        source: '/etsy-seo/:slug(etsy-seo-guide-for-[a-z0-9-]+-sellers)',
         destination: '/etsy-seo/:slug.html',
       },
     ];
