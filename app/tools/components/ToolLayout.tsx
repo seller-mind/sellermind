@@ -191,11 +191,11 @@ export function ToolLayout({
       <meta property="og:type" content="website" />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:site_name" content="SellerMind" />
-      <meta property="og:image" content={`${canonicalUrl}/og-image.png`} />
+      <meta property="og:image" content="https://thesellermind.com/og-image.png" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={metaTitle} />
       <meta name="twitter:description" content={metaDescription} />
-      <meta name="twitter:image" content={`${canonicalUrl}/og-image.png`} />
+      <meta name="twitter:image" content="https://thesellermind.com/og-image.png" />
       <link rel="canonical" href={canonicalUrl} />
 
       {/* Breadcrumb Navigation */}

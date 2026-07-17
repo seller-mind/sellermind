@@ -8,21 +8,25 @@ import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: 'Free Etsy Seller Tools — 10 AI Tools for Titles, SEO, Tags, Reviews · SellerMind',
-  description: 'Boost your Etsy shop with 10 free AI seller tools — generate titles, tags, reviews, SEO audits, and listing optimizations in seconds. No signup, no credit card, unlimited use.',
+  description: '10 free Etsy SEO tools for titles, tags, reviews, SEO audits, and listing optimizations. 3 free AI uses per month across all tools · Pro plan ($19.99/mo) unlocks unlimited.',
   alternates: {
     canonical: 'https://thesellermind.com/tools',
   },
   openGraph: {
     title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
-    description: 'Boost your Etsy shop with 10 free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+    description: '10 free Etsy SEO tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
     url: 'https://thesellermind.com/tools',
     type: "website",
     siteName: "SellerMind",
+    images: [
+      { url: "https://thesellermind.com/og-image.png", width: 1200, height: 630 },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
-    description: 'Boost your Etsy shop with 10 free AI seller tools — generate titles, tags, reviews, and SEO audits in seconds. No signup, no credit card, unlimited use.',
+    description: '10 free Etsy SEO tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
+    images: ["https://thesellermind.com/og-image.png"],
   },
 };
 
@@ -432,7 +436,7 @@ export default function ToolsHubPage() {
                 Are these Etsy tools really free?
               </h4>
               <p className="text-foreground-secondary">
-                Yes, all of the single-purpose tools are 100% free to use, and the flagship workflow tools come with 3 free AI uses per month for every user. Upgrade to Pro for unlimited access.
+                All 10 AI tools share the same 3 free AI uses per month for every user (usage is pooled across the entire suite). Upgrade to Pro for unlimited access.
               </p>
             </div>
             <div>
