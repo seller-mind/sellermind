@@ -15,11 +15,13 @@ export const metadata: Metadata = {
     url: URL,
     type: "website",
     siteName: "SellerMind",
+    images: [{ url: 'https://thesellermind.com/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESC,
+    images: ['https://thesellermind.com/og-image.png'],
   },
 };
 

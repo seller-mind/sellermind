@@ -40,9 +40,9 @@ export async function generateMetadata({
       authors: [post.author],
       images: [
         {
-          url: "https://thesellermind.com/icons/icon-512.svg",
-          width: 512,
-          height: 512,
+          url: "https://thesellermind.com/og-image.png",
+          width: 1200,
+          height: 630,
           alt: "SellerMind",
         },
       ],
@@ -51,7 +51,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: ["https://thesellermind.com/icons/icon-512.svg"],
+      images: ["https://thesellermind.com/og-image.png"],
     },
   };
 }
