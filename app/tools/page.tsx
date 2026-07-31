@@ -7,14 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Free Etsy Seller Tools — 10 AI Tools for Titles, SEO, Tags, Reviews · SellerMind',
-  description: '10 free Etsy SEO tools for titles, tags, reviews, SEO audits, and listing optimizations. 3 free AI uses per month across all tools · Pro plan ($19.99/mo) unlocks unlimited.',
+  title: 'Free Etsy Seller Tools — 11 Tools for Titles, Fees & SEO, SEO, Tags, Reviews · SellerMind',
+  description: '11 free Etsy seller tools for titles, tags, reviews, SEO audits, and listing optimizations. 3 free AI uses per month across all tools · Pro plan ($19.99/mo) unlocks unlimited.',
   alternates: {
     canonical: 'https://thesellermind.com/tools',
   },
   openGraph: {
     title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
-    description: '10 free Etsy SEO tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
+    description: '11 free Etsy seller tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
     url: 'https://thesellermind.com/tools',
     type: "website",
     siteName: "SellerMind",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
-    description: '10 free Etsy SEO tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
+    description: '11 free Etsy seller tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
     images: ["https://thesellermind.com/og-image.png"],
   },
 };
@@ -35,6 +35,15 @@ export const metadata: Metadata = {
 // pSEO landing tools (single-purpose, keyword-optimized pages)
 // ============================================================
 const PSEO_TOOLS = [
+  {
+    name: "Etsy Fee Calculator",
+    slug: "/tools/fee-calculator",
+    description: "Calculate exactly how much you earn after Etsy fees. See listing, transaction, and payment processing fees in real time.",
+    icon: "🧮",
+    features: ["Real-time calculation", "Fee breakdown", "Profit margin", "No sign-up"],
+    keywords: ["etsy fee calculator", "etsy profit calculator", "etsy seller tools", "etsy fees 2026"],
+    featured: true,
+  },
   {
     name: "Etsy Title Generator",
     slug: "/tools/etsy-title-generator",
@@ -486,3 +495,4 @@ export default function ToolsHubPage() {
     </>
   );
 }
+
