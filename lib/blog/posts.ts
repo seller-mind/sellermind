@@ -13,6 +13,25 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: "etsy-fees-explained-2026",
+    title: "Etsy Fees Explained: The Complete Guide for Sellers in 2026",
+    description:
+      "Every Etsy fee explained in plain English — listing fee, transaction fee, payment processing, and how to calculate your real profit per sale. Updated for 2026.",
+    date: "2026-07-31",
+    author: "SellerMind team",
+    keywords: [
+      "etsy fees",
+      "etsy fee structure",
+      "etsy fees 2026",
+      "etsy seller fees",
+      "etsy transaction fee",
+      "etsy listing fee",
+      "etsy payment processing",
+      "etsy profit calculator",
+    ],
+    file: "etsy-fees-explained-2026.md",
+  },
+  {
     slug: "sellermind-vs-marmalead-vs-erank-best-etsy-ai-tool-2026",
     title:
       "SellerMind vs Marmalead vs eRank: Best Etsy AI Tool for Sellers in 2026?",
