@@ -82,6 +82,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly' as const,
       priority: 0.9,
     },
+    // Fee Calculator — high-value tool page for Etsy fee breakdown
+    {
+      url: `${baseUrl}/tools/fee-calculator`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
     // Blog index
     {
       url: `${baseUrl}/blog`,
