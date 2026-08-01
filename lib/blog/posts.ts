@@ -50,6 +50,27 @@ export const POSTS: BlogPost[] = [
     ],
     file: "sellermind-vs-marmalead-vs-erank.md",
   },
+  {
+    slug: "etsy-listing-optimization-seo-strategies-2026",
+    title: "Etsy Listing Optimization: 12 Proven SEO Strategies That Actually Work in 2026",
+    description:
+      "Master Etsy listing optimization with 12 actionable SEO strategies for 2026 — from keyword research and title structure to tags, attributes, and AI-powered tools that save hours of manual work.",
+    date: "2026-08-01",
+    author: "SellerMind team",
+    keywords: [
+      "etsy seo",
+      "etsy listing optimization",
+      "etsy seo 2026",
+      "etsy keyword research",
+      "etsy tags",
+      "etsy title optimization",
+      "etsy search algorithm",
+      "etsy listing tips",
+      "ai listing generator",
+      "etsy fee calculator",
+    ],
+    file: "etsy-listing-optimization-seo-strategies-2026.md",
+  },
 ];
 
 export function getAllPosts(): BlogPost[] {
