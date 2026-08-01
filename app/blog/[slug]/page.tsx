@@ -13,6 +13,8 @@ interface PageProps {
   params: { slug: string };
 }
 
+// Blog post pages — statically generated at build time for all posts in lib/blog/posts.ts.
+// Redeploy trigger: 2026-08-01 — ensure new etsy-fees-explained-2026 post is included.
 export async function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
 }
