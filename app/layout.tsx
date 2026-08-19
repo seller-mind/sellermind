@@ -39,6 +39,24 @@ export const metadata: Metadata = {
   },
 };
 
+const OTHER_TOOLS = [
+  {
+    name: "PodCrisp",
+    url: "https://podcrisp.com",
+    description: "AI podcast tool — transcripts, show notes & chapters",
+  },
+  {
+    name: "SaaSLaunch",
+    url: "https://saaslaunch.dev",
+    description: "Next.js SaaS boilerplate — ship your startup in a weekend",
+  },
+  {
+    name: "Parcelglance",
+    url: "https://parcelglance.com",
+    description: "AI order tracking widget for Shopify — cut WISMO emails 50%",
+  },
+];
+
 export default function RootLayout({
   children,
 }: {
@@ -60,8 +78,73 @@ export default function RootLayout({
         </main>
         <MobileNav />
 
+        {/* Cross-linking footer — Other Tools */}
+        <section
+          style={{
+            padding: "48px 0",
+            background: "#FAFAF8",
+            borderTop: "1px solid #E8E5E0",
+          }}
+        >
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h3
+              style={{
+                fontSize: "14px",
+                textTransform: "uppercase",
+                letterSpacing: "1.5px",
+                color: "#8B8680",
+                marginBottom: "20px",
+                fontWeight: 600,
+              }}
+            >
+              Other Tools
+            </h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+              {OTHER_TOOLS.map((tool) => (
+                <a
+                  key={tool.name}
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    width: "180px",
+                    padding: "16px",
+                    borderRadius: "12px",
+                    border: "1px solid #E8E5E0",
+                    background: "#FFFFFF",
+                    textDecoration: "none",
+                    color: "inherit",
+                    transition: "box-shadow 0.2s",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.boxShadow =
+                      "0 4px 12px rgba(0,0,0,0.08)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.boxShadow = "none")
+                  }
+                >
+                  <div
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      color: "#1A1410",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {tool.name}
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#8B8680", lineHeight: "1.5" }}>
+                    {tool.description}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Global Disclaimer Footer */}
-        <footer className="border-t border-border bg-background-secondary/50 mt-8">
+        <footer className="border-t border-border bg-background-secondary/50 mt-0">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div className="text-center space-y-3">
               <p className="text-sm text-foreground-muted">

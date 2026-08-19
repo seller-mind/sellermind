@@ -13,6 +13,27 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: "etsy-fee-calculation-guide",
+    title: "The Complete Guide to Etsy Fee Calculation in 2026",
+    description:
+      "Learn exactly how Etsy fees work in 2026: listing fees, transaction fees, payment processing, and offsite ads. Calculate your true profit per sale with our breakdown.",
+    date: "2026-08-19",
+    author: "SellerMind team",
+    keywords: [
+      "etsy fees",
+      "etsy fee calculator",
+      "etsy fees 2026",
+      "etsy fee structure",
+      "etsy transaction fee",
+      "etsy listing fee",
+      "etsy payment processing",
+      "etsy profit calculator",
+      "etsy offsite ads",
+      "etsy seller fees",
+    ],
+    file: "etsy-fee-calculation-guide.md",
+  },
+  {
     slug: "etsy-fees-explained-2026",
     title: "Etsy Fees Explained: The Complete Guide for Sellers in 2026",
     description:
