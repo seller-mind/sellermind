@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="mt-2 text-foreground-secondary">
-          Last updated: June 2026
+          Last updated: January 2027
         </p>
       </div>
 
@@ -384,6 +384,23 @@ export default function PrivacyPage() {
           <p className="mt-4">
             We encourage you to review this policy periodically.
           </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>AI Content Generation Disclosure</CardTitle>
+        </CardHeader>
+        <CardContent className="prose prose-sm max-w-none text-foreground-secondary">
+          <p>We use artificial intelligence tools to assist in creating certain content, including but not limited to:</p>
+          <ul className="list-disc pl-5 space-y-2 mt-4">
+            <li>Product documentation and help articles</li>
+            <li>Blog posts and marketing materials</li>
+            <li>Social media content</li>
+            <li>Email communications</li>
+          </ul>
+          <p className="mt-4">All AI-assisted content undergoes human review and editorial control before publication. We maintain full editorial responsibility for all published content.</p>
+          <p className="mt-4">In accordance with EU AI Act Article 50(5), content that has undergone human review and editorial control is exempt from mandatory AI labeling requirements. We voluntarily disclose our use of AI tools as a transparency best practice.</p>
         </CardContent>
       </Card>
 
