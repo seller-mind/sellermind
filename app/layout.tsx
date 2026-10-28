@@ -106,6 +106,7 @@ export default function RootLayout({
                   href={tool.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="other-tool-card"
                   style={{
                     width: "180px",
                     padding: "16px",
@@ -116,13 +117,6 @@ export default function RootLayout({
                     color: "inherit",
                     transition: "box-shadow 0.2s",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.boxShadow =
-                      "0 4px 12px rgba(0,0,0,0.08)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.boxShadow = "none")
-                  }
                 >
                   <div
                     style={{

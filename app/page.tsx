@@ -28,6 +28,9 @@ export const metadata: Metadata = {
       "SellerMind — AI Tools for Etsy Sellers · 10 Free Tools + Pro Optimizer",
     description:
       "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier + Pro plan.",
+    images: [
+      { url: "https://thesellermind.com/og-image.png", width: 1200, height: 630, alt: "SellerMind — AI Tools for Etsy Sellers" },
+    ],
   },
 };
 

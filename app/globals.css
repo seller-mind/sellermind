@@ -271,3 +271,9 @@ html {
   color: inherit;
   padding: 0;
 }
+
+/* Other-tools card hover — replaces inline onMouseEnter/onMouseLeave handlers
+   that broke Server Component rendering in app/layout.tsx */
+.other-tool-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
