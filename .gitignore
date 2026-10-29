@@ -47,3 +47,4 @@ public/workbox-*
 
 # PWA
 workbox-config.js
+.env*

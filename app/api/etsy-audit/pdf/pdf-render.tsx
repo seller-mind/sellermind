@@ -254,9 +254,8 @@ function AuditDoc({ audit }: { audit: AuditResult }) {
 
         <Text style={styles.sectionTitle}>Want to audit your whole store?</Text>
         <Text style={{ fontSize: 10 }}>
-          This is just one listing. TheSellerMind audits your entire shop, tracks
-          keyword rankings over 14 days, and A/B tests title variants — all in
-          one place. 14-day free trial, no card. {"\n\n"}
+          This is just one listing. To optimize a whole batch at once, use the
+          batch copy generator at https://thesellermind.com/tools/batch {"\n\n"}
           → https://thesellermind.com/?utm_source=etsy-seo-checker&utm_medium=pdf_report
         </Text>
 

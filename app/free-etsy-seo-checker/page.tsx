@@ -23,7 +23,7 @@ const FAQS = [
   },
   {
     q: "Why do you cap audits at 5 per day?",
-    a: "Each audit costs about $0.0004 in Groq API spend. As a single-founder indie tool we cap total spend at $0.20/day. If you want to audit your full store, the paid TheSellerMind dashboard does bulk audits.",
+    a: "Each audit costs about $0.0004 in Groq API spend. As a single-founder indie tool we cap total spend at $0.20/day. Bulk store audits are not available yet. For now, you can batch-generate optimized copy for up to 20 listings with our batch tool at https://thesellermind.com/tools/batch",
   },
   {
     q: "How accurate is the score?",

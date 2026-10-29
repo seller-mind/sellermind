@@ -409,14 +409,14 @@ export default function EtsyAuditWidget() {
             {/* CTA tail — single exit to main product */}
             <div className="rounded-2xl bg-[#3D405B] p-6 text-white md:p-8">
               <p className="text-lg font-medium">
-                Audit your entire store, track keywords over 14 days, and A/B test
-                titles — all in one place.
+                Need optimized copy for a whole batch of listings? The Pro plan
+                unlocks the batch copy generator.
               </p>
               <a
-                href="https://thesellermind.com/?utm_source=etsy-seo-checker&utm_medium=micro_tool"
+                href="https://thesellermind.com/pricing?utm_source=etsy-seo-checker&utm_medium=micro_tool"
                 className="mt-4 inline-block rounded-lg bg-[#E07A5F] px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-[#C96A52]"
               >
-                Try TheSellerMind (14-day free trial) →
+                See Pro plan ($19.99/mo) →
               </a>
             </div>
           </div>

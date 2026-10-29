@@ -322,7 +322,7 @@ export function rateLimitBody(decision: RateLimitDecision): {
       error: {
         code: "DAILY_QUOTA_EXCEEDED",
         message:
-          "You've used today's free audits (5/day). Comes back tomorrow — or if you want to audit your full store, try TheSellerMind (14-day free trial). — Haimo",
+          "You've used today's free audits (5/day). Comes back tomorrow — or batch-generate optimized copy for up to 20 listings at https://thesellermind.com/tools/batch — Haimo",
         resetAt: decision.resetAt,
       },
     };

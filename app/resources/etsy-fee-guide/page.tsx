@@ -83,32 +83,19 @@ export default function EtsyFeeGuidePage() {
             Get Your Free Copy
           </h2>
           <p className="text-gray-500 mb-6">
-            Enter your email and we&apos;ll send the PDF instantly.
+            No email needed — download the PDF directly.
           </p>
-          <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              required
-              className="flex-1 px-5 py-3.5 border-2 border-[#D8F3DC] rounded-xl text-base outline-none focus:border-[#52B788] transition-colors"
-            />
-            <button
-              type="submit"
-              className="bg-[#1B4332] text-white px-7 py-3.5 rounded-xl font-semibold text-base hover:bg-[#2D6A4F] transition-colors whitespace-nowrap cursor-pointer"
-            >
-              Download Free Guide →
-            </button>
-          </form>
+          <a
+            href="/pdfs/Etsy_Fee_Calculator_Guide_2026.pdf"
+            download
+            className="inline-block bg-[#1B4332] text-white px-7 py-3.5 rounded-xl font-semibold text-base hover:bg-[#2D6A4F] transition-colors"
+          >
+            Download Free Guide →
+          </a>
           <p className="text-xs text-gray-400 mt-3">
-            🔒 No spam. Unsubscribe anytime. Your email stays safe.
+            Free PDF, no signup required.
           </p>
         </div>
-
-        {/* Social Proof */}
-        <p className="text-center text-gray-500 text-sm pb-6">
-          Join <strong className="text-[#1B4332]">2,400+ Etsy sellers</strong>{" "}
-          who&apos;ve already downloaded this guide
-        </p>
 
         {/* Footer */}
         <div className="text-center pt-6 border-t border-gray-200">

@@ -110,8 +110,9 @@ export default function MethodologyPage() {
           </li>
           <li>
             <strong>One listing at a time.</strong> Real SEO insight comes
-            from auditing your whole store and tracking changes over weeks —
-            that&apos;s what the paid TheSellerMind dashboard is for.
+            from auditing your whole store and tracking changes over weeks.
+            Bulk store auditing is not available yet — this tool covers one
+            listing at a time.
           </li>
         </ul>
 

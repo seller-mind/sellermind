@@ -68,7 +68,7 @@ export const FAQ_JSONLD = {
       name: "Why do you cap audits at 5 per day?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Each audit costs us about $0.004 in DeepSeek API spend. As a single-founder indie tool we cap total spend at $0.20/day. If you want to audit your full store, the paid TheSellerMind dashboard does bulk audits.",
+        text: "Each audit costs us about $0.004 in DeepSeek API spend. As a single-founder indie tool we cap total spend at $0.20/day. Bulk store audits are not available yet. For now, you can batch-generate optimized copy for up to 20 listings with our batch tool at https://thesellermind.com/tools/batch",
       },
     },
     {
