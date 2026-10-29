@@ -33,22 +33,37 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "SellerMind",
   },
+  // SM-07 fix (2026-10-28 QA): /favicon.ico and /apple-touch-icon.png were both
+  // 404. Modern browsers honour the declared SVG, so nothing was visibly broken,
+  // but RSS readers, some crawlers and the bare-path request all fall back to
+  // /favicon.ico. Both files now exist, and are declared here as explicit
+  // fallbacks ahead of the SVG so the request never reaches a 404.
   icons: {
-    icon: "/favicon.svg",
-    apple: "/icons/icon-192.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/icons/icon-192.svg", type: "image/svg+xml" },
+    ],
   },
 };
 
+// Copy fix (2026-10-29 audit): the previous descriptions described products that
+// do not exist. PodCrisp is a summarization and knowledge-base tool, not a
+// transcript / show-notes / chapters product. SaaSLaunch is a Chrome-extension
+// starter kit on Cloudflare Workers + Dodo Payments, not a Next.js boilerplate.
 const OTHER_TOOLS = [
   {
     name: "PodCrisp",
     url: "https://podcrisp.com",
-    description: "AI podcast tool — transcripts, show notes & chapters",
+    description: "AI podcast summary tool — turn episodes into notes you keep",
   },
   {
     name: "SaaSLaunch",
     url: "https://saaslaunch.dev",
-    description: "Next.js SaaS boilerplate — ship your startup in a weekend",
+    description: "Chrome-extension SaaS starter kit — extension, worker and billing in one repo",
   },
   {
     name: "Parcelglance",

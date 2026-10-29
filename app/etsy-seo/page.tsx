@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     siteName: "SellerMind",
     type: "website",
     images: [
-      { url: "https://thesellermind.com/og-image.png", width: 1200, height: 630 },
+      { url: "https://thesellermind.com/og-image.jpg", width: 1200, height: 630 },
     ],
   },
   twitter: {
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     title: "Etsy SEO Guides — 30 Category-Specific Playbooks (2026)",
     description:
       "Free Etsy SEO playbooks by category — 2026 title formula, 13-tag templates, listing description structure.",
-    images: ["https://thesellermind.com/og-image.png"],
+    images: ["https://thesellermind.com/og-image.jpg"],
   },
 };
 

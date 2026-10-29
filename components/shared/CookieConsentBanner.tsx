@@ -35,7 +35,15 @@ export function CookieConsentBanner() {
       }}
       expires={365}
     >
-      We use cookies to enhance your experience and analyze site traffic.{' '}
+      {/* SM-04 fix (2026-10-28 QA): the old copy claimed we "analyze site
+          traffic", but /privacy says "We do not currently use any third-party
+          analytics or tracking cookies" and /cookies says "We currently do not
+          use any analytics or advertising cookies". GDPR Art.13 requires the
+          notice to be accurate, so the banner was overstating collection.
+          Keep the wording in sync with both policy pages if that ever changes. */}
+      This site uses only the cookies needed to keep you signed in and remember
+      this choice. We do not use analytics, advertising or third-party tracking
+      cookies.{' '}
       {/* F-18 fix: cookie banner previously linked to /privacy, but the
           detailed cookie disclosure lives on /cookies. GDPR Art.13 requires
           the "cookie information" link to point at the actual cookie policy.

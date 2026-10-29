@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     url: "https://thesellermind.com",
     siteName: "SellerMind",
     images: [
-      { url: "https://thesellermind.com/og-image.png", width: 1200, height: 630 },
+      { url: "https://thesellermind.com/og-image.jpg", width: 1200, height: 630 },
     ],
     type: "website",
   },
@@ -248,8 +248,17 @@ export default function HomePage() {
         <h2 className="mb-4 text-3xl font-bold text-foreground-primary sm:text-4xl">
           Ready to Transform Your Etsy Shop?
         </h2>
+        {/* SM-01 fix (2026-10-28 QA): the previous copy read "Join thousands of
+            Etsy sellers..." with no user count, rating, review or case study
+            anywhere on the site to back it up. An unverifiable quantified
+            social-proof claim is a real risk under FTC §5 and EU UCPD
+            (misleading commercial practice). Replaced with a claim that is
+            true by construction and needs no evidence. Do not reintroduce a
+            number here until there is a published, dated source for it. */}
         <p className="mx-auto mb-8 max-w-xl text-foreground-secondary">
-          Join thousands of Etsy sellers who use AI to save time and sell more.
+          Ten AI tools that handle the tedious part of an Etsy listing &mdash;
+          titles, tags, descriptions and customer replies &mdash; so you can get
+          back to making.
         </p>
         <Link
           href="/tools/listing"

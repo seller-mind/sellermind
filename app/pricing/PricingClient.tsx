@@ -314,7 +314,7 @@ export default function PricingClient() {
               >
                 Dodo Payments
               </a>
-              , a PCI-DSS Level 1 compliant Merchant of Record (Stripe-backed). We never see or store your card details.
+              , a global Merchant of Record that handles payment processing and sales tax. We never see or store your card details.
             </p>
           </div>
         </div>

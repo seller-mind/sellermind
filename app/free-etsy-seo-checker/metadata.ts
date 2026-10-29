@@ -13,14 +13,14 @@ export const etsySeoCheckerMetadata: Metadata = {
     description: "4-dimension score on your Etsy listing in 10 seconds. Free, no signup.",
     url: URL,
     siteName: "TheSellerMind",
-    images: [{ url: `${BASE}/og-image.png`, width: 1200, height: 630 }],
+    images: [{ url: `${BASE}/og-image.jpg`, width: 1200, height: 630 }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Free Etsy SEO Checker",
     description: "4-dimension score on your Etsy listing in 10 seconds. Free.",
-    images: [`${BASE}/og-image.png`],
+    images: [`${BASE}/og-image.jpg`],
   },
   robots: { index: true, follow: true },
 };

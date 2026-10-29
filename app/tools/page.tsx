@@ -19,14 +19,14 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "SellerMind",
     images: [
-      { url: "https://thesellermind.com/og-image.png", width: 1200, height: 630 },
+      { url: "https://thesellermind.com/og-image.jpg", width: 1200, height: 630 },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
     description: '11 free Etsy seller tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
-    images: ["https://thesellermind.com/og-image.png"],
+    images: ["https://thesellermind.com/og-image.jpg"],
   },
 };
 

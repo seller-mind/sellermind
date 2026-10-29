@@ -26,9 +26,21 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
+    // SM-09 fix (2026-10-28 QA): script-src carried both 'unsafe-inline' and
+    // 'unsafe-eval', which removes most of the XSS depth a CSP is supposed to
+    // buy. 'unsafe-eval' is only needed by the webpack dev overlay / HMR, never
+    // by a production Next.js build, so it is now dev-only. 'unsafe-inline'
+    // stays: Next injects inline bootstrap scripts, and switching to a nonce
+    // requires moving CSP generation into middleware — a bigger change than a
+    // P3 hardening item justifies. Re-verify /tools/* and /pricing in a browser
+    // console for CSP violations after deploying; if a vendor lib still calls
+    // eval(), the console will name the file.
+    key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      process.env.NODE_ENV === 'production'
+        ? "script-src 'self' 'unsafe-inline'"
+        : "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://rsms.me",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com https://rsms.me",

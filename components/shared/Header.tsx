@@ -5,10 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+// SM-10 fix (2026-10-28 QA): the desktop nav labelled /tools/reply "Auto Reply"
+// while the mobile bar labelled the same route "Reply", and /pricing was
+// "Pricing" on desktop but "Pro" on mobile. Two names for one destination
+// makes navigation unpredictable. Labels are now identical across both bars;
+// the mobile bar still separates the paid entry visually via its zap icon.
 const NAV_ITEMS = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/tools/listing", label: "Listing", icon: "sparkles" },
-  { href: "/tools/reply", label: "Auto Reply", icon: "message" },
+  { href: "/tools/reply", label: "Reply", icon: "message" },
   { href: "/tools/holiday", label: "Marketing", icon: "megaphone" },
   { href: "/tools/review", label: "Review", icon: "star" },
   { href: "/tools/batch", label: "Batch", icon: "layers" },
@@ -121,7 +126,7 @@ function MobileNav() {
     { href: "/tools/holiday", label: "Marketing", icon: "megaphone" },
     { href: "/tools/review", label: "Review", icon: "star" },
     { href: "/tools/batch", label: "Batch", icon: "layers" },
-    { href: "/pricing", label: "Pro", icon: "zap" },
+    { href: "/pricing", label: "Pricing", icon: "zap" },
   ];
 
   const icons: Record<string, React.ReactNode> = {
