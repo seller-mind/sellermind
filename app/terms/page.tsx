@@ -78,7 +78,7 @@ export default function TermsPage() {
           </p>
           <ul className="list-disc pl-5 space-y-2 mt-4">
             <li>Listing Generator - Create SEO-optimized product listings</li>
-            <li>Auto Reply - Generate customer service responses</li>
+            <li>Reply Generator - Generate customer service responses</li>
             <li>Holiday Marketing - Create seasonal marketing content</li>
             <li>Review Handler - Generate review responses</li>
             <li>Batch Optimizer - Optimize multiple listings at once</li>

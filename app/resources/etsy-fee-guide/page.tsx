@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Free Etsy Fee Calculator Guide 2026 | SellerMind",
     description:
-      "The complete 20-page guide to Etsy fees, profit margins, and pricing strategies. Download free.",
+      "The complete 19-page guide to Etsy fees, profit margins, and pricing strategies. Download free.",
     url: "https://thesellermind.com/resources/etsy-fee-guide",
     siteName: "SellerMind",
     type: "website",
@@ -30,7 +30,7 @@ export default function EtsyFeeGuidePage() {
           The Ultimate Etsy Fee Calculator Guide 2026
         </h1>
         <p className="text-lg text-[#2D6A4F] text-center mb-8 max-w-2xl mx-auto">
-          Stop losing money on Etsy fees. Download the free 20-page guide and price
+          Stop losing money on Etsy fees. Download the free 19-page guide and price
           your products for profit.
         </p>
 
@@ -42,7 +42,7 @@ export default function EtsyFeeGuidePage() {
               {[
                 "Complete breakdown of all 7 Etsy fee types with 2026 rates",
                 "Profit margin calculator with step-by-step pricing formulas",
-                "3 real case studies showing how sellers increased profits by 40-70%",
+                "3 real case studies with before/after numbers — e.g. a jewelry seller who moved from a 17.6% to a 39.2% profit margin",
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 text-[15px]">
                   <span className="flex-shrink-0 w-5 h-5 bg-[#D8F3DC] text-[#1B4332] rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
@@ -53,7 +53,7 @@ export default function EtsyFeeGuidePage() {
               ))}
             </ul>
             <p className="text-gray-500 text-sm mt-4">
-              📄 20 pages · 📊 Fee reference tables · 🧮 Pricing templates
+              📄 19 pages · 📊 Fee reference tables · 🧮 Pricing templates
             </p>
           </div>
 
@@ -72,7 +72,7 @@ export default function EtsyFeeGuidePage() {
               <p className="text-sm opacity-80 mb-4">
                 Everything about Etsy fees, profit margins & smart pricing
               </p>
-              <p className="text-xs opacity-50">By SellerMind · 20 Pages</p>
+              <p className="text-xs opacity-50">By SellerMind · 19 Pages</p>
             </div>
           </div>
         </div>

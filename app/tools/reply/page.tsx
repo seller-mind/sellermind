@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ReplyClient } from "./client";
 
-const TITLE = "Free Etsy Message Reply Generator — AI Customer Replies · SellerMind";
+const TITLE = "Free Etsy Reply Generator — AI Customer Replies · SellerMind";
 const DESC = "Draft warm, professional Etsy customer replies in seconds. Free AI reply generator handles shipping, returns, custom orders, and complaint scenarios with the right tone.";
 const URL = "https://thesellermind.com/tools/reply";
 

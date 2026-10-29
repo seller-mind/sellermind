@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title:
     "SellerMind — AI Tools for Etsy Sellers · 10 Free Tools + Pro Optimizer",
   description:
-    "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier + Pro plan. Trusted by indie shop owners.",
+    "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier plus a Pro plan for unlimited use.",
   alternates: {
     canonical: "https://thesellermind.com",
   },
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     title:
       "SellerMind — AI Tools for Etsy Sellers · 10 Free Tools + Pro Optimizer",
     description:
-      "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier + Pro plan. Trusted by indie shop owners.",
+      "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier plus a Pro plan for unlimited use.",
     url: "https://thesellermind.com",
     siteName: "SellerMind",
     images: [
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     description:
       "AI-powered Etsy SEO, listing optimization, holiday marketing, and customer reply tools. Free tier + Pro plan.",
     images: [
-      { url: "https://thesellermind.com/og-image.png", width: 1200, height: 630, alt: "SellerMind — AI Tools for Etsy Sellers" },
+      { url: "https://thesellermind.com/og-image.jpg", width: 1200, height: 630, alt: "SellerMind — AI Tools for Etsy Sellers" },
     ],
   },
 };
@@ -46,7 +46,7 @@ const FEATURES = [
   {
     href: "/tools/reply",
     emoji: "💬",
-    title: "Auto Reply",
+    title: "Reply Generator",
     description: "Generate professional, warm customer service responses for any inquiry scenario.",
     color: "bg-secondary-light",
     accent: "text-secondary",

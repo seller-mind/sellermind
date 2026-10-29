@@ -71,7 +71,7 @@ export function ReplyClient() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="text-center sm:text-left">
         <h1 className="text-3xl font-bold text-foreground-primary sm:text-4xl">
-          💬 Auto Reply
+          💬 Reply Generator
         </h1>
         <p className="mt-2 text-foreground-secondary">
           Generate professional, warm customer service responses for any inquiry.

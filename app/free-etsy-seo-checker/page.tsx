@@ -50,7 +50,7 @@ export default function FreeEtsySeoCheckerPage() {
       {/* Hero */}
       <header className="mb-8 text-center md:mb-10">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#E07A5F]">
-          Free tool · TheSellerMind
+          Free tool · SellerMind
         </p>
         <h1 className="mt-3 text-3xl font-bold leading-tight text-stone-900 md:text-4xl">
           Free Etsy Listing SEO Checker
@@ -166,10 +166,10 @@ export default function FreeEtsySeoCheckerPage() {
       <section className="mt-14 rounded-xl bg-stone-50 p-5 text-sm text-stone-600">
         <p>
           <strong className="text-stone-800">Honest disclosure.</strong> This is an
-          opinionated tool built by Haimo (an indie hacker behind TheSellerMind).
+          opinionated tool built by Haimo (an indie hacker behind SellerMind).
           The LLM has biases and can be wrong — treat the score as a directional
           signal, not gospel. This audit is offered free because it&apos;s
-          top-of-funnel for TheSellerMind&apos;s paid product, but there are no
+          top-of-funnel for SellerMind&apos;s paid product, but there are no
           upsell pop-ups, no email capture, and no retargeting pixels.
         </p>
         <p className="mt-3">

@@ -198,7 +198,7 @@ function AuditDoc({ audit }: { audit: AuditResult }) {
         <Header listingId={audit.meta.listing_id} />
 
         <Text style={styles.title}>Your Etsy listing SEO audit</Text>
-        <Text style={styles.subtle}>Generated {date} · Free preview from TheSellerMind</Text>
+        <Text style={styles.subtle}>Generated {date} · Free preview from SellerMind</Text>
 
         <View style={styles.scoreBox}>
           <Text style={styles.scoreNumber}>{audit.total_score}</Text>

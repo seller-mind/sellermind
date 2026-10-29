@@ -4,15 +4,15 @@ const BASE = "https://thesellermind.com";
 const URL = `${BASE}/free-etsy-seo-checker`;
 
 export const etsySeoCheckerMetadata: Metadata = {
-  title: "Free Etsy SEO Checker — Score Your Listing in 10 Seconds | TheSellerMind",
+  title: "Free Etsy SEO Checker — Score Your Listing in 10 Seconds | SellerMind",
   description:
-    "Paste your Etsy listing URL. Get a 4-dimension SEO score (Title / Tags / Description / Images) with 3 prioritized fixes — instantly, no signup, no email. Free preview from TheSellerMind.",
+    "Paste your Etsy listing URL. Get a 4-dimension SEO score (Title / Tags / Description / Images) with 3 prioritized fixes — instantly, no signup, no email. Free preview from SellerMind.",
   alternates: { canonical: URL },
   openGraph: {
     title: "Free Etsy SEO Checker",
     description: "4-dimension score on your Etsy listing in 10 seconds. Free, no signup.",
     url: URL,
-    siteName: "TheSellerMind",
+    siteName: "SellerMind",
     images: [{ url: `${BASE}/og-image.jpg`, width: 1200, height: 630 }],
     type: "website",
   },
@@ -38,7 +38,7 @@ export const SOFTWARE_APPLICATION_JSONLD = {
   url: URL,
   publisher: {
     "@type": "Organization",
-    name: "TheSellerMind",
+    name: "SellerMind",
     url: BASE,
   },
 };

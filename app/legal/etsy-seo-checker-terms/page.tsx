@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Free Etsy SEO Checker — Terms of Use | TheSellerMind",
+  title: "Free Etsy SEO Checker — Terms of Use | SellerMind",
   description:
     "Terms of use for the SellerMind Free Etsy SEO Checker bookmarklet. Plain English, no dark patterns.",
   alternates: { canonical: "https://thesellermind.com/legal/etsy-seo-checker-terms" },

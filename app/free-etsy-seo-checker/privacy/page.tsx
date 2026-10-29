@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy · Free Etsy SEO Checker | TheSellerMind",
+  title: "Privacy · Free Etsy SEO Checker | SellerMind",
   description:
     "What we read, what we keep, what we don't keep — full GDPR Art.13 / Art.14 disclosure for the Free Etsy SEO Checker.",
   alternates: { canonical: "https://thesellermind.com/free-etsy-seo-checker/privacy" },
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
           1. Data controller &amp; contact
         </h2>
         <p>
-          <strong>Operator:</strong> Haimo, founder of TheSellerMind (indie
+          <strong>Operator:</strong> Haimo, founder of SellerMind (indie
           hacker, single-person team).<br />
           <strong>Email:</strong>{" "}
           <a className="text-[#E07A5F] underline" href="mailto:hello@thesellermind.com">

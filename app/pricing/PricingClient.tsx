@@ -202,7 +202,7 @@ export default function PricingClient() {
               <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-foreground-secondary">Auto Reply</span>
+              <span className="text-foreground-secondary">Reply Generator</span>
             </li>
             <li className="flex items-start gap-3">
               <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -334,7 +334,7 @@ export default function PricingClient() {
               </svg>
             </summary>
             <p className="mt-4 text-foreground-secondary">
-              No! Just enter your email and start using the tools. Your email is used to track your free usage and link your Pro subscription — no password needed.
+              No! Just enter your email and start using the tools. Your email is used to track your free usage and link your Pro subscription — no password needed. Free credits are counted per email address.
             </p>
           </details>
 

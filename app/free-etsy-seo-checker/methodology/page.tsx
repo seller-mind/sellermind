@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Methodology · Free Etsy SEO Checker | TheSellerMind",
+  title: "Methodology · Free Etsy SEO Checker | SellerMind",
   description:
     "Exactly how we score your Etsy listing — the 4-dimension rubric, scoring weights, and the honest limitations of an LLM-powered audit.",
   alternates: { canonical: "https://thesellermind.com/free-etsy-seo-checker/methodology" },

@@ -7,14 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Zap, Shield, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Free Etsy Seller Tools — 11 Tools for Titles, Fees & SEO, SEO, Tags, Reviews · SellerMind',
-  description: '11 free Etsy seller tools for titles, tags, reviews, SEO audits, and listing optimizations. 3 free AI uses per month across all tools · Pro plan ($19.99/mo) unlocks unlimited.',
+  title: 'Free Etsy Seller Tools — 10 AI Tools + Fee Calculator · SellerMind',
+  description: '10 free AI tools plus a free Etsy fee calculator — titles, tags, reviews, SEO audits, and listing optimization. 3 free AI uses per month across all 10 AI tools · Pro plan ($19.99/mo) unlocks unlimited.',
   alternates: {
     canonical: 'https://thesellermind.com/tools',
   },
   openGraph: {
-    title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
-    description: '11 free Etsy seller tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
+    title: 'Free Etsy Seller Tools — 10 AI Tools + Fee Calculator · SellerMind',
+    description: '10 free AI tools plus a free Etsy fee calculator — titles, tags, reviews, SEO audits. 3 free AI uses/month across all 10 AI tools · Pro plan unlocks unlimited.',
     url: 'https://thesellermind.com/tools',
     type: "website",
     siteName: "SellerMind",
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: 'Free Etsy Seller Tools — 10 AI Tools · SellerMind',
-    description: '11 free Etsy seller tools — titles, tags, reviews, SEO audits. 3 free AI uses/month across all tools · Pro plan unlocks unlimited.',
+    title: 'Free Etsy Seller Tools — 10 AI Tools + Fee Calculator · SellerMind',
+    description: '10 free AI tools plus a free Etsy fee calculator — titles, tags, reviews, SEO audits. 3 free AI uses/month across all 10 AI tools · Pro plan unlocks unlimited.',
     images: ["https://thesellermind.com/og-image.jpg"],
   },
 };
@@ -100,7 +100,7 @@ const LEGACY_TOOLS = [
     keywords: ["etsy listing generator", "etsy listing creator", "full etsy listing"]
   },
   {
-    name: "Auto Reply",
+    name: "Reply Generator",
     slug: "/tools/reply",
     description: "Generate warm, professional customer service replies for any Etsy inquiry scenario.",
     icon: "💌",
@@ -140,7 +140,7 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Free Etsy Seller Tools - SellerMind",
-  "description": "Complete suite of 10 free AI-powered Etsy seller tools. Generate titles, tags, listings, tags, analyze SEO, respond to reviews, and create holiday marketing campaigns.",
+  "description": "Complete suite of 10 free AI-powered Etsy seller tools, plus a free Etsy fee calculator. Generate titles, tags and listings, analyze SEO, respond to reviews, and create holiday marketing campaigns.",
   "url": "https://thesellermind.com/tools",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web Browser",
@@ -380,7 +380,7 @@ export default function ToolsHubPage() {
           <CardHeader>
             <CardTitle className="text-xl">🎯 Target Keywords Covered</CardTitle>
             <CardDescription>
-              Our 10 tools are optimized for these high-value Etsy seller keywords
+              Our 10 AI tools are optimized for these high-value Etsy seller keywords
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -437,7 +437,7 @@ export default function ToolsHubPage() {
                 How many tools does SellerMind offer?
               </h4>
               <p className="text-foreground-secondary">
-                SellerMind offers 10 AI-powered Etsy seller tools — 5 focused single-purpose tools and 5 flagship workflow tools. All 10 tools share a shared free tier of 3 AI generations per month.
+                SellerMind offers 10 AI-powered Etsy seller tools — 5 focused single-purpose tools and 5 flagship workflow tools — plus a free Etsy fee calculator. All 10 AI tools share one free tier of 3 AI generations per month; the fee calculator does not use AI credits.
               </p>
             </div>
             <div>

@@ -7,7 +7,7 @@ SellerMind is a free AI-powered tool suite designed specifically for Etsy seller
 ## Features
 
 - **Listing Generator** - Create SEO-optimized titles, descriptions, and tags
-- **Auto Reply** - Generate professional customer service responses
+- **Reply Generator** - Generate professional customer service responses
 - **Holiday Marketing** - Create seasonal marketing copy for holidays
 - **Review Handler** - Transform negative reviews into opportunities
 - **Batch Optimizer** - Analyze and optimize multiple listings at once

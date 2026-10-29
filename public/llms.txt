@@ -26,7 +26,7 @@
 ## Flagship workflow tools (SellerMind Pro engine, 3 free uses/month)
 
 - [Listing Generator](https://thesellermind.com/tools/listing): End-to-end Etsy listing (title + description + 13 tags).
-- [Auto Reply](https://thesellermind.com/tools/reply): Warm, professional customer service replies.
+- [Reply Generator](https://thesellermind.com/tools/reply): Warm, professional customer service replies.
 - [Holiday Marketing](https://thesellermind.com/tools/holiday): Full holiday campaign copy.
 - [Review Handler](https://thesellermind.com/tools/review): Turn negative reviews into recovery opportunities.
 - [Batch Optimizer](https://thesellermind.com/tools/batch): Analyze and optimize multiple listings at once.
