@@ -32,7 +32,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://rsms.me",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com https://rsms.me",
-      "connect-src 'self' https://thesellermind.com https://*.thesellermind.com https://vitals.vercel-insights.com",
+      "connect-src 'self' https://thesellermind.com https://*.thesellermind.com https://vitals.vercel-insights.com https://alerts.saaslaunch.dev",
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
