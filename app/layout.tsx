@@ -3,6 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import { Header, MobileNav } from "@/components/shared/Header";
 import { CookieConsentBanner } from "@/components/shared/CookieConsentBanner";
+import { SiteAlerts } from "@/components/shared/SiteAlerts";
 import { UsageBanner } from "@/components/shared/UsageBanner";
 
 // F-UX-06 fix: removed `maximumScale: 1` (WCAG 2.1 SC 1.4.4 Resize Text).
@@ -63,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-alert-site="sellermind">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -184,6 +185,7 @@ export default function RootLayout({
         </footer>
 
         <CookieConsentBanner />
+        <SiteAlerts />
 
         <script
           dangerouslySetInnerHTML={{
