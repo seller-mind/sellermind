@@ -365,13 +365,26 @@ export async function POST(request: NextRequest) {
 
       case 'subscription.updated':
       case 'subscription.plan_changed': {
-        result = await updateSellermindUserByEmail(normalizedEmail, {
+        // 升降级必须同步 subscription_plan，否则用户付了更高档位的钱却仍被
+        // 按旧档位授权。仅当 product_id 明确命中已配置的两个产品时才改 plan，
+        // 避免未知/缺失 product_id 时把 plan 误写成一个兜底值。
+        const patch1: Record<string, any> = {
           subscription_status: 'active',
           payment_provider: 'dodo',
           current_period_end: currentPeriodEnd,
+          dodo_subscription_id: dodoSubscriptionId,
           updated_at: now,
-        })
-        console.log(`[dodo-webhook] subscription updated for ${maskEmail(normalizedEmail)}`)
+        }
+        const planMatched =
+          !!productId &&
+          (productId === process.env.DODO_PRODUCT_ID_MONTHLY ||
+            productId === process.env.DODO_PRODUCT_ID_YEARLY)
+        if (planMatched) patch1.subscription_plan = planName
+        result = await updateSellermindUserByEmail(normalizedEmail, patch1)
+        console.log(
+          `[dodo-webhook] subscription updated for ${maskEmail(normalizedEmail)}` +
+            (planMatched ? ` plan=${planName}` : ' plan=<unchanged>')
+        )
         break
       }
 
@@ -401,6 +414,46 @@ export async function POST(request: NextRequest) {
           updated_at: now,
         })
         console.log(`[dodo-webhook] subscription on_hold for ${maskEmail(normalizedEmail)}`)
+        break
+      }
+
+      case 'subscription.paused': {
+        result = await updateSellermindUserByEmail(normalizedEmail, {
+          subscription_status: 'paused',
+          updated_at: now,
+        })
+        console.warn(`[dodo-webhook] subscription paused for ${maskEmail(normalizedEmail)}`)
+        break
+      }
+
+      case 'subscription.past_due': {
+        // 扣款失败进入催收：先降级为 past_due，权益收紧但仍保留账号，
+        // 等 dunning.recovered / subscription.active 再恢复。
+        result = await updateSellermindUserByEmail(normalizedEmail, {
+          subscription_status: 'past_due',
+          current_period_end: currentPeriodEnd,
+          updated_at: now,
+        })
+        console.warn(`[dodo-webhook] subscription past_due for ${maskEmail(normalizedEmail)}`)
+        break
+      }
+
+      case 'dunning.started': {
+        result = await updateSellermindUserByEmail(normalizedEmail, {
+          subscription_status: 'past_due',
+          updated_at: now,
+        })
+        console.warn(`[dodo-webhook] dunning started for ${maskEmail(normalizedEmail)}`)
+        break
+      }
+
+      case 'dunning.recovered': {
+        result = await updateSellermindUserByEmail(normalizedEmail, {
+          subscription_status: 'active',
+          current_period_end: currentPeriodEnd,
+          updated_at: now,
+        })
+        console.log(`[dodo-webhook] dunning recovered for ${maskEmail(normalizedEmail)}`)
         break
       }
 
@@ -459,7 +512,8 @@ export async function POST(request: NextRequest) {
         )
         break
       }
-      case 'dispute.won': {
+      case 'dispute.won':
+      case 'dispute.cancelled': {
         // Dispute resolved in our favor → try to restore active status only if
         // the subscription is currently in the 'disputed' state we set above.
         // We use updateSellermindUserByEmail (no upsert) so an already-cancelled
